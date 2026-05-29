@@ -18,13 +18,13 @@ input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
 /* ─── RESET & BASE ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg1:#0F0205;--bg2:#1A0608;--bg3:#260A10;
-  --blue:#4A0E17;--blue-light:#6B1428;--accent:#8B1A2E;
-  --mint:#00D4AA;--gold:#FFD93D;--sky:#90CAF9;--peach:#FF9A56;
-  --coral:#FF6B6B;--purple:#C77DFF;--teal:#80DEEA;
-  --text:#E8F0FE;--text-dim:rgba(232,240,254,.55);--text-muted:rgba(232,240,254,.35);
-  --card:rgba(255,255,255,.08);--card-hover:rgba(255,255,255,.12);
-  --border:rgba(255,255,255,.1);
+  --bg1:#111318;--bg2:#171921;--bg3:#1E2030;
+  --blue:#3A0C15;--blue-light:#4E1422;--accent:#6B1428;
+  --mint:#10B981;--gold:#F0B429;--sky:#60A5FA;--peach:#FB923C;
+  --coral:#F87171;--purple:#A78BFA;--teal:#2DD4BF;
+  --text:#E2E8F0;--text-dim:rgba(226,232,240,.55);--text-muted:rgba(226,232,240,.35);
+  --card:rgba(255,255,255,.055);--card-hover:rgba(255,255,255,.085);
+  --border:rgba(255,255,255,.09);
   --radius:12px;--radius-lg:16px;
   --sidebar-w:210px;--topbar-h:58px;--botnav-h:64px;
 }
@@ -211,7 +211,7 @@ body.mode-print{--mode:print}
 #topbar{
   position:fixed;top:0;left:0;right:0;z-index:100;
   height:var(--topbar-h);
-  background:linear-gradient(135deg,#4A0E17 0%,#6B1428 100%);
+  background:linear-gradient(135deg,#2E0A10 0%,#3A0C15 100%);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 16px;gap:12px;
   box-shadow:0 2px 20px rgba(0,0,0,.3);
@@ -260,7 +260,7 @@ body.mode-print{--mode:print}
   display:none;
   position:fixed;top:var(--topbar-h);left:0;bottom:0;
   width:var(--sidebar-w);
-  background:linear-gradient(180deg,#4A0E17 0%,#1A0608 100%);
+  background:linear-gradient(180deg,#2E0A10 0%,#161820 100%);
   border-right:1px solid var(--border);
   overflow-y:auto;z-index:90;
   padding:12px 0;
@@ -288,7 +288,7 @@ body.mode-print{--mode:print}
   display:none;
   position:fixed;bottom:0;left:0;right:0;z-index:100;
   height:var(--botnav-h);
-  background:linear-gradient(0deg,#4A0E17 0%,#6B1428 100%);
+  background:linear-gradient(0deg,#2E0A10 0%,#3A0C15 100%);
   border-top:1px solid var(--border);
   box-shadow:0 -2px 20px rgba(0,0,0,.3);
 }
@@ -309,7 +309,7 @@ body.mode-print{--mode:print}
   padding-top:calc(var(--topbar-h) + 16px);
   padding-bottom:16px;
   min-height:100vh;
-  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  background:var(--bg1);
 }
 .tab-content{display:none;padding:0 16px;max-width:1200px}
 .tab-content.active{display:block}
@@ -494,7 +494,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .foto-link{color:var(--gold);font-size:16px;text-decoration:none;line-height:1}
 .foto-link:hover{opacity:.75}
 #obs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center}
-#obs-modal-box{background:#1e0a10;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
+#obs-modal-box{background:#181B26;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
 #obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:10px}
 #obs-modal-text{color:var(--text);font-size:14px;line-height:1.65;white-space:pre-wrap;margin:0}
 #obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;line-height:1;padding:0}
@@ -639,12 +639,12 @@ body.mode-mobile .donut-wrap svg{width:90px;height:90px}
 body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 
 /* ─── VENDOR COLORS ─── */
-.c-guilherme{color:#00D4AA} .c-relson{color:#90CAF9} .c-everaldo{color:#FF9A56}
-.c-israel{color:#C77DFF} .c-natalia{color:#FF6B6B} .c-keller{color:#80DEEA}
-.c-althieres{color:#FFD93D} .c-jorge{color:rgba(255,255,255,.75)}
-.bg-guilherme{background:#00D4AA} .bg-relson{background:#90CAF9} .bg-everaldo{background:#FF9A56}
-.bg-israel{background:#C77DFF} .bg-natalia{background:#FF6B6B} .bg-keller{background:#80DEEA}
-.bg-althieres{background:#FFD93D} .bg-jorge{background:rgba(255,255,255,.35)}
+.c-guilherme{color:#10B981} .c-relson{color:#60A5FA} .c-everaldo{color:#F59E0B}
+.c-israel{color:#8B5CF6} .c-natalia{color:#F472B6} .c-keller{color:#22D3EE}
+.c-althieres{color:#FBBF24} .c-jorge{color:#94A3B8}
+.bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
+.bg-israel{background:#8B5CF6} .bg-natalia{background:#F472B6} .bg-keller{background:#22D3EE}
+.bg-althieres{background:#FBBF24} .bg-jorge{background:#94A3B8}
 
 /* spacer */
 .mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-8{margin-top:8px}
@@ -653,7 +653,7 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 .flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
 .flex-1{flex:1}.w-full{width:100%}.text-right{text-align:right}
 /* Vendor colors extra */
-.c-joao{color:#A8EDEA} .bg-joao{background:#A8EDEA}
+.c-joao{color:#2DD4BF} .bg-joao{background:#2DD4BF}
 /* Mês toggle btn */
 .mes-toggle-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:Poppins,sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
 .mes-toggle-btn.active{background:rgba(255,255,255,.15);color:#fff}
@@ -677,7 +677,7 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 .member-row:last-child{border-bottom:none}
 .member-row:hover{background:rgba(255,255,255,.06);border-bottom-color:transparent}
 #equipe-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
-#equipe-modal-box{background:#160508;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+#equipe-modal-box{background:#181B26;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
 .ep-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px}
 .ep-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);font-weight:600;margin-bottom:5px}
 .ep-stat-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
@@ -1272,15 +1272,15 @@ let CRM_MES = 'abril'; // 'abril' | 'maio' — declarado aqui para estar acessí
    DATA
 ───────────────────────────────────────── */
 const VENDEDORES = [
-  { name:'Guilherme', av:'GU', color:'#00D4AA', abr:440861.66, mar:413310.44, cli:40, ped:198, cod:'093' },
-  { name:'Relson',    av:'RE', color:'#90CAF9', abr:318310.82, mar:338916.13, cli:48, ped: 65, cod:'094' },
-  { name:'Everaldo',  av:'EV', color:'#FF9A56', abr: 96541.81, mar: 98835.66, cli:18, ped: 22, cod:'107' },
-  { name:'Israel',    av:'IS', color:'#C77DFF', abr: 97245.40, mar: 80961.54, cli:30, ped: 45, cod:'115' },
-  { name:'Natália',   av:'NA', color:'#FF6B6B', abr: 87271.21, mar: 70689.47, cli:17, ped: 24, cod:'116' },
-  { name:'Keller',    av:'KE', color:'#80DEEA', abr: 73275.56, mar: 61898.09, cli:26, ped: 35, cod:'117' },
-  { name:'Althieres', av:'AL', color:'#FFD93D', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'119', newHire:true },
-  { name:'Jorge',     av:'JO', color:'rgba(255,255,255,.75)', abr: 0.00, mar: 0.00, cli: 0, ped: 0, cod:'118', newHire:true },
-  { name:'João',      av:'JO2',color:'#A8EDEA', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'120', newHire:true },
+  { name:'Guilherme', av:'GU', color:'#10B981', abr:440861.66, mar:413310.44, cli:40, ped:198, cod:'093' },
+  { name:'Relson',    av:'RE', color:'#60A5FA', abr:318310.82, mar:338916.13, cli:48, ped: 65, cod:'094' },
+  { name:'Everaldo',  av:'EV', color:'#F59E0B', abr: 96541.81, mar: 98835.66, cli:18, ped: 22, cod:'107' },
+  { name:'Israel',    av:'IS', color:'#8B5CF6', abr: 97245.40, mar: 80961.54, cli:30, ped: 45, cod:'115' },
+  { name:'Natália',   av:'NA', color:'#F472B6', abr: 87271.21, mar: 70689.47, cli:17, ped: 24, cod:'116' },
+  { name:'Keller',    av:'KE', color:'#22D3EE', abr: 73275.56, mar: 61898.09, cli:26, ped: 35, cod:'117' },
+  { name:'Althieres', av:'AL', color:'#FBBF24', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'119', newHire:true },
+  { name:'Jorge',     av:'JO', color:'#94A3B8', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'118', newHire:true },
+  { name:'João',      av:'JO2',color:'#2DD4BF', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'120', newHire:true },
 ];
 
 /* ─────────────────────────────────────────
@@ -1413,15 +1413,15 @@ const VENDOR_TOP5 = {
 // CRM_MES já declarado no topo do script
 
 const VENDEDORES_MAIO = [
-  {name:'Guilherme', av:'GU', color:'#00D4AA', total:423432.45, cli:40, ped:210, cod:'093'},
-  {name:'Relson',    av:'RE', color:'#90CAF9', total:250781.59, cli:41, ped: 59, cod:'094'},
-  {name:'Natália',   av:'NA', color:'#FF6B6B', total:174342.60, cli:28, ped: 47, cod:'116'},
-  {name:'Israel',    av:'IS', color:'#C77DFF', total:165187.17, cli:63, ped: 95, cod:'115'},
-  {name:'Keller',    av:'KE', color:'#80DEEA', total:105013.58, cli:29, ped: 40, cod:'117'},
-  {name:'Everaldo',  av:'EV', color:'#FF9A56', total: 94577.05, cli:14, ped: 22, cod:'107'},
-  {name:'Althieres', av:'AL', color:'#FFD93D', total: 73795.27, cli:27, ped: 38, cod:'119'},
-  {name:'Jorge',     av:'JO', color:'rgba(255,255,255,.75)', total:42171.16, cli:12, ped:17, cod:'118'},
-  {name:'João',     av:'JO2',color:'#A8EDEA', total:     0.00, cli: 0, ped:  0, cod:'120', newHire:true},
+  {name:'Guilherme', av:'GU', color:'#10B981', total:423432.45, cli:40, ped:210, cod:'093'},
+  {name:'Relson',    av:'RE', color:'#60A5FA', total:250781.59, cli:41, ped: 59, cod:'094'},
+  {name:'Natália',   av:'NA', color:'#F472B6', total:174342.60, cli:28, ped: 47, cod:'116'},
+  {name:'Israel',    av:'IS', color:'#8B5CF6', total:165187.17, cli:63, ped: 95, cod:'115'},
+  {name:'Keller',    av:'KE', color:'#22D3EE', total:105013.58, cli:29, ped: 40, cod:'117'},
+  {name:'Everaldo',  av:'EV', color:'#F59E0B', total: 94577.05, cli:14, ped: 22, cod:'107'},
+  {name:'Althieres', av:'AL', color:'#FBBF24', total: 73795.27, cli:27, ped: 38, cod:'119'},
+  {name:'Jorge',     av:'JO', color:'#94A3B8', total: 42171.16, cli:12, ped: 17, cod:'118'},
+  {name:'João',     av:'JO2',color:'#2DD4BF', total:      0.00, cli: 0, ped:  0, cod:'120', newHire:true},
 ];
 
 const CARTEIRA_MAIO = {
