@@ -389,7 +389,7 @@ body.mode-mobile #analise-kpi-grid{grid-template-columns:1fr 1fr}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 body.mode-desktop .dash-main-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:16px}
-body.mode-desktop .dash-second-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+body.mode-desktop .dash-second-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:16px}
 
 /* ─── RANKING ─── */
@@ -897,92 +897,65 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
     </div>
   </div>
 
-  <!-- Main grid -->
-  <div class="dash-main-grid gap-12 mb-16">
-    <!-- Ranking -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Ranking de Faturamento — Abril 2026</span>
-      </div>
-      <div id="ranking-list"></div>
-      <div class="rank-total">
-        <span class="rank-total-label">Total Geral</span>
-        <span class="rank-total-val" id="rank-total-dynamic">R$ 1.113.506,46</span>
-      </div>
+  <!-- Ranking (largura total) -->
+  <div class="card mb-16">
+    <div class="card-header">
+      <span class="card-title" id="ranking-title">Ranking de Faturamento — Abril 2026</span>
     </div>
-    <!-- Right column -->
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <!-- Alertas -->
-      <div class="card">
-        <div class="card-header"><span class="card-title">Alertas</span></div>
-        <div class="alert-item"><div class="alert-dot warn"></div><div class="alert-text"><strong>Café Dia das Mães</strong> — Juan · Matheus · Marcelo · 08–09 Mai</div></div>
-        <div class="alert-item"><div class="alert-dot ok"></div><div class="alert-text"><strong>Natália</strong> — maior crescimento M/M · <span class="up">+23,5%</span></div></div>
-        <div class="alert-item"><div class="alert-dot ok" style="background:var(--gold)"></div><div class="alert-text"><strong>Althieres e Jorge</strong> — <span style="color:var(--gold)">★ Novos na equipe</span> · Ingresso Mai/2026</div></div>
-        <div class="alert-item"><div class="alert-dot info"></div><div class="alert-text"><strong>Relson</strong> — única queda · <span class="dn">-6,1%</span> vs Março</div></div>
-      </div>
-      <!-- Agenda da semana -->
-      <div class="card">
-        <div class="card-header"><span class="card-title">Agenda desta semana</span></div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div class="ag-item" style="padding:10px 12px">
-            <div class="ag-item-header"><div class="ag-dot" style="background:#FF9A56"></div><div class="ag-name">MULTI PANE</div></div>
-            <div class="ag-meta">04–05 Mai · Seg/Ter · Mogi</div>
-            <div class="ag-tags">
-              <span class="ag-obs" style="background:rgba(0,212,170,.15);color:var(--mint)">Treinamento</span>
-              <span class="ag-tag" style="color:#FF9A56">Juan</span><span class="ag-tag" style="color:#80DEEA">Keller</span>
-            </div>
-          </div>
-          <div class="ag-item" style="padding:10px 12px">
-            <div class="ag-item-header"><div class="ag-dot" style="background:#FF9A56"></div><div class="ag-name">ARMAZÉM BRASILÂNDIA</div></div>
-            <div class="ag-meta">08–09 Mai · Sex/Sáb · Brasilândia</div>
-            <div class="ag-tags">
-              <span class="ag-obs" style="background:rgba(255,217,61,.15);color:var(--gold)">Café Dia das Mães</span>
-              <span class="ag-tag" style="color:#FF9A56">Juan</span><span class="ag-tag" style="color:#00D4AA">Guilherme</span>
-            </div>
-          </div>
-          <div class="ag-item" style="padding:10px 12px">
-            <div class="ag-item-header"><div class="ag-dot" style="background:#80DEEA"></div><div class="ag-name">JACOMÉ</div></div>
-            <div class="ag-meta">04–05 Mai · Seg/Ter · Mogi</div>
-            <div class="ag-tags">
-              <span class="ag-obs" style="background:rgba(144,202,249,.15);color:var(--sky)">Apresentação</span>
-              <span class="ag-tag" style="color:#80DEEA">Gabriel</span><span class="ag-tag" style="color:#80DEEA">Keller</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div id="ranking-list"></div>
+    <div class="rank-total">
+      <span class="rank-total-label">Total Geral</span>
+      <span class="rank-total-val" id="rank-total-dynamic">R$ 1.113.506,46</span>
     </div>
   </div>
 
-  <!-- Second row -->
-  <div class="dash-second-grid gap-12 mt-16">
-    <!-- Donut -->
+  <!-- Linha 2: Donut + Top5 -->
+  <div class="dash-second-grid gap-12">
     <div class="card">
-      <div class="card-header"><span class="card-title">Distribuição Abril</span></div>
+      <div class="card-header"><span class="card-title" id="dash-donut-title">Distribuição Abril</span></div>
       <div class="donut-wrap">
         <svg id="donut-svg" width="120" height="120" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="18"/>
-          <!-- Filled by JS -->
         </svg>
         <div class="donut-legend" id="donut-legend"></div>
       </div>
     </div>
-    <!-- Atividades -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">Atividades Abril</span></div>
-      <div class="act-grid">
-        <div class="act-item"><div class="act-num" style="color:var(--sky)">47</div><div class="act-label">Visitas</div></div>
-        <div class="act-item"><div class="act-num" style="color:var(--mint)">23</div><div class="act-label">Prospecções</div></div>
-        <div class="act-item"><div class="act-num" style="color:var(--sky)">15</div><div class="act-label">Apresentações</div></div>
-        <div class="act-item"><div class="act-num" style="color:var(--gold)">9</div><div class="act-label">Cadastros</div></div>
-        <div class="act-item"><div class="act-num" style="color:var(--peach)">3</div><div class="act-label">Cafés</div></div>
-        <div class="act-item"><div class="act-num" style="color:var(--purple)">8</div><div class="act-label">Técnicos</div></div>
-      </div>
-    </div>
-    <!-- Top 5 -->
     <div class="card">
       <div class="card-header"><span class="card-title">Top 5 Clientes</span></div>
       <div id="top5-list"></div>
     </div>
+  </div>
+
+  <!-- Atividades (dinâmico — Google Forms) -->
+  <div class="card mt-16" id="act-card">
+    <div class="card-header">
+      <span class="card-title">Atividades · Google Forms</span>
+      <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s">↻ Carregar</button>
+    </div>
+    <div class="subtab-row" id="act-seller-tabs" style="margin-bottom:10px">
+      <button class="subtab active" data-seller="GERAL" onclick="selectActSeller(this)">Geral</button>
+      <button class="subtab" data-seller="GUILHERME" onclick="selectActSeller(this)">Guilherme</button>
+      <button class="subtab" data-seller="RELSON" onclick="selectActSeller(this)">Relson</button>
+      <button class="subtab" data-seller="EVERALDO" onclick="selectActSeller(this)">Everaldo</button>
+      <button class="subtab" data-seller="ISRAEL" onclick="selectActSeller(this)">Israel</button>
+      <button class="subtab" data-seller="NATALIA" onclick="selectActSeller(this)">Natália</button>
+      <button class="subtab" data-seller="KELLER" onclick="selectActSeller(this)">Keller</button>
+      <button class="subtab" data-seller="JORGE" onclick="selectActSeller(this)">Jorge</button>
+      <button class="subtab" data-seller="ALTHIERES" onclick="selectActSeller(this)">Althieres</button>
+      <button class="subtab" data-seller="JOAO" onclick="selectActSeller(this)">João</button>
+    </div>
+    <div class="forms-filter-bar" style="margin-bottom:14px">
+      <label>De <input type="date" id="act-dt-from" onchange="renderActivities()"></label>
+      <label>Até <input type="date" id="act-dt-to" onchange="renderActivities()"></label>
+      <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
+      <div class="act-item"><div class="act-num" id="act-n-visitas" style="color:var(--sky)">—</div><div class="act-label">Visitas</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-prospeccoes" style="color:var(--mint)">—</div><div class="act-label">Prospecções</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-apresentacoes" style="color:var(--gold)">—</div><div class="act-label">Apresentações</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-cadastros" style="color:var(--peach)">—</div><div class="act-label">Cadastros</div></div>
+    </div>
+    <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Clique em Carregar para ver os dados dos formulários</div>
   </div>
 </div>
 
@@ -2564,6 +2537,12 @@ function applyVendorMode(user){
     if(btn.dataset.seller===vendorKey){btn.classList.add('active');}
     else{btn.style.display='none';btn.classList.remove('active');}
   });
+  // Atividades dashboard: bloqueia seleção de outros vendedores
+  currentActSeller=vendorKey;
+  document.querySelectorAll('#act-seller-tabs .subtab').forEach(btn=>{
+    if(btn.dataset.seller===vendorKey){btn.classList.add('active');}
+    else{btn.style.display='none';btn.classList.remove('active');}
+  });
   // Oculta subtabs de visão geral e comparativo
   const subtabs=document.querySelectorAll('#tab-analise .subtab');
   subtabs.forEach((btn,i)=>{ if(i!==2) btn.style.display='none'; });
@@ -2622,6 +2601,67 @@ document.addEventListener('keydown',e=>{
 /* ─────────────────────────────────────────
    INIT
 ───────────────────────────────────────── */
+/* ─── ATIVIDADES DASHBOARD ─── */
+let currentActSeller='GERAL';
+
+async function loadAllFormsAndRender(){
+  const btn=document.getElementById('act-load-btn');
+  if(btn){btn.textContent='↻ Carregando...';btn.disabled=true;}
+  const types=['prospeccoes','visitas','apresentacoes','cadastros'];
+  try{
+    await Promise.all(types.map(async t=>{
+      if(formsCaches[t].length) return;
+      const url=FORMS_CSV[t]; if(!url) return;
+      const res=await fetch(url);
+      const text=await res.text();
+      formsCaches[t]=parseCSV(text).filter(r=>r.length>1);
+    }));
+  }catch(e){console.error(e);}
+  if(btn){btn.textContent='↻ Atualizar';btn.disabled=false;}
+  renderActivities();
+}
+
+function selectActSeller(el){
+  currentActSeller=el.dataset.seller;
+  document.querySelectorAll('#act-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderActivities();
+}
+
+function renderActivities(){
+  const fromVal=document.getElementById('act-dt-from')?.value;
+  const toVal=document.getElementById('act-dt-to')?.value;
+  const dtFrom=fromVal?new Date(fromVal):null;
+  const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
+  const norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const types=['visitas','prospeccoes','apresentacoes','cadastros'];
+  const loaded=types.some(t=>formsCaches[t].length>0);
+  let total=0;
+  types.forEach(t=>{
+    const n=formsCaches[t].filter(r=>{
+      if(!r[0]||r[1]==='#N/A') return false;
+      if(currentActSeller!=='GERAL'&&norm(r[0].trim())!==currentActSeller) return false;
+      if(dtFrom||dtTo){
+        const d=toDate(r[1]); if(!d) return false;
+        if(dtFrom&&d<dtFrom) return false;
+        if(dtTo&&d>dtTo) return false;
+      }
+      return true;
+    }).length;
+    const el=document.getElementById('act-n-'+t);
+    if(el) el.textContent=loaded?n:'—';
+    if(loaded) total+=n;
+  });
+  const status=document.getElementById('act-status');
+  if(status){
+    if(!loaded) status.textContent='Clique em Carregar para ver os dados dos formulários';
+    else{
+      const p=(dtFrom||dtTo)?' no período selecionado':'';
+      status.textContent=total+' registro(s)'+p;
+    }
+  }
+}
+
 /* ─── AUTO MODE DETECTION ─── */
 function autoMode(){
   if(document.body.classList.contains('mode-print')) return;
