@@ -6,7 +6,7 @@
 <title>Valochi Sousa — Sistema Comercial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
@@ -398,7 +398,6 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);
 }
 .rank-item:last-child{border-bottom:none}
-.rank-medal{width:22px;text-align:center;font-size:14px;flex-shrink:0}
 .rank-num{width:18px;text-align:center;font-size:11px;color:var(--text-muted);flex-shrink:0}
 .rank-av{
   width:32px;height:32px;border-radius:8px;
@@ -550,11 +549,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   font-size:10px;font-weight:700;flex-shrink:0;
 }
 .tree-children{margin-left:20px;border-left:1px solid var(--border);padding-left:12px}
-.member-row{
-  display:flex;align-items:center;gap:10px;padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-.member-row:last-child{border-bottom:none}
+.member-row{display:flex;align-items:center;gap:10px}
 .member-av{
   width:36px;height:36px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
@@ -668,6 +663,24 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 #carteira-table-wrap tr:hover td{background:rgba(255,255,255,.04)}
 #carteira-table-wrap td.carteira-bar{width:100px}
 .carteira-bar-inner{height:5px;border-radius:3px;transition:.4s}
+
+/* ─── UI REFINEMENTS ─── */
+.kpi-value,.rank-val-main,.rank-total-val,.act-num,.mini-kpi-value,.top5-val{font-variant-numeric:tabular-nums}
+.section-title{font-size:17px;font-weight:700}
+.kpi-value{font-size:20px;font-weight:700;margin:6px 0 2px;line-height:1.1}
+.card-title{font-size:11px;letter-spacing:.7px}
+.badge-up{background:rgba(0,212,170,.12);color:var(--mint);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
+.badge-dn{background:rgba(255,107,107,.12);color:var(--coral);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
+.rank-pos{width:26px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.3px;flex-shrink:0;font-variant-numeric:tabular-nums;font-family:'SF Mono',ui-monospace,monospace}
+.rank-pos.top{color:var(--gold)}
+.member-row{cursor:pointer;border-radius:8px;margin:0 -8px;padding:8px;transition:.15s;border-bottom:1px solid rgba(255,255,255,.05)}
+.member-row:last-child{border-bottom:none}
+.member-row:hover{background:rgba(255,255,255,.06);border-bottom-color:transparent}
+#equipe-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
+#equipe-modal-box{background:#160508;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+.ep-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px}
+.ep-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);font-weight:600;margin-bottom:5px}
+.ep-stat-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 </style>
 </head>
 <body class="mode-desktop">
@@ -1221,27 +1234,27 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
     <div class="card">
       <div class="card-header"><span class="card-title">Técnicos de Panificação</span></div>
       <div>
-        <div class="member-row">
+        <div class="member-row" onclick="openTecnicoProfile('Matheus','Guarulhos','MA','#00D4AA')">
           <div class="member-av" style="background:#00D4AA;color:#000">MA</div>
           <div class="member-info"><div class="member-name">Matheus</div><div class="member-meta">Técnico · Guarulhos</div></div>
           <div class="role-badge" style="background:rgba(0,212,170,.2);color:#00D4AA">Guarulhos</div>
         </div>
-        <div class="member-row">
+        <div class="member-row" onclick="openTecnicoProfile('Juan','Zona Leste','JU','#FF9A56')">
           <div class="member-av" style="background:#FF9A56;color:#000">JU</div>
           <div class="member-info"><div class="member-name">Juan</div><div class="member-meta">Técnico · Zona Leste</div></div>
           <div class="role-badge" style="background:rgba(255,154,86,.2);color:#FF9A56">Zona Leste</div>
         </div>
-        <div class="member-row">
+        <div class="member-row" onclick="openTecnicoProfile('Gabriel','Guarulhos','GA','#80DEEA')">
           <div class="member-av" style="background:#80DEEA;color:#000">GA</div>
           <div class="member-info"><div class="member-name">Gabriel</div><div class="member-meta">Técnico · Guarulhos</div></div>
           <div class="role-badge" style="background:rgba(128,222,234,.2);color:#80DEEA">Guarulhos</div>
         </div>
-        <div class="member-row">
+        <div class="member-row" onclick="openTecnicoProfile('Marcelo','Guarulhos','MC','#C77DFF')">
           <div class="member-av" style="background:#C77DFF;color:#000">MC</div>
           <div class="member-info"><div class="member-name">Marcelo</div><div class="member-meta">Técnico · Guarulhos</div></div>
           <div class="role-badge" style="background:rgba(199,125,255,.2);color:#C77DFF">Guarulhos</div>
         </div>
-        <div class="member-row">
+        <div class="member-row" onclick="openTecnicoProfile('Rogério','Guarulhos','RO','#FF6B6B')">
           <div class="member-av" style="background:#FF6B6B;color:#fff">RO</div>
           <div class="member-info"><div class="member-name">Rogério</div><div class="member-meta">Técnico · Guarulhos</div></div>
           <div class="role-badge" style="background:rgba(255,107,107,.2);color:#FF6B6B">Guarulhos</div>
@@ -2009,14 +2022,13 @@ function renderRanking(){
     : VENDEDORES;
   const sorted=[...source].sort((a,b)=>b.abr-a.abr);
   const max=sorted.find(v=>v.abr>0)?.abr||1;
-  const medals=['🥇','🥈','🥉'];
   let html='';
   sorted.forEach((v,i)=>{
     const pct=v.abr>0?Math.round((v.abr/max)*100):0;
     const isNew=v.newHire;
     const varPctV=v.mar>0?((v.abr-v.mar)/v.mar*100):null;
     html+=`<div class="rank-item">
-      <div class="rank-medal">${i<3&&!isNew?medals[i]:'<span style="font-size:11px;color:var(--text-muted)">'+(i+1)+'</span>'}</div>
+      <div class="rank-pos ${i<3&&!isNew?'top':''}">${String(i+1).padStart(2,'0')}</div>
       <div class="rank-av" style="background:${isNew?'rgba(255,255,255,.08)':v.color+'22'};color:${v.color}">${v.av}</div>
       <div class="rank-info">
         <div class="rank-name" style="color:${v.color}">${v.name}${v.newHire?' <span style="font-size:9px;color:var(--gold)">★ Novo</span>':''}</div>
@@ -2387,7 +2399,7 @@ function renderEquipeVendedores(){
   const sorted=[...VENDEDORES].sort((a,b)=>b.abr-a.abr);
   let html='';
   sorted.forEach(v=>{
-    html+=`<div class="member-row">
+    html+=`<div class="member-row" onclick="openEquipeProfile('${v.name}')">
       <div class="member-av" style="background:${v.color}33;color:${v.color}">${v.av}</div>
       <div class="member-info">
         <div class="member-name" style="color:${v.color}">${v.name}</div>
@@ -2688,6 +2700,56 @@ document.addEventListener('DOMContentLoaded',()=>{
   const obs=new MutationObserver(()=>renderAgenda(null));
   obs.observe(document.body,{attributes:true,attributeFilter:['class']});
 });
+function openEquipeProfile(name){
+  const isMaio=CRM_MES==='maio';
+  const v=VENDEDORES.find(x=>x.name===name);
+  if(!v) return;
+  const vM=typeof VENDEDORES_MAIO!=='undefined'?VENDEDORES_MAIO.find(x=>x.cod===v.cod):null;
+  const cur=isMaio&&vM?{...v,abr:vM.total,cli:vM.cli,ped:vM.ped}:v;
+  const prev=isMaio?v.abr:v.mar;
+  const varPct=prev>0?((cur.abr-prev)/prev*100):null;
+  const src=isMaio&&typeof VENDEDORES_MAIO!=='undefined'
+    ?VENDEDORES_MAIO.map(x=>({...x,abr:x.total}))
+    :VENDEDORES;
+  const rank=[...src].sort((a,b)=>b.abr-a.abr).findIndex(x=>x.cod===v.cod)+1;
+  const ticket=cur.ped>0?cur.abr/cur.ped:0;
+  const mes=isMaio?'Maio':'Abril';
+  const varHTML=varPct===null?'':` <span style="font-size:12px;color:${varPct>=0?'var(--mint)':'var(--coral)'};font-weight:600">${varPct>=0?'▲ +':'▼ '}${Math.abs(varPct).toFixed(1)}%</span>`;
+  const statsHTML=cur.abr>0?`
+    <div style="margin-bottom:18px">
+      <div class="ep-stat-label">Faturamento ${mes} 2026</div>
+      <div style="font-size:24px;font-weight:700;color:${v.color};font-variant-numeric:tabular-nums;line-height:1.2">${fBRL(cur.abr)}${varHTML}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ep-stat"><div class="ep-stat-label">Ranking</div><div class="ep-stat-val">#${rank}º</div></div>
+      <div class="ep-stat"><div class="ep-stat-label">Pedidos</div><div class="ep-stat-val">${cur.ped}</div></div>
+      <div class="ep-stat"><div class="ep-stat-label">Clientes</div><div class="ep-stat-val">${cur.cli}</div></div>
+      <div class="ep-stat"><div class="ep-stat-label">Ticket Médio</div><div class="ep-stat-val">${fK(ticket)}</div></div>
+    </div>`
+    :`<div style="padding:24px;text-align:center;color:rgba(255,255,255,.35);font-size:13px">Novo vendedor — sem dados de faturamento ainda</div>`;
+  document.getElementById('equipe-modal-box').innerHTML=`
+    <button onclick="closeEquipeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;line-height:1;padding:0;transition:.15s">✕</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div style="width:46px;height:46px;border-radius:12px;background:${v.color}22;color:${v.color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${v.av}</div>
+      <div><div style="font-size:16px;font-weight:700;color:${v.color}">${v.name}</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Vendedor · Cód. ${v.cod} · ${mes} 2026</div></div>
+    </div>
+    ${statsHTML}`;
+  document.getElementById('equipe-modal').style.display='flex';
+}
+
+function openTecnicoProfile(name,area,av,color){
+  document.getElementById('equipe-modal-box').innerHTML=`
+    <button onclick="closeEquipeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;line-height:1;padding:0">✕</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div style="width:46px;height:46px;border-radius:12px;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${av}</div>
+      <div><div style="font-size:16px;font-weight:700">${name}</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Técnico de Panificação</div></div>
+    </div>
+    <div class="ep-stat"><div class="ep-stat-label">Área de atuação</div><div style="font-size:15px;font-weight:600;margin-top:4px">${area}</div></div>`;
+  document.getElementById('equipe-modal').style.display='flex';
+}
+
+function closeEquipeModal(){document.getElementById('equipe-modal').style.display='none';}
+
 /* ─── COPY / SCREENSHOT PROTECTION ─── */
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('copy',e=>e.preventDefault());
@@ -2722,6 +2784,9 @@ window.addEventListener('resize',()=>{
   if(name) buildWatermark(name);
 });
 </script>
+<div id="equipe-modal" onclick="if(event.target===this)closeEquipeModal()">
+  <div id="equipe-modal-box"></div>
+</div>
 <div id="wm-overlay"></div>
 </body>
 </html>
