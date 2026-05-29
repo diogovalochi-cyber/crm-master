@@ -6,29 +6,29 @@
 <title>Valochi Sousa — Sistema Comercial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
 @media print{body *{display:none!important}body::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}}
 #wm-overlay{position:fixed;inset:0;pointer-events:none;z-index:8888;overflow:hidden}
-#wm-overlay span{position:absolute;font-size:13px;color:rgba(255,255,255,.035);white-space:nowrap;transform:rotate(-28deg);font-family:'Poppins',sans-serif;font-weight:600;letter-spacing:1.5px;pointer-events:none}
+#wm-overlay span{position:absolute;font-size:12px;color:rgba(255,255,255,.04);white-space:nowrap;transform:rotate(-30deg);font-family:'Inter',sans-serif;font-weight:500;letter-spacing:2px;pointer-events:none}
 
 /* ─── RESET & BASE ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg1:#111318;--bg2:#171921;--bg3:#1E2030;
-  --blue:#3A0C15;--blue-light:#4E1422;--accent:#6B1428;
-  --mint:#10B981;--gold:#F0B429;--sky:#60A5FA;--peach:#FB923C;
+  --bg1:#1A0910;--bg2:#210D14;--bg3:#2B1219;
+  --blue:#3A0C15;--blue-light:#4E1422;--accent:#7A1830;
+  --mint:#10B981;--gold:#C9A84C;--sky:#60A5FA;--peach:#FB923C;
   --coral:#F87171;--purple:#A78BFA;--teal:#2DD4BF;
-  --text:#E2E8F0;--text-dim:rgba(226,232,240,.55);--text-muted:rgba(226,232,240,.35);
-  --card:rgba(255,255,255,.055);--card-hover:rgba(255,255,255,.085);
-  --border:rgba(255,255,255,.09);
+  --text:#E8E0E3;--text-dim:rgba(232,224,227,.55);--text-muted:rgba(232,224,227,.35);
+  --card:rgba(255,255,255,.05);--card-hover:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.08);
   --radius:12px;--radius-lg:16px;
   --sidebar-w:210px;--topbar-h:58px;--botnav-h:64px;
 }
-html,body{height:100%;font-family:'Poppins',system-ui,sans-serif;background:var(--bg1);color:var(--text);font-size:14px;line-height:1.5}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg1);color:var(--text);font-size:14px;line-height:1.5}
 
 /* ─── LOGIN SCREEN ─── */
 #login-screen{
@@ -117,7 +117,7 @@ html,body{height:100%;font-family:'Poppins',system-ui,sans-serif;background:var(
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.12);
   border-radius:12px;
-  color:#fff;font-size:13px;font-family:'Poppins',sans-serif;
+  color:#fff;font-size:13px;font-family:'Inter',sans-serif;
   font-weight:400;outline:none;
   transition:border-color .2s,background .2s,box-shadow .2s;
 }
@@ -140,7 +140,7 @@ html,body{height:100%;font-family:'Poppins',system-ui,sans-serif;background:var(
   padding:14px;
   border-radius:12px;border:none;
   background:linear-gradient(135deg,#C1294A 0%,#8B0A2E 60%,#6B0A22 100%);
-  color:#fff;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;
+  color:#fff;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
   letter-spacing:.4px;cursor:pointer;
   box-shadow:0 8px 24px rgba(139,10,46,.5);
   transition:all .25s;
@@ -177,7 +177,7 @@ html,body{height:100%;font-family:'Poppins',system-ui,sans-serif;background:var(
   display:flex;justify-content:center;margin-top:8px;
 }
 .login-link{
-  font-size:11px;color:rgba(255,255,255,.38);font-family:'Poppins',sans-serif;
+  font-size:11px;color:rgba(255,255,255,.38);font-family:'Inter',sans-serif;
   cursor:pointer;text-decoration:none;transition:.2s;
   font-weight:500;
 }
@@ -192,7 +192,7 @@ html,body{height:100%;font-family:'Poppins',system-ui,sans-serif;background:var(
 .login-footer{
   text-align:center;margin-top:24px;
   font-size:10px;color:rgba(255,255,255,.18);
-  font-family:'Poppins',sans-serif;
+  font-family:'Inter',sans-serif;
   letter-spacing:.3px;
 }
 a{color:inherit;text-decoration:none}
@@ -249,7 +249,7 @@ body.mode-print{--mode:print}
 }
 .topbar-avatar-label{
   position:absolute;right:0;top:36px;
-  background:#4A0E17;border:1px solid var(--border);
+  background:#2E1018;border:1px solid var(--border);
   border-radius:8px;padding:6px 10px;white-space:nowrap;
   font-size:11px;pointer-events:none;
   box-shadow:0 4px 20px rgba(0,0,0,.4);
@@ -260,7 +260,7 @@ body.mode-print{--mode:print}
   display:none;
   position:fixed;top:var(--topbar-h);left:0;bottom:0;
   width:var(--sidebar-w);
-  background:linear-gradient(180deg,#2E0A10 0%,#161820 100%);
+  background:linear-gradient(180deg,#2E0A10 0%,#200A12 100%);
   border-right:1px solid var(--border);
   overflow-y:auto;z-index:90;
   padding:12px 0;
@@ -494,7 +494,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .foto-link{color:var(--gold);font-size:16px;text-decoration:none;line-height:1}
 .foto-link:hover{opacity:.75}
 #obs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center}
-#obs-modal-box{background:#181B26;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
+#obs-modal-box{background:#26101A;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
 #obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:10px}
 #obs-modal-text{color:var(--text);font-size:14px;line-height:1.65;white-space:pre-wrap;margin:0}
 #obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;line-height:1;padding:0}
@@ -578,7 +578,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   background:rgba(255,255,255,.05);border-radius:10px;
   padding:10px;text-align:center;
 }
-.act-num{font-size:24px;font-weight:900}
+.act-num{font-size:24px;font-weight:700;color:var(--text)}
 .act-label{font-size:10px;color:var(--text-dim);font-weight:600;margin-top:2px}
 
 /* ─── MINI KPIS ─── */
@@ -655,7 +655,7 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 /* Vendor colors extra */
 .c-joao{color:#2DD4BF} .bg-joao{background:#2DD4BF}
 /* Mês toggle btn */
-.mes-toggle-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:Poppins,sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
+.mes-toggle-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
 .mes-toggle-btn.active{background:rgba(255,255,255,.15);color:#fff}
 .mes-toggle-btn:hover{background:rgba(255,255,255,.1);color:#fff}
 /* Carteira table */
@@ -677,7 +677,7 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 .member-row:last-child{border-bottom:none}
 .member-row:hover{background:rgba(255,255,255,.06);border-bottom-color:transparent}
 #equipe-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
-#equipe-modal-box{background:#181B26;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+#equipe-modal-box{background:#26101A;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
 .ep-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px}
 .ep-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);font-weight:600;margin-bottom:5px}
 .ep-stat-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
@@ -892,19 +892,19 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
     </div>
     <div class="kpi-card kpi-mint">
       <div class="kpi-label">Líder do Mês</div>
-      <div class="kpi-value" style="color:var(--mint)" id="kpi-lider-val">Guilherme</div>
+      <div class="kpi-value" id="kpi-lider-val">Guilherme</div>
       <div class="kpi-sub" id="kpi-lider-sub">R$440.861 · 40 clientes</div>
       <div class="kpi-change" id="kpi-lider-change"><span class="badge-up">▲ +6,7%</span> vs Março</div>
     </div>
     <div class="kpi-card kpi-sky">
       <div class="kpi-label">Pedidos Abril</div>
-      <div class="kpi-value" style="color:var(--sky)" id="kpi-pedidos-val">389</div>
+      <div class="kpi-value" id="kpi-pedidos-val">389</div>
       <div class="kpi-sub" id="kpi-pedidos-sub">179 clientes ativos</div>
       <div class="kpi-change" style="color:var(--text-dim)">Base consolidada</div>
     </div>
     <div class="kpi-card kpi-peach">
       <div class="kpi-label">Ticket Médio</div>
-      <div class="kpi-value" style="color:var(--peach)" id="kpi-ticket-val">R$2,86k</div>
+      <div class="kpi-value" id="kpi-ticket-val">R$2,86k</div>
       <div class="kpi-sub" id="kpi-ticket-sub">por pedido · Abril</div>
       <div class="kpi-change"><span class="badge-up">▲ Mês ativo</span></div>
     </div>
@@ -963,10 +963,10 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
       <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
-      <div class="act-item"><div class="act-num" id="act-n-visitas" style="color:var(--sky)">—</div><div class="act-label">Visitas</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-prospeccoes" style="color:var(--mint)">—</div><div class="act-label">Prospecções</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-apresentacoes" style="color:var(--gold)">—</div><div class="act-label">Apresentações</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-cadastros" style="color:var(--peach)">—</div><div class="act-label">Cadastros</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
+      <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
     </div>
     <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Clique em Carregar para ver os dados dos formulários</div>
   </div>
@@ -1019,9 +1019,9 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
   <div id="subtab-visao">
     <div class="kpi-grid mb-16" id="analise-kpi-grid">
       <div class="kpi-card kpi-gold"><div class="kpi-label">Total Abril</div><div class="kpi-value" style="color:var(--gold)">R$1,67M</div><div class="kpi-sub">R$ 1.669.419,80</div></div>
-      <div class="kpi-card kpi-sky"><div class="kpi-label">Total Março</div><div class="kpi-value" style="color:var(--sky)">R$1,61M</div><div class="kpi-sub">R$ 1.605.694,66</div></div>
-      <div class="kpi-card kpi-mint"><div class="kpi-label">Maior Alta</div><div class="kpi-value" style="color:var(--mint)">Israel</div><div class="kpi-sub"><span class="badge-up">▲ +20,1%</span> M/M</div></div>
-      <div class="kpi-card kpi-peach"><div class="kpi-label">Única Queda</div><div class="kpi-value" style="color:var(--coral)">Relson</div><div class="kpi-sub"><span class="badge-dn">▼ -6,1%</span> M/M</div></div>
+      <div class="kpi-card kpi-sky"><div class="kpi-label">Total Março</div><div class="kpi-value">R$1,61M</div><div class="kpi-sub">R$ 1.605.694,66</div></div>
+      <div class="kpi-card kpi-mint"><div class="kpi-label">Maior Alta</div><div class="kpi-value">Israel</div><div class="kpi-sub"><span class="badge-up">▲ +20,1%</span> M/M</div></div>
+      <div class="kpi-card kpi-peach"><div class="kpi-label">Única Queda</div><div class="kpi-value">Relson</div><div class="kpi-sub"><span class="badge-dn">▼ -6,1%</span> M/M</div></div>
     </div>
 
     <div class="analise-main-grid gap-12">
@@ -1044,12 +1044,12 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
         <div class="card">
           <div class="card-header"><span class="card-title">Atividades</span></div>
           <div class="act-grid">
-            <div class="act-item"><div class="act-num" style="color:var(--sky)">47</div><div class="act-label">Visitas</div></div>
-            <div class="act-item"><div class="act-num" style="color:var(--mint)">23</div><div class="act-label">Prospecções</div></div>
-            <div class="act-item"><div class="act-num" style="color:var(--sky)">15</div><div class="act-label">Apres.</div></div>
-            <div class="act-item"><div class="act-num" style="color:var(--gold)">9</div><div class="act-label">Cadastros</div></div>
-            <div class="act-item"><div class="act-num" style="color:var(--peach)">3</div><div class="act-label">Cafés</div></div>
-            <div class="act-item"><div class="act-num" style="color:var(--purple)">8</div><div class="act-label">Técnicos</div></div>
+            <div class="act-item"><div class="act-num">47</div><div class="act-label">Visitas</div></div>
+            <div class="act-item"><div class="act-num">23</div><div class="act-label">Prospecções</div></div>
+            <div class="act-item"><div class="act-num">15</div><div class="act-label">Apres.</div></div>
+            <div class="act-item"><div class="act-num">9</div><div class="act-label">Cadastros</div></div>
+            <div class="act-item"><div class="act-num">3</div><div class="act-label">Cafés</div></div>
+            <div class="act-item"><div class="act-num">8</div><div class="act-label">Técnicos</div></div>
           </div>
         </div>
       </div>
@@ -1195,7 +1195,7 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
       <div class="team-tree">
         <!-- Carlos -->
         <div class="tree-node">
-          <div class="tree-node-av" style="background:#FFD93D;color:#000">CA</div>
+          <div class="tree-node-av" style="background:#C9A84C;color:#000">CA</div>
           <div><strong>Carlos</strong> <span style="font-size:10px;color:var(--text-dim)">Gerente</span></div>
         </div>
         <div class="tree-children">
@@ -1210,13 +1210,13 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
           <div style="margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px">
             <div style="font-size:10px;color:var(--text-muted);font-weight:700;margin-bottom:6px">VENDEDORES</div>
             <div style="display:flex;flex-wrap:wrap;gap:5px">
-              <span style="background:rgba(255,217,61,.2);color:#FFD93D;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Felipe</span>
-              <span style="background:rgba(0,212,170,.2);color:#00D4AA;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Guilherme</span>
-              <span style="background:rgba(144,202,249,.2);color:#90CAF9;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Relson</span>
-              <span style="background:rgba(199,125,255,.2);color:#C77DFF;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Israel</span>
-              <span style="background:rgba(255,154,86,.2);color:#FF9A56;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Everaldo</span>
-              <span style="background:rgba(255,107,107,.2);color:#FF6B6B;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Natália</span>
-              <span style="background:rgba(128,222,234,.2);color:#80DEEA;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Keller</span>
+              <span style="background:rgba(201,168,76,.15);color:#C9A84C;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Felipe</span>
+              <span style="background:rgba(16,185,129,.15);color:#10B981;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Guilherme</span>
+              <span style="background:rgba(96,165,250,.15);color:#60A5FA;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Relson</span>
+              <span style="background:rgba(139,92,246,.15);color:#8B5CF6;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Israel</span>
+              <span style="background:rgba(245,158,11,.15);color:#F59E0B;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Everaldo</span>
+              <span style="background:rgba(244,114,182,.15);color:#F472B6;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Natália</span>
+              <span style="background:rgba(34,211,238,.15);color:#22D3EE;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Keller</span>
               <span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Alex ⚠</span>
             </div>
           </div>
@@ -1234,30 +1234,30 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
     <div class="card">
       <div class="card-header"><span class="card-title">Técnicos de Panificação</span></div>
       <div>
-        <div class="member-row" onclick="openTecnicoProfile('Matheus','Guarulhos','MA','#00D4AA')">
-          <div class="member-av" style="background:#00D4AA;color:#000">MA</div>
+        <div class="member-row" onclick="openTecnicoProfile('Matheus','Guarulhos','MA','#2DD4BF')">
+          <div class="member-av" style="background:#2DD4BF;color:#000">MA</div>
           <div class="member-info"><div class="member-name">Matheus</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(0,212,170,.2);color:#00D4AA">Guarulhos</div>
+          <div class="role-badge" style="background:rgba(45,212,191,.15);color:#2DD4BF">Guarulhos</div>
         </div>
-        <div class="member-row" onclick="openTecnicoProfile('Juan','Zona Leste','JU','#FF9A56')">
-          <div class="member-av" style="background:#FF9A56;color:#000">JU</div>
+        <div class="member-row" onclick="openTecnicoProfile('Juan','Zona Leste','JU','#FB923C')">
+          <div class="member-av" style="background:#FB923C;color:#000">JU</div>
           <div class="member-info"><div class="member-name">Juan</div><div class="member-meta">Técnico · Zona Leste</div></div>
-          <div class="role-badge" style="background:rgba(255,154,86,.2);color:#FF9A56">Zona Leste</div>
+          <div class="role-badge" style="background:rgba(251,146,60,.15);color:#FB923C">Zona Leste</div>
         </div>
-        <div class="member-row" onclick="openTecnicoProfile('Gabriel','Guarulhos','GA','#80DEEA')">
-          <div class="member-av" style="background:#80DEEA;color:#000">GA</div>
+        <div class="member-row" onclick="openTecnicoProfile('Gabriel','Guarulhos','GA','#60A5FA')">
+          <div class="member-av" style="background:#60A5FA;color:#000">GA</div>
           <div class="member-info"><div class="member-name">Gabriel</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(128,222,234,.2);color:#80DEEA">Guarulhos</div>
+          <div class="role-badge" style="background:rgba(96,165,250,.15);color:#60A5FA">Guarulhos</div>
         </div>
-        <div class="member-row" onclick="openTecnicoProfile('Marcelo','Guarulhos','MC','#C77DFF')">
-          <div class="member-av" style="background:#C77DFF;color:#000">MC</div>
+        <div class="member-row" onclick="openTecnicoProfile('Marcelo','Guarulhos','MC','#A78BFA')">
+          <div class="member-av" style="background:#A78BFA;color:#000">MC</div>
           <div class="member-info"><div class="member-name">Marcelo</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(199,125,255,.2);color:#C77DFF">Guarulhos</div>
+          <div class="role-badge" style="background:rgba(167,139,250,.15);color:#A78BFA">Guarulhos</div>
         </div>
-        <div class="member-row" onclick="openTecnicoProfile('Rogério','Guarulhos','RO','#FF6B6B')">
-          <div class="member-av" style="background:#FF6B6B;color:#fff">RO</div>
+        <div class="member-row" onclick="openTecnicoProfile('Rogério','Guarulhos','RO','#F87171')">
+          <div class="member-av" style="background:#F87171;color:#fff">RO</div>
           <div class="member-info"><div class="member-name">Rogério</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(255,107,107,.2);color:#FF6B6B">Guarulhos</div>
+          <div class="role-badge" style="background:rgba(248,113,113,.15);color:#F87171">Guarulhos</div>
         </div>
       </div>
     </div>
@@ -2457,11 +2457,11 @@ function forgotPw(e){
   e.preventDefault();
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)';
-  overlay.innerHTML=`<div style="background:rgba(74,14,28,.95);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:32px;max-width:320px;width:90%;text-align:center;font-family:Poppins,sans-serif;color:#fff">
+  overlay.innerHTML=`<div style="background:rgba(74,14,28,.95);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:32px;max-width:320px;width:90%;text-align:center;font-family:Inter,sans-serif;color:#fff">
     <div style="font-size:32px;margin-bottom:12px">🔐</div>
     <div style="font-size:14px;font-weight:700;margin-bottom:8px">Recuperação de Senha</div>
     <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:20px">Entre em contato com o administrador do sistema para redefinir sua senha.</div>
-    <button onclick="this.closest('div[style]').remove()" style="padding:10px 28px;border-radius:10px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:Poppins,sans-serif;font-weight:600;cursor:pointer;font-size:12px">Fechar</button>
+    <button onclick="this.closest('div[style]').remove()" style="padding:10px 28px;border-radius:10px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:Inter,sans-serif;font-weight:600;cursor:pointer;font-size:12px">Fechar</button>
   </div>`;
   document.body.appendChild(overlay);
 }
@@ -2766,15 +2766,15 @@ function buildWatermark(userName){
   const el=document.getElementById('wm-overlay');
   if(!el) return;
   el.innerHTML='';
-  const text='VALOCHI SOUSA · '+(userName||'CRM').toUpperCase();
-  const W=window.innerWidth+300,H=window.innerHeight+200;
-  const cols=Math.ceil(W/230)+1,rows=Math.ceil(H/110)+1;
+  const name=(userName||'CRM').toUpperCase();
+  const W=window.innerWidth+400,H=window.innerHeight+300;
+  const cols=Math.ceil(W/280)+1,rows=Math.ceil(H/130)+1;
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
       const s=document.createElement('span');
-      s.textContent=text;
-      s.style.left=(c*230-80)+'px';
-      s.style.top=(r*110-30)+'px';
+      s.textContent=name;
+      s.style.left=(c*280-100)+'px';
+      s.style.top=(r*130-40)+'px';
       el.appendChild(s);
     }
   }
