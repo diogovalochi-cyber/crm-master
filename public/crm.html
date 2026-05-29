@@ -1883,11 +1883,11 @@ const FORMS_CONFIG={
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
     // r[6]=DIA VISITA r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     cols:[
-      {h:'Data',w:'95px'},{h:'Mês',w:'72px'},{h:'Cód.',w:'62px'},
-      {h:'Razão Social',w:''},{h:'Dia Visita',w:'82px'},
+      {h:'Data',w:'95px'},{h:'Cód.',w:'62px'},
+      {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=DATA APRES(serial) r[3]=MÊS(texto) r[4]=NOME CLIENTE
