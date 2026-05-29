@@ -1852,16 +1852,17 @@ function toDate(v){
   if(!isNaN(n)&&n>40000&&n<60000) return new Date(Math.round((n-25569)*86400000));
   const d=new Date(v); return isNaN(d.getTime())?null:d;
 }
-function obsCell(text,label){
-  if(!text||!text.trim()) return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
-  return `<td style="text-align:center"><button class="obs-btn" onclick="showObs(this)"data-obs="${text.replace(/"/g,'&quot;')}">${label||'ver'}</button></td>`;
+function obsCell(text,btnLabel,modalLabel){
+  if(!text||!text.trim()||text==='#N/A') return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
+  const lbl=modalLabel||(btnLabel==='ver'||!btnLabel?'Observação':btnLabel);
+  return `<td style="text-align:center"><button class="obs-btn" onclick="showObs(this)" data-obs="${text.replace(/"/g,'&quot;')}" data-label="${lbl}">${btnLabel||'ver'}</button></td>`;
 }
 function fotoCell(url){
-  if(!url||!url.trim()) return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
+  if(!url||!url.trim()||url==='#N/A') return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
   return `<td style="text-align:center"><a href="${url}" target="_blank" class="foto-link" title="Ver foto">📷</a></td>`;
 }
 function showObs(btn){
-  document.getElementById('obs-modal-label').textContent=btn.textContent==='ver'?'Observação':btn.textContent;
+  document.getElementById('obs-modal-label').textContent=btn.dataset.label||'Observação';
   document.getElementById('obs-modal-text').textContent=btn.dataset.obs;
   document.getElementById('obs-modal').style.display='flex';
 }
@@ -1869,31 +1870,38 @@ function closeObsModal(){document.getElementById('obs-modal').style.display='non
 
 const FORMS_CONFIG={
   prospeccoes:{
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
+    // r[5]=RESPONSÁVEL r[6]=CONTATOS r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[9]=FOTO r[10]=OBS
     cols:[
-      {h:'Data',w:'82px'},{h:'Razão Social',w:'140px'},{h:'Endereço',w:''},
-      {h:'Responsável',w:'100px'},{h:'Contatos',w:'110px'},{h:'Empresa Atual',w:'110px'},
-      {h:'Qtd Pães',w:'68px'},{h:'📷',w:'38px'},{h:'Obs.',w:'50px'}
+      {h:'Data',w:'95px'},{h:'Razão Social',w:''},{h:'Empresa Atual',w:'150px'},
+      {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
+      {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${fotoCell(r[9])}${obsCell(r[10])}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
   },
   visitas:{
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
+    // r[6]=DIA VISITA r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     cols:[
-      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Cód.',w:'60px'},
-      {h:'Razão Social',w:''},{h:'Dia Visita',w:'80px'},
-      {h:'Obs. Visita',w:'70px'},{h:'Obs. Pão',w:'65px'}
+      {h:'Data',w:'95px'},{h:'Mês',w:'72px'},{h:'Cód.',w:'62px'},
+      {h:'Razão Social',w:''},{h:'Dia Visita',w:'82px'},
+      {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td>${obsCell(r[6],'ver')}${obsCell(r[7],'ver')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=DATA APRES(serial) r[3]=MÊS(texto) r[4]=NOME CLIENTE
+    // r[5]=EMPRESA ATUAL r[6]=VOLUME/DIA
     cols:[
-      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Data Apres.',w:'95px'},
-      {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'120px'},{h:'Volume/dia',w:'90px'}
+      {h:'Data',w:'95px'},{h:'Mês',w:'72px'},{h:'Data Apres.',w:'100px'},
+      {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'150px'},{h:'Volume/dia',w:'90px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${fmtDate(r[3])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td>${fmtDate(r[2])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=CÓDIGO r[4]=NOME CLIENTE
     cols:[
-      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Código',w:'80px'},{h:'Nome Cliente',w:''}
+      {h:'Data',w:'95px'},{h:'Mês',w:'80px'},{h:'Código',w:'80px'},{h:'Nome Cliente',w:''}
     ],
     row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
   }
@@ -1957,7 +1965,7 @@ function renderFormsTable(){
   const toVal=document.getElementById('forms-dt-to')?.value;
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const sellerRows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller);
+  const sellerRows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller&&r[1]!=='#N/A');
   const rows=sellerRows.filter(r=>{
     if(!dtFrom&&!dtTo) return true;
     const d=toDate(r[1]);
