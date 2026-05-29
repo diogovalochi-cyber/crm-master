@@ -613,6 +613,37 @@ body.mode-mobile .dash-main-grid{grid-template-columns:1fr!important}
 body.mode-mobile .mini-kpi-grid{grid-template-columns:1fr 1fr}
 body.mode-mobile .kpi-value{font-size:18px}
 
+/* ─── MOBILE-SPECIFIC ─── */
+body.mode-mobile .topbar-toggles{display:none!important}
+body.mode-mobile .topbar-brand p{display:none}
+body.mode-mobile .topbar-stats{display:none!important}
+body.mode-mobile .section-title{font-size:17px}
+body.mode-mobile .section-sub{font-size:11px}
+body.mode-mobile .kpi-card{padding:10px 12px}
+body.mode-mobile .kpi-label{font-size:9px}
+body.mode-mobile .kpi-sub{font-size:10px}
+body.mode-mobile .card{padding:12px}
+/* Subtab rows scroll horizontally on mobile */
+body.mode-mobile .subtab-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+body.mode-mobile .subtab-row::-webkit-scrollbar{display:none}
+body.mode-mobile .subtab{white-space:nowrap;flex-shrink:0}
+/* Pill rows (Por Vendedor) scroll horizontally */
+body.mode-mobile .pill-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+body.mode-mobile .pill-row::-webkit-scrollbar{display:none}
+body.mode-mobile .pill{white-space:nowrap;flex-shrink:0}
+/* Forms table: fixed min-width so overflow-x:auto container scrolls */
+body.mode-mobile #forms-table{min-width:560px}
+/* Carteira controls stack on mobile */
+body.mode-mobile #subtab-carteira>div>div:first-child{flex-direction:column;align-items:stretch}
+body.mode-mobile #subtab-carteira .mes-toggle-btn{padding:6px 10px;font-size:11px}
+/* Section header compact on mobile */
+body.mode-mobile .section-header{margin-bottom:10px}
+body.mode-mobile .section-header button{padding:6px 12px;font-size:12px}
+/* Donut smaller on mobile */
+body.mode-mobile .donut-wrap svg{width:90px;height:90px}
+/* Act grid adjustments */
+body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
+
 /* ─── VENDOR COLORS ─── */
 .c-guilherme{color:#00D4AA} .c-relson{color:#90CAF9} .c-everaldo{color:#FF9A56}
 .c-israel{color:#C77DFF} .c-natalia{color:#FF6B6B} .c-keller{color:#80DEEA}
@@ -641,6 +672,7 @@ body.mode-mobile .kpi-value{font-size:18px}
 </style>
 </head>
 <body class="mode-desktop">
+<script>document.body.className='mode-'+(window.innerWidth<768?'mobile':'desktop');</script>
 
 <!-- ═══════════════════════════════════════
      TELA DE LOGIN
@@ -2583,7 +2615,17 @@ document.addEventListener('keydown',e=>{
 /* ─────────────────────────────────────────
    INIT
 ───────────────────────────────────────── */
+/* ─── AUTO MODE DETECTION ─── */
+function autoMode(){
+  if(document.body.classList.contains('mode-print')) return;
+  const m=window.innerWidth<768?'mobile':'desktop';
+  if(!document.body.classList.contains('mode-'+m)) setMode(m);
+}
+let _rszT;
+window.addEventListener('resize',()=>{clearTimeout(_rszT);_rszT=setTimeout(autoMode,150);});
+
 document.addEventListener('DOMContentLoaded',()=>{
+  autoMode();
   renderKPIs();
   renderRanking();
   renderTop5();
