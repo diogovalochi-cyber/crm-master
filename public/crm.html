@@ -8,6 +8,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ─── PROTECTION ─── */
+body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
+input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
+@media print{body *{display:none!important}body::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}}
+#wm-overlay{position:fixed;inset:0;pointer-events:none;z-index:8888;overflow:hidden}
+#wm-overlay span{position:absolute;font-size:13px;color:rgba(255,255,255,.035);white-space:nowrap;transform:rotate(-28deg);font-family:'Poppins',sans-serif;font-weight:600;letter-spacing:1.5px;pointer-events:none}
+
 /* ─── RESET & BASE ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2483,6 +2490,9 @@ function applySession(user){
   // Print header meta
   const phMeta=document.querySelector('#print-header .ph-meta');
   if(phMeta) phMeta.innerHTML='<div>Emissão: '+new Date().toLocaleDateString('pt-BR')+'</div><div>'+user.name+' · '+user.role+'</div>';
+  // Watermark
+  const wm=document.getElementById('wm-overlay');
+  if(wm){wm.dataset.user=user.name;buildWatermark(user.name);}
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
@@ -2589,6 +2599,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   const obs=new MutationObserver(()=>renderAgenda(null));
   obs.observe(document.body,{attributes:true,attributeFilter:['class']});
 });
+/* ─── COPY / SCREENSHOT PROTECTION ─── */
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('cut',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  const ctrl=e.ctrlKey||e.metaKey;
+  if(ctrl&&['c','a','p','s','u'].includes(k)){e.preventDefault();return;}
+  if(k==='printscreen'){e.preventDefault();navigator.clipboard&&navigator.clipboard.writeText('');return;}
+  if(k==='f12'&&!window.DEV_MODE){e.preventDefault();return;}
+});
+
+function buildWatermark(userName){
+  const el=document.getElementById('wm-overlay');
+  if(!el) return;
+  el.innerHTML='';
+  const text='VALOCHI SOUSA · '+(userName||'CRM').toUpperCase();
+  const W=window.innerWidth+300,H=window.innerHeight+200;
+  const cols=Math.ceil(W/230)+1,rows=Math.ceil(H/110)+1;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const s=document.createElement('span');
+      s.textContent=text;
+      s.style.left=(c*230-80)+'px';
+      s.style.top=(r*110-30)+'px';
+      el.appendChild(s);
+    }
+  }
+}
+window.addEventListener('resize',()=>{
+  const name=document.querySelector('#wm-overlay')?.dataset.user;
+  if(name) buildWatermark(name);
+});
 </script>
+<div id="wm-overlay"></div>
 </body>
 </html>
