@@ -475,6 +475,10 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:rgba(255,255,255,.03)}
 .tbl .total-row td{border-top:1px solid rgba(255,255,255,.15);font-weight:700;color:var(--gold)}
+#forms-table{width:100%;table-layout:fixed}
+#forms-table th{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#forms-table td{font-size:13px;vertical-align:top;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#forms-table td.td-wrap{white-space:normal;word-break:break-word;overflow:visible;text-overflow:clip;line-height:1.4}
 .tbl-bar{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;width:60px;display:inline-block;vertical-align:middle}
 .tbl-bar-fill{height:100%;border-radius:4px}
 .tbl-bar-duo{height:4px;display:flex;gap:2px;width:80px;display:inline-flex;vertical-align:middle}
@@ -1109,7 +1113,7 @@ body.mode-mobile .kpi-value{font-size:18px}
   <!-- Tabela -->
   <div class="card" style="overflow-x:auto;margin-top:8px">
     <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Clique em Atualizar para carregar os dados</div>
-    <table class="anal-table" style="min-width:820px">
+    <table id="forms-table" class="tbl">
       <thead><tr id="forms-thead-row"></tr></thead>
       <tbody id="forms-tbody">
         <tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>
@@ -1762,22 +1766,45 @@ const FORMS_CSV={
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv'
 };
 
+function fmtDate(v){
+  if(!v) return '';
+  const s=String(v).replace(',','.');
+  const n=parseFloat(s);
+  if(!isNaN(n)&&n>40000&&n<60000){
+    return new Date(Math.round((n-25569)*86400000)).toLocaleDateString('pt-BR');
+  }
+  return s.split(' ')[0];
+}
+
 const FORMS_CONFIG={
   prospeccoes:{
-    headers:['Data','Razão Social','Endereço','Responsável','Contatos','Empresa Atual','Qtd Pães','Observação'],
-    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[3]||''}</td><td style="font-size:12px;max-width:160px">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td>${r[8]||''}</td><td style="font-size:12px;max-width:200px">${r[10]||''}</td>`
+    cols:[
+      {h:'Data',w:'82px'},{h:'Razão Social',w:'150px'},{h:'Endereço',w:''},
+      {h:'Responsável',w:'105px'},{h:'Contatos',w:'110px'},{h:'Empresa Atual',w:'115px'},
+      {h:'Qtd Pães',w:'72px'},{h:'Observação',w:'170px'}
+    ],
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td><td class="td-wrap">${r[10]||''}</td>`
   },
   visitas:{
-    headers:['Data','Mês','Cód. Cliente','Razão Social','Dia da Visita','Obs. Visita','Obs. Pão'],
-    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td style="font-size:12px;max-width:200px">${r[6]||''}</td><td style="font-size:12px;max-width:200px">${r[7]||''}</td>`
+    cols:[
+      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Cód.',w:'60px'},
+      {h:'Razão Social',w:''},{h:'Dia Visita',w:'85px'},
+      {h:'Obs. Visita',w:'180px'},{h:'Obs. Pão',w:'180px'}
+    ],
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td class="td-wrap">${r[6]||''}</td><td class="td-wrap">${r[7]||''}</td>`
   },
   apresentacoes:{
-    headers:['Data','Mês','Data Apres.','Nome Cliente','Empresa Atual','Volume/dia'],
-    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
+    cols:[
+      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Data Apres.',w:'95px'},
+      {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'120px'},{h:'Volume/dia',w:'90px'}
+    ],
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${fmtDate(r[3])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
-    headers:['Data','Mês','Código','Nome Cliente'],
-    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
+    cols:[
+      {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Código',w:'80px'},{h:'Nome Cliente',w:''}
+    ],
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
   }
 };
 
@@ -1794,8 +1821,9 @@ function selectFormsType(el){
   el.classList.add('active');
   if(!FORMS_CSV[currentFormsType]){
     document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
-    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
-    document.getElementById('forms-thead-row').innerHTML=FORMS_CONFIG[currentFormsType].headers.map(h=>`<th>${h}</th>`).join('');
+    const _cfg=FORMS_CONFIG[currentFormsType];
+    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="${_cfg.cols.length}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
+    document.getElementById('forms-thead-row').innerHTML=_cfg.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.h}</th>`).join('');
     return;
   }
   if(formsCaches[currentFormsType].length) renderFormsTable();
@@ -1827,8 +1855,8 @@ function renderFormsTable(){
   const status=document.getElementById('forms-status');
   const cfg=FORMS_CONFIG[currentFormsType];
   const cache=formsCaches[currentFormsType];
-  const ncols=cfg.headers.length;
-  thead.innerHTML=cfg.headers.map(h=>`<th>${h}</th>`).join('');
+  const ncols=cfg.cols.length;
+  thead.innerHTML=cfg.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.h}</th>`).join('');
   if(!cache.length){
     status.textContent='Clique em Atualizar para carregar os dados';
     tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
@@ -1858,7 +1886,7 @@ async function loadFormsData(){
     formsCaches[type]=parseCSV(text).filter(r=>r[0]&&r[0].trim());
     renderFormsTable();
   }catch(e){
-    const ncols=FORMS_CONFIG[type].headers.length;
+    const ncols=FORMS_CONFIG[type].cols.length;
     status.textContent='Erro ao carregar. Verifique a conexão.';
     document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#c00;padding:24px">Falha ao buscar dados</td></tr>`;
   }
