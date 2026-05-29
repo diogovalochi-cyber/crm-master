@@ -1099,26 +1099,18 @@ body.mode-mobile .kpi-value{font-size:18px}
   </div>
 
   <!-- Nível 2: Tipo de dado -->
-  <div class="subtab-row" style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
-    <button class="subtab active" style="font-size:12px">Prospecções</button>
+  <div class="subtab-row" id="reg-type-tabs" style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
+    <button class="subtab active" data-type="prospeccoes" onclick="selectFormsType(this)" style="font-size:12px">Prospecções</button>
+    <button class="subtab" data-type="visitas" onclick="selectFormsType(this)" style="font-size:12px">Visitas</button>
+    <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)" style="font-size:12px">Apresentações</button>
+    <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)" style="font-size:12px">Cadastros</button>
   </div>
 
   <!-- Tabela -->
   <div class="card" style="overflow-x:auto;margin-top:8px">
     <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Clique em Atualizar para carregar os dados</div>
     <table class="anal-table" style="min-width:820px">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Razão Social</th>
-          <th>Endereço</th>
-          <th>Responsável</th>
-          <th>Contatos</th>
-          <th>Empresa Atual</th>
-          <th>Qtd Pães</th>
-          <th>Observação</th>
-        </tr>
-      </thead>
+      <thead><tr id="forms-thead-row"></tr></thead>
       <tbody id="forms-tbody">
         <tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>
       </tbody>
@@ -1760,7 +1752,34 @@ function showSubtab(id,el){
   if(id==='carteira') initCarteiraSelect();
 }
 let currentRegSeller='GUILHERME';
-let formsCache=[];
+let currentFormsType='prospeccoes';
+const formsCaches={prospeccoes:[],visitas:[],apresentacoes:[],cadastros:[]};
+
+const FORMS_CSV={
+  prospeccoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRDMGydAtyaDITnAo3H7oqAh4HrB9rGYzsDS8sQUPeLvPPAH4IZri4UpK79d4lvYUGN2Q5n3P2qISVC/pub?gid=1717895650&single=true&output=csv',
+  visitas:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRAvnHYU0UxBnJXG3Km54hwzBiUibcFhiH-sn-Xe20nCs1WAR0mn79K_aOnQnTdt3Zi2TkoKAWKdZU0/pub?gid=1717895650&single=true&output=csv',
+  apresentacoes:'',
+  cadastros:''
+};
+
+const FORMS_CONFIG={
+  prospeccoes:{
+    headers:['Data','Razão Social','Endereço','Responsável','Contatos','Empresa Atual','Qtd Pães','Observação'],
+    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[3]||''}</td><td style="font-size:12px;max-width:160px">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td>${r[8]||''}</td><td style="font-size:12px;max-width:200px">${r[10]||''}</td>`
+  },
+  visitas:{
+    headers:['Data','Mês','Cód. Cliente','Razão Social','Dia da Visita','Obs. Visita','Obs. Pão'],
+    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td style="font-size:12px;max-width:200px">${r[6]||''}</td><td style="font-size:12px;max-width:200px">${r[7]||''}</td>`
+  },
+  apresentacoes:{
+    headers:['Data','Mês','Data Apres.','Nome Cliente','Empresa Atual','Volume/dia'],
+    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
+  },
+  cadastros:{
+    headers:['Data','Mês','Código','Nome Cliente'],
+    row:r=>`<td>${(r[1]||'').split(' ')[0]}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
+  }
+};
 
 function selectRegSeller(el){
   currentRegSeller=el.dataset.seller;
@@ -1769,7 +1788,21 @@ function selectRegSeller(el){
   renderFormsTable();
 }
 
-const PROSPECCOES_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRDMGydAtyaDITnAo3H7oqAh4HrB9rGYzsDS8sQUPeLvPPAH4IZri4UpK79d4lvYUGN2Q5n3P2qISVC/pub?gid=1717895650&single=true&output=csv';
+function selectFormsType(el){
+  currentFormsType=el.dataset.type;
+  document.querySelectorAll('#reg-type-tabs .subtab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if(!FORMS_CSV[currentFormsType]){
+    document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
+    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
+    document.getElementById('forms-thead-row').innerHTML=FORMS_CONFIG[currentFormsType].headers.map(h=>`<th>${h}</th>`).join('');
+    return;
+  }
+  if(formsCaches[currentFormsType].length) renderFormsTable();
+  else loadFormsData();
+}
+
+const PROSPECCOES_CSV=FORMS_CSV.prospeccoes;
 
 function parseCSV(text){
   const rows=[];
@@ -1790,42 +1823,44 @@ function parseCSV(text){
 
 function renderFormsTable(){
   const tbody=document.getElementById('forms-tbody');
+  const thead=document.getElementById('forms-thead-row');
   const status=document.getElementById('forms-status');
-  if(!formsCache.length){
+  const cfg=FORMS_CONFIG[currentFormsType];
+  const cache=formsCaches[currentFormsType];
+  const ncols=cfg.headers.length;
+  thead.innerHTML=cfg.headers.map(h=>`<th>${h}</th>`).join('');
+  if(!cache.length){
     status.textContent='Clique em Atualizar para carregar os dados';
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>';
+    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
     return;
   }
-  const rows=formsCache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller);
+  const rows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller);
   if(!rows.length){
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">Nenhuma prospecção registrada para este vendedor</td></tr>';
-    status.textContent=`Total geral: ${formsCache.length} registros`;
+    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">Nenhum registro para este vendedor</td></tr>`;
+    status.textContent=`Total geral: ${cache.length} registros`;
     return;
   }
-  tbody.innerHTML=rows.map(r=>`<tr>
-    <td>${(r[1]||'').split(' ')[0]}</td>
-    <td>${r[3]||''}</td>
-    <td style="font-size:12px;max-width:160px">${r[4]||''}</td>
-    <td>${r[5]||''}</td>
-    <td>${r[6]||''}</td>
-    <td>${r[7]||''}</td>
-    <td>${r[8]||''}</td>
-    <td style="font-size:12px;max-width:200px">${r[10]||''}</td>
-  </tr>`).join('');
-  status.textContent=`${rows.length} prospecção(ões) — ${formsCache.length} no total`;
+  tbody.innerHTML=rows.map(r=>`<tr>${cfg.row(r)}</tr>`).join('');
+  status.textContent=`${rows.length} registro(s) — ${cache.length} no total`;
 }
 
 async function loadFormsData(){
+  const type=currentFormsType;
+  if(!FORMS_CSV[type]){
+    document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
+    return;
+  }
   const status=document.getElementById('forms-status');
   status.textContent='Carregando...';
   try{
-    const res=await fetch(PROSPECCOES_CSV);
+    const res=await fetch(FORMS_CSV[type]);
     const text=await res.text();
-    formsCache=parseCSV(text).filter(r=>r[0]&&r[0].trim());
+    formsCaches[type]=parseCSV(text).filter(r=>r[0]&&r[0].trim());
     renderFormsTable();
   }catch(e){
+    const ncols=FORMS_CONFIG[type].headers.length;
     status.textContent='Erro ao carregar. Verifique a conexão.';
-    document.getElementById('forms-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;color:#c00;padding:24px">Falha ao buscar dados</td></tr>';
+    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#c00;padding:24px">Falha ao buscar dados</td></tr>`;
   }
 }
 
