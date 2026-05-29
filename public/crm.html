@@ -479,6 +479,21 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 #forms-table th{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #forms-table td{font-size:13px;vertical-align:top;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #forms-table td.td-wrap{white-space:normal;word-break:break-word;overflow:visible;text-overflow:clip;line-height:1.4}
+.forms-filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.forms-filter-bar label{font-size:12px;color:#aaa;display:flex;align-items:center;gap:5px}
+.forms-filter-bar input[type=date]{background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:4px 8px;font-size:12px;font-family:inherit;cursor:pointer;color-scheme:dark}
+.forms-filter-bar .clear-btn{font-size:11px;color:#888;background:none;border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:4px 10px;cursor:pointer;font-family:inherit}
+.forms-filter-bar .clear-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.obs-btn{font-size:10px;color:var(--gold);background:none;border:1px solid rgba(200,170,80,.3);border-radius:3px;padding:2px 7px;cursor:pointer;font-family:inherit}
+.obs-btn:hover{background:rgba(200,170,80,.12)}
+.foto-link{color:var(--gold);font-size:16px;text-decoration:none;line-height:1}
+.foto-link:hover{opacity:.75}
+#obs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center}
+#obs-modal-box{background:#1e0a10;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
+#obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:10px}
+#obs-modal-text{color:var(--text);font-size:14px;line-height:1.65;white-space:pre-wrap;margin:0}
+#obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;line-height:1;padding:0}
+#obs-modal-close:hover{color:#fff}
 .tbl-bar{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;width:60px;display:inline-block;vertical-align:middle}
 .tbl-bar-fill{height:100%;border-radius:4px}
 .tbl-bar-duo{height:4px;display:flex;gap:2px;width:80px;display:inline-flex;vertical-align:middle}
@@ -1110,8 +1125,15 @@ body.mode-mobile .kpi-value{font-size:18px}
     <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)" style="font-size:12px">Cadastros</button>
   </div>
 
+  <!-- Filtro de data -->
+  <div class="forms-filter-bar" style="margin-top:10px">
+    <label>De <input type="date" id="forms-dt-from" onchange="renderFormsTable()"></label>
+    <label>Até <input type="date" id="forms-dt-to" onchange="renderFormsTable()"></label>
+    <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';renderFormsTable()">✕ Limpar</button>
+  </div>
+
   <!-- Tabela -->
-  <div class="card" style="overflow-x:auto;margin-top:8px">
+  <div class="card" style="overflow-x:auto;margin-top:6px">
     <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Clique em Atualizar para carregar os dados</div>
     <table id="forms-table" class="tbl">
       <thead><tr id="forms-thead-row"></tr></thead>
@@ -1119,6 +1141,15 @@ body.mode-mobile .kpi-value{font-size:18px}
         <tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Modal de observação -->
+  <div id="obs-modal" onclick="if(event.target===this)closeObsModal()">
+    <div id="obs-modal-box">
+      <button id="obs-modal-close" onclick="closeObsModal()">✕</button>
+      <div id="obs-modal-label">Observação</div>
+      <p id="obs-modal-text"></p>
+    </div>
   </div>
 </div>
 
@@ -1775,23 +1806,44 @@ function fmtDate(v){
   }
   return s.split(' ')[0];
 }
+function toDate(v){
+  if(!v) return null;
+  const s=String(v).replace(',','.');
+  const n=parseFloat(s);
+  if(!isNaN(n)&&n>40000&&n<60000) return new Date(Math.round((n-25569)*86400000));
+  const d=new Date(v); return isNaN(d.getTime())?null:d;
+}
+function obsCell(text,label){
+  if(!text||!text.trim()) return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
+  return `<td style="text-align:center"><button class="obs-btn" onclick="showObs(this)"data-obs="${text.replace(/"/g,'&quot;')}">${label||'ver'}</button></td>`;
+}
+function fotoCell(url){
+  if(!url||!url.trim()) return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
+  return `<td style="text-align:center"><a href="${url}" target="_blank" class="foto-link" title="Ver foto">📷</a></td>`;
+}
+function showObs(btn){
+  document.getElementById('obs-modal-label').textContent=btn.textContent==='ver'?'Observação':btn.textContent;
+  document.getElementById('obs-modal-text').textContent=btn.dataset.obs;
+  document.getElementById('obs-modal').style.display='flex';
+}
+function closeObsModal(){document.getElementById('obs-modal').style.display='none';}
 
 const FORMS_CONFIG={
   prospeccoes:{
     cols:[
-      {h:'Data',w:'82px'},{h:'Razão Social',w:'150px'},{h:'Endereço',w:''},
-      {h:'Responsável',w:'105px'},{h:'Contatos',w:'110px'},{h:'Empresa Atual',w:'115px'},
-      {h:'Qtd Pães',w:'72px'},{h:'Observação',w:'170px'}
+      {h:'Data',w:'82px'},{h:'Razão Social',w:'140px'},{h:'Endereço',w:''},
+      {h:'Responsável',w:'100px'},{h:'Contatos',w:'110px'},{h:'Empresa Atual',w:'110px'},
+      {h:'Qtd Pães',w:'68px'},{h:'📷',w:'38px'},{h:'Obs.',w:'50px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td><td class="td-wrap">${r[10]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${fotoCell(r[9])}${obsCell(r[10])}`
   },
   visitas:{
     cols:[
       {h:'Data',w:'82px'},{h:'Mês',w:'65px'},{h:'Cód.',w:'60px'},
-      {h:'Razão Social',w:''},{h:'Dia Visita',w:'85px'},
-      {h:'Obs. Visita',w:'180px'},{h:'Obs. Pão',w:'180px'}
+      {h:'Razão Social',w:''},{h:'Dia Visita',w:'80px'},
+      {h:'Obs. Visita',w:'70px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td class="td-wrap">${r[6]||''}</td><td class="td-wrap">${r[7]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td><td>${r[5]||''}</td>${obsCell(r[6],'ver')}${obsCell(r[7],'ver')}`
   },
   apresentacoes:{
     cols:[
@@ -1862,14 +1914,28 @@ function renderFormsTable(){
     tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
     return;
   }
-  const rows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller);
+  const fromVal=document.getElementById('forms-dt-from')?.value;
+  const toVal=document.getElementById('forms-dt-to')?.value;
+  const dtFrom=fromVal?new Date(fromVal):null;
+  const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
+  const sellerRows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller);
+  const rows=sellerRows.filter(r=>{
+    if(!dtFrom&&!dtTo) return true;
+    const d=toDate(r[1]);
+    if(!d) return true;
+    if(dtFrom&&d<dtFrom) return false;
+    if(dtTo&&d>dtTo) return false;
+    return true;
+  });
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">Nenhum registro para este vendedor</td></tr>`;
-    status.textContent=`Total geral: ${cache.length} registros`;
+    const msg=sellerRows.length?'Nenhum registro no período selecionado':'Nenhum registro para este vendedor';
+    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">${msg}</td></tr>`;
+    status.textContent=`${sellerRows.length} registro(s) para este vendedor — ${cache.length} no total`;
     return;
   }
   tbody.innerHTML=rows.map(r=>`<tr>${cfg.row(r)}</tr>`).join('');
-  status.textContent=`${rows.length} registro(s) — ${cache.length} no total`;
+  const filtered=(dtFrom||dtTo)&&rows.length<sellerRows.length?` (${rows.length} filtrado${rows.length>1?'s':''} de ${sellerRows.length})`:``;
+  status.textContent=`${sellerRows.length} registro(s)${filtered} — ${cache.length} no total`;
 }
 
 async function loadFormsData(){
