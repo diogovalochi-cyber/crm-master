@@ -925,7 +925,11 @@ body.mode-mobile .section-header{gap:12px}
   <!-- Ranking (largura total) -->
   <div class="card mb-16">
     <div class="card-header">
-      <span class="card-title" id="ranking-title">Ranking de Faturamento — Abril 2026</span>
+      <span class="card-title" id="ranking-title">Ranking de Faturamento — Maio 2026</span>
+      <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
+        <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
+        <button class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
+      </div>
     </div>
     <div id="ranking-list"></div>
     <div class="rank-total">
@@ -985,7 +989,11 @@ body.mode-mobile .section-header{gap:12px}
   <div class="section-header">
     <div>
       <div class="section-title">Análise Comercial</div>
-      <div class="section-sub" id="analise-section-sub">Comparativo Março vs Abril 2026</div>
+      <div class="section-sub" id="analise-section-sub">Carteiras de Maio 2026</div>
+    </div>
+    <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
+      <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
+      <button class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
     </div>
   </div>
 
@@ -1061,8 +1069,8 @@ body.mode-mobile .section-header{gap:12px}
       <!-- Controles -->
       <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px">
         <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
-          <button id="mes-btn-abril" class="mes-toggle-btn" onclick="setMes('abril',this)">📅 Abril 2026</button>
-          <button id="mes-btn-maio" class="mes-toggle-btn active" onclick="setMes('maio',this)">📅 Maio 2026</button>
+          <button id="mes-btn-abril" class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">📅 Abril 2026</button>
+          <button id="mes-btn-maio" class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">📅 Maio 2026</button>
         </div>
         <select id="carteira-vend-select" class="fi" style="flex:1;min-width:160px;max-width:260px" onchange="renderCarteira()">
           <option value="">Selecione um vendedor...</option>
@@ -1088,7 +1096,7 @@ body.mode-mobile .section-header{gap:12px}
           <div class="card-header">
             <span class="card-title" id="vendor-table-title">Top Clientes</span>
           </div>
-          <div style="overflow-x:auto" id="vendor-table-wrap"></div>
+          <div style="overflow-x:auto;overflow-y:auto;max-height:420px" id="vendor-table-wrap"></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px">
           <div class="card">
@@ -2063,10 +2071,12 @@ function renderRanking(){
     </div>`;
   });
   document.getElementById('ranking-list').innerHTML=html;
-  // update rank total
+  // update rank total e título
   const total=sorted.reduce((s,v)=>s+v.abr,0);
   const el2=document.getElementById('rank-total-dynamic');
   if(el2) el2.textContent=fBRL(total);
+  const rt=document.getElementById('ranking-title');
+  if(rt) rt.textContent='Ranking de Faturamento — '+(isMaio?'Maio':'Abril')+' 2026';
 }
 
 /* ─────────────────────────────────────────
@@ -2093,8 +2103,7 @@ function renderTop5(){
 ───────────────────────────────────────── */
 function setMes(mes, btn){
   CRM_MES=mes;
-  document.querySelectorAll('.mes-toggle-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.mes-toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.mes===mes));
   // Atualizar todos os componentes dinâmicos
   renderKPIs();
   renderRanking();
@@ -2105,9 +2114,11 @@ function setMes(mes, btn){
   renderComparativo();
   renderCarteira();
   renderVendorDetail(activeVendor);
-  // Atualizar label
+  // Atualizar labels
   const sub=document.getElementById('analise-section-sub');
   if(sub) sub.textContent=mes==='maio'?'Carteiras de Maio 2026':'Comparativo Março vs Abril 2026';
+  const dt=document.getElementById('dash-donut-title');
+  if(dt) dt.textContent='Distribuição '+(mes==='maio'?'Maio':'Abril');
 }
 
 /* ─────────────────────────────────────────
@@ -2383,11 +2394,11 @@ function renderVendorDetail(name){
   const mesAntShort=isMaio?'Abr':'Mar';
   const mesAtualShort=isMaio?'Mai':'Abr';
 
-  // Top clients
+  // Clientes
   let clients;
   if(isMaio){
     const cod=vMaio?.cod;
-    clients=(CARTEIRA_MAIO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5)
+    clients=(CARTEIRA_MAIO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor)
       .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
   } else {
     clients=VENDOR_TOP5[name]||[];
@@ -2405,7 +2416,8 @@ function renderVendorDetail(name){
     </tr>`;
   });
   tbl+=`</tbody></table>`;
-  document.getElementById('vendor-table-title').textContent='Top Clientes · '+name;
+  const nCli=clients.length;
+  document.getElementById('vendor-table-title').textContent=(isMaio?'Carteira Completa':'Top Clientes')+' · '+name+(isMaio?' ('+nCli+' clientes)':'');
   document.getElementById('vendor-table-wrap').innerHTML=tbl;
 
   // Mini KPIs
