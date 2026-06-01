@@ -1983,17 +1983,17 @@ function closeObsModal(){document.getElementById('obs-modal').style.display='non
 
 const FORMS_CONFIG={
   prospeccoes:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
+    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=RAZÃO SOCIAL r[3]=MÊS r[4]=ENDEREÇO
     // r[5]=RESPONSÁVEL r[6]=CONTATOS r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[9]=FOTO r[10]=OBS
     cols:[
       {h:'Data',w:'95px'},{h:'Razão Social',w:''},{h:'Empresa Atual',w:'150px'},
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[2]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
   },
   visitas:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
+    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
     // r[6]=DIA VISITA r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     cols:[
       {h:'Data',w:'95px'},{h:'Cód.',w:'62px'},
@@ -2003,20 +2003,20 @@ const FORMS_CONFIG={
     row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=DATA APRES(serial) r[3]=MÊS(texto) r[4]=NOME CLIENTE
+    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES(serial) r[4]=NOME CLIENTE
     // r[5]=EMPRESA ATUAL r[6]=VOLUME/DIA
     cols:[
       {h:'Data Preench.',w:'110px'},{h:'Data Apres.',w:'110px'},
       {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'160px'},{h:'Volume/dia',w:'100px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${fmtDate(r[2])}</td><td class="td-wrap">${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${fmtDate(r[3])}</td><td class="td-wrap">${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=CÓDIGO r[4]=NOME CLIENTE
+    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=CÓDIGO r[3]=MÊS(texto) r[4]=NOME CLIENTE
     cols:[
       {h:'Data',w:'110px'},{h:'Código',w:'90px'},{h:'Nome Cliente',w:''}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${r[4]||''}</td>`
   }
 };
 
@@ -2078,7 +2078,8 @@ function renderFormsTable(){
   const toVal=document.getElementById('forms-dt-to')?.value;
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const sellerRows=cache.filter(r=>r[0]&&r[0].trim().toUpperCase()===currentRegSeller&&r[1]!=='#N/A');
+  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const sellerRows=cache.filter(r=>r[0]&&r[1]!=='#N/A'&&_nm(r[0])===_nm(currentRegSeller));
   const rows=sellerRows.filter(r=>{
     if(!dtFrom&&!dtTo) return true;
     const d=toDate(r[1]);
@@ -2763,9 +2764,22 @@ function renderVendorDashboard(user, vendorKey){
   const vM=mesData.find(v=>v.cod===user.vendId);
   if(!vM) return;
 
+  const mesLabel=MES_LABELS[CRM_MES]||'Maio';
+  const mesAnt=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
   const isNew=!!vM.newHire;
+
+  // Variação vs mês anterior
+  const varPctV=vM.mar>0?((vM.abr-vM.mar)/vM.mar*100):null;
+  const varHTML=varPctV!==null
+    ?`<span class="${varPctV>=0?'badge-up':'badge-dn'}">${varPctV>=0?'▲ +':'▼ '}${Math.abs(varPctV).toFixed(1)}%</span> vs ${mesAnt}`
+    :vM.ped+' pedidos';
+
+  // Participação no total da equipe
+  const totalEquipe=mesData.reduce((s,v)=>s+v.abr,0);
+  const partPct=totalEquipe>0?((vM.abr/totalEquipe)*100).toFixed(1):0;
 
   const metaMap={'093':500000,'094':250000,'115':200000,'116':200000,'117':150000,'107':100000,'119':100000,'118':80000,'120':30000};
   const meta=metaMap[user.vendId]||200000;
@@ -2775,41 +2789,52 @@ function renderVendorDashboard(user, vendorKey){
 
   const carteiraMap=CRM_MES==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
   const carteira=(carteiraMap[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
+  const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
 
-  const now=new Date();
-  const fmt=d=>d.toISOString().slice(0,10);
-  const dtFrom=fmt(new Date(now.getFullYear(),now.getMonth(),1));
-  const dtTo  =fmt(new Date(now.getFullYear(),now.getMonth()+1,0));
+  // Atividades do mês (dos formsCaches já carregados)
+  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const vNorm=_nm(user.name);
+  const now2=new Date(); const cm=now2.getMonth(),cy=now2.getFullYear();
+  const countF=type=>formsCaches[type].filter(r=>{
+    if(!r[0]||_nm(r[0])!==vNorm) return false;
+    const d=toDate(r[1]); return d&&d.getMonth()===cm&&d.getFullYear()===cy;
+  }).length;
+  const hasF=Object.values(formsCaches).some(c=>c.length>0);
+  const nVis=hasF?countF('visitas'):null;
+  const nPro=hasF?countF('prospeccoes'):null;
+  const nApr=hasF?countF('apresentacoes'):null;
+  const nCad=hasF?countF('cadastros'):null;
+  const actVal=v=>v===null?'—':String(v);
 
   document.getElementById('tab-dashboard').innerHTML=`
     <div class="section-header">
       <div>
         <div class="section-title" id="dash-greeting">Olá, ${user.name} 💼</div>
-        <div class="section-sub" id="dash-subgreeting">${MES_LABELS[CRM_MES]||'Maio'} 2026 · Cód. ${user.vendId}</div>
+        <div class="section-sub" id="dash-subgreeting">${mesLabel} 2026 · Cód. ${user.vendId}</div>
       </div>
     </div>
 
     <div class="kpi-grid mb-16">
       <div class="kpi-card kpi-gold">
-        <div class="kpi-label">Faturamento Maio</div>
+        <div class="kpi-label">Faturamento ${mesLabel}</div>
         <div class="kpi-value" style="color:var(--gold)">${fK(vM.abr)}</div>
         <div class="kpi-sub">${fBRL(vM.abr)}</div>
-        <div class="kpi-change" style="color:var(--text-dim)">${vM.ped} pedidos no mês</div>
+        <div class="kpi-change">${varHTML}</div>
       </div>
       <div class="kpi-card kpi-mint">
-        <div class="kpi-label">Ranking Maio</div>
+        <div class="kpi-label">Ranking ${mesLabel}</div>
         <div class="kpi-value" style="color:${vM.color}">${isNew?'Novo':'#'+rank+'º'}</div>
         <div class="kpi-sub">${isNew?'Primeiro mês':'de '+sorted.length+' vendedores'}</div>
-        <div class="kpi-change" style="color:var(--text-dim)">Posição atual</div>
+        <div class="kpi-change" style="color:var(--text-dim)">${partPct}% do total da equipe</div>
       </div>
       <div class="kpi-card kpi-sky">
-        <div class="kpi-label">Pedidos</div>
+        <div class="kpi-label">Pedidos ${mesLabel}</div>
         <div class="kpi-value">${vM.ped}</div>
         <div class="kpi-sub">${vM.cli} clientes ativos</div>
-        <div class="kpi-change" style="color:var(--text-dim)">Mês de Maio</div>
+        <div class="kpi-change" style="color:var(--text-dim)">Ticket médio: ${vM.ped>0?fK(vM.abr/vM.ped):'—'}</div>
       </div>
       <div class="kpi-card kpi-peach">
-        <div class="kpi-label">Meta</div>
+        <div class="kpi-label">Meta ${mesLabel}</div>
         <div class="kpi-value" style="color:${mc}">${pct}%</div>
         <div class="kpi-sub">${fK(meta)} alvo</div>
         <div class="kpi-change" style="color:${mc}">${msg}</div>
@@ -2818,7 +2843,7 @@ function renderVendorDashboard(user, vendorKey){
 
     <div class="card mb-16">
       <div class="card-header">
-        <span class="card-title">Progresso da Meta · Maio 2026</span>
+        <span class="card-title">Progresso da Meta · ${mesLabel} 2026</span>
         <span style="font-size:12px;color:${mc};font-weight:700">${fBRL(vM.abr)} de ${fBRL(meta)}</span>
       </div>
       <div style="background:rgba(255,255,255,.08);border-radius:8px;height:14px;overflow:hidden;margin-bottom:8px">
@@ -2831,14 +2856,47 @@ function renderVendorDashboard(user, vendorKey){
       </div>
     </div>
 
-    <div class="card mt-16">
-      <div class="card-header"><span class="card-title">Seus Top Clientes · Maio</span></div>
-      ${carteira.length?carteira.map((c,i)=>`
-        <div class="top5-item">
-          <div class="top5-rank">${i+1}</div>
-          <div class="top5-name">${c.nome}</div>
-          <div class="top5-val" style="color:${vM.color}">${fBRL(c.valor)}</div>
-        </div>`).join(''):'<div style="color:var(--text-dim);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
+    <div class="dash-second-grid gap-12">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Seus Top Clientes · ${mesLabel}</span>
+          ${carteira.length?`<span style="font-size:11px;color:var(--text-dim)">${fBRL(totalCarteira)}</span>`:''}
+        </div>
+        ${carteira.length?carteira.map((c,i)=>`
+          <div class="top5-item">
+            <div class="top5-rank">${i+1}</div>
+            <div class="top5-name">${c.nome}</div>
+            <div class="top5-val" style="color:${vM.color}">${fBRL(c.valor)}</div>
+          </div>`).join(''):'<div style="color:var(--text-dim);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Atividades · ${mesLabel}</span>
+          ${!hasF?'<span style="font-size:10px;color:var(--text-muted)">Carregue os Forms</span>':''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="act-item"><div class="act-num">${actVal(nVis)}</div><div class="act-label">Visitas</div></div>
+          <div class="act-item"><div class="act-num">${actVal(nPro)}</div><div class="act-label">Prospecções</div></div>
+          <div class="act-item"><div class="act-num">${actVal(nApr)}</div><div class="act-label">Apresentações</div></div>
+          <div class="act-item"><div class="act-num">${actVal(nCad)}</div><div class="act-label">Cadastros</div></div>
+        </div>
+        ${vM.mar>0?`
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)">
+          <div style="font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Comparativo vs ${mesAnt}</div>
+          <div style="display:flex;align-items:flex-end;gap:16px;height:60px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+              <div style="width:100%;height:${Math.round((vM.mar/Math.max(vM.abr,vM.mar))*50)}px;background:${vM.color}44;border-radius:4px 4px 0 0;min-height:4px"></div>
+              <div style="font-size:9px;color:var(--text-dim)">${mesAnt}</div>
+              <div style="font-size:10px;font-weight:700">${fK(vM.mar)}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+              <div style="width:100%;height:${Math.round((vM.abr/Math.max(vM.abr,vM.mar))*50)}px;background:${vM.color};border-radius:4px 4px 0 0;min-height:4px"></div>
+              <div style="font-size:9px;color:var(--text-dim)">${mesLabel}</div>
+              <div style="font-size:10px;font-weight:700">${fK(vM.abr)}</div>
+            </div>
+          </div>
+        </div>`:''}
+      </div>
     </div>
   `;
 }
