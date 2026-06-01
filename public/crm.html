@@ -682,6 +682,9 @@ body.mode-mobile .section-header{gap:12px}
 .mes-toggle-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
 .mes-toggle-btn.active{background:rgba(255,255,255,.15);color:#fff}
 .mes-toggle-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+/* Comparativo mês selector */
+.comp-mes-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
+.comp-mes-sel option{background:#2C0018;color:#fff}
 /* Carteira table */
 #carteira-table-wrap table{width:100%}
 #carteira-table-wrap tr:hover td{background:rgba(255,255,255,.04)}
@@ -928,7 +931,8 @@ body.mode-mobile .section-header{gap:12px}
       <span class="card-title" id="ranking-title">Ranking de Faturamento — Maio 2026</span>
       <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
         <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
-        <button class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
+        <button class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
+        <button class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">Junho</button>
       </div>
     </div>
     <div id="ranking-list"></div>
@@ -993,7 +997,8 @@ body.mode-mobile .section-header{gap:12px}
     </div>
     <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
       <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
-      <button class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
+      <button class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
+      <button class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">Junho</button>
     </div>
   </div>
 
@@ -1022,7 +1027,24 @@ body.mode-mobile .section-header{gap:12px}
   <!-- SUB: Comparativo -->
   <div id="subtab-comparativo" style="display:none">
     <div class="card">
-      <div class="card-header"><span class="card-title">Comparativo Março vs Abril 2026</span></div>
+      <div class="card-header">
+        <span class="card-title" id="comp-title">Comparativo Abril vs Maio 2026</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <select id="comp-mes-a" class="comp-mes-sel" onchange="renderComparativo()">
+            <option value="marco">Março</option>
+            <option value="abril" selected>Abril</option>
+            <option value="maio">Maio</option>
+            <option value="junho">Junho</option>
+          </select>
+          <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
+          <select id="comp-mes-b" class="comp-mes-sel" onchange="renderComparativo()">
+            <option value="marco">Março</option>
+            <option value="abril">Abril</option>
+            <option value="maio" selected>Maio</option>
+            <option value="junho">Junho</option>
+          </select>
+        </div>
+      </div>
       <div style="overflow-x:auto">
         <table class="tbl" id="comp-table"></table>
       </div>
@@ -1070,7 +1092,8 @@ body.mode-mobile .section-header{gap:12px}
       <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px">
         <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
           <button id="mes-btn-abril" class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">📅 Abril 2026</button>
-          <button id="mes-btn-maio" class="mes-toggle-btn active" data-mes="maio" onclick="setMes('maio',this)">📅 Maio 2026</button>
+          <button id="mes-btn-maio" class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">📅 Maio 2026</button>
+          <button id="mes-btn-junho" class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">📅 Junho 2026</button>
         </div>
         <select id="carteira-vend-select" class="fi" style="flex:1;min-width:160px;max-width:260px" onchange="renderCarteira()">
           <option value="">Selecione um vendedor...</option>
@@ -1298,7 +1321,7 @@ function removeLogoBg(img){
   }catch(e){}
 }
 
-let CRM_MES = 'maio'; // 'abril' | 'maio' — declarado aqui para estar acessível por todas as funções
+let CRM_MES = new Date().getMonth()>=5?'junho':'maio'; // auto-detectado pelo mês atual; 'abril'|'maio'|'junho'
 /* ─────────────────────────────────────────
    DATA
 ───────────────────────────────────────── */
@@ -1318,15 +1341,12 @@ const VENDEDORES = [
    renderKPIs (definida após VENDEDORES mas referencia VENDEDORES_MAIO via função = hoisted OK)
 ───────────────────────────────────────── */
 function renderKPIs(){
-  const isMaio=CRM_MES==='maio';
   const $=id=>document.getElementById(id);
   const cls=v=>v>=0?'badge-up':'badge-dn';
   const arrow=v=>v>=0?'▲ +':'▼ ';
 
   // Fonte de dados do mês
-  const src = isMaio
-    ? VENDEDORES_MAIO.map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}))
-    : VENDEDORES;
+  const src=getVendedoresForMes(CRM_MES);
   const active=src.filter(v=>!v.newHire);
   const totalAbr=src.reduce((s,v)=>s+v.abr,0);
   const totalMar=src.reduce((s,v)=>s+v.mar,0);
@@ -1340,8 +1360,8 @@ function renderKPIs(){
   const liderVar=lider&&lider.mar>0?((lider.abr-lider.mar)/lider.mar*100):0;
   const altaVar=maiorAlta&&maiorAlta.mar>0?((maiorAlta.abr-maiorAlta.mar)/maiorAlta.mar*100):0;
   const quedaVar=maiorQueda&&maiorQueda.mar>0?((maiorQueda.abr-maiorQueda.mar)/maiorQueda.mar*100):0;
-  const mesLabel=isMaio?'vs Abril':'vs Março';
-  const mesTitle=isMaio?'Maio':'Abril';
+  const mesLabel=CRM_MES==='junho'?'vs Maio':CRM_MES==='maio'?'vs Abril':'vs Março';
+  const mesTitle=MES_LABELS[CRM_MES]||'Abril';
 
   // Dashboard KPIs
   if($('kpi-total-val'))  $('kpi-total-val').textContent=fK(totalAbr);
@@ -1764,6 +1784,19 @@ const TOP_CLIENTES_MAIO = [
   {r:10,nome:'IPAVA RAIO SUPERMERCADO LTDA',        vend:'Israel',    val:23626.12},
 ];
 
+// Junho 2026 — preencher conforme dados chegam
+const VENDEDORES_JUNHO = [
+  {name:'Guilherme', av:'GU', color:'#10B981', total:0, cli:0, ped:0, cod:'093'},
+  {name:'Relson',    av:'RE', color:'#60A5FA', total:0, cli:0, ped:0, cod:'094'},
+  {name:'Natália',   av:'NA', color:'#F472B6', total:0, cli:0, ped:0, cod:'116'},
+  {name:'Israel',    av:'IS', color:'#8B5CF6', total:0, cli:0, ped:0, cod:'115'},
+  {name:'Keller',    av:'KE', color:'#22D3EE', total:0, cli:0, ped:0, cod:'117'},
+  {name:'Everaldo',  av:'EV', color:'#F59E0B', total:0, cli:0, ped:0, cod:'107'},
+  {name:'Althieres', av:'AL', color:'#FBBF24', total:0, cli:0, ped:0, cod:'119', newHire:true},
+  {name:'Jorge',     av:'JO', color:'#94A3B8', total:0, cli:0, ped:0, cod:'118', newHire:true},
+  {name:'João',     av:'JO2',color:'#2DD4BF', total:0, cli:0, ped:0, cod:'120', newHire:true},
+];
+const CARTEIRA_JUNHO = {};
 
 const AGENDA = [
   {dates:'04–05 Mai', days:'Seg/Ter', nome:'MULTI PANE',          tipo:'Treinamento',     tec:'Juan',    vend:'Keller',   local:'Mogi'},
@@ -1783,6 +1816,17 @@ const AGENDA = [
 const TEC_COLORS = {Juan:'#80DEEA',Rogério:'#FF6B6B',Matheus:'#00D4AA',Marcelo:'#C77DFF',Leonardo:'#FF9A56',Caio:'#FFD93D',Gabriel:'#90CAF9'};
 const TIPO_COLORS = {Treinamento:'rgba(0,212,170,.15)',Café:'rgba(255,217,61,.15)',Apresentação:'rgba(144,202,249,.15)',Reservado:'rgba(255,255,255,.08)'};
 const TIPO_TEXT   = {Treinamento:'#00D4AA',Café:'#FFD93D',Apresentação:'#90CAF9',Reservado:'#fff'};
+
+/* ─────────────────────────────────────────
+   MÊS HELPER
+───────────────────────────────────────── */
+const MES_LABELS={marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho'};
+function getVendedoresForMes(mes){
+  if(mes==='junho') return VENDEDORES_JUNHO.map(v=>({...v, abr:v.total, mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
+  if(mes==='maio')  return VENDEDORES_MAIO.map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
+  if(mes==='marco') return VENDEDORES.map(v=>({...v, abr:v.mar, mar:0}));
+  return VENDEDORES; // abril
+}
 
 /* ─────────────────────────────────────────
    UTILS
@@ -2079,10 +2123,7 @@ function filterAgenda(filter,el){
    RANKING
 ───────────────────────────────────────── */
 function renderRanking(){
-  const isMaio=CRM_MES==='maio';
-  const source=isMaio
-    ? VENDEDORES_MAIO.map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}))
-    : VENDEDORES;
+  const source=getVendedoresForMes(CRM_MES);
   const sorted=[...source].sort((a,b)=>b.abr-a.abr);
   const max=sorted.find(v=>v.abr>0)?.abr||1;
   let html='';
@@ -2095,11 +2136,11 @@ function renderRanking(){
       <div class="rank-av" style="background:${isNew?'rgba(255,255,255,.08)':v.color+'22'};color:#fff">${v.av}</div>
       <div class="rank-info">
         <div class="rank-name">${v.name}${v.newHire?' <span style="font-size:9px;color:var(--gold)">★ Novo</span>':''}</div>
-        <div class="rank-meta">${isNew?'Ingresso Mai/2026 · cód.'+v.cod:v.cli+' cli · '+v.ped+' ped · cód.'+v.cod}</div>
+        <div class="rank-meta">${isNew&&v.abr===0?'Ingresso 2026 · cód.'+v.cod:v.cli+' cli · '+v.ped+' ped · cód.'+v.cod}</div>
       </div>
       <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%;background:${v.color}"></div></div>
       <div class="rank-value">
-        <div class="rank-val-main" style="color:${isNew?'var(--text-muted)':'var(--text)'}">${isNew?'—':fK(v.abr)}</div>
+        <div class="rank-val-main" style="color:${isNew&&v.abr===0?'var(--text-muted)':'var(--text)'}">${isNew&&v.abr===0?'—':fK(v.abr)}</div>
         <div class="rank-val-change ${varPctV===null?'':varPctV>=0?'up':'dn'}">${varPctV===null?'Novo':((varPctV>=0?'▲ +':'▼ ')+Math.abs(varPctV).toFixed(1)+'%')}</div>
       </div>
     </div>`;
@@ -2110,15 +2151,14 @@ function renderRanking(){
   const el2=document.getElementById('rank-total-dynamic');
   if(el2) el2.textContent=fBRL(total);
   const rt=document.getElementById('ranking-title');
-  if(rt) rt.textContent='Ranking de Faturamento — '+(isMaio?'Maio':'Abril')+' 2026';
+  if(rt) rt.textContent='Ranking de Faturamento — '+(MES_LABELS[CRM_MES]||'Maio')+' 2026';
 }
 
 /* ─────────────────────────────────────────
    TOP 5
 ───────────────────────────────────────── */
 function renderTop5(){
-  const isMaio=CRM_MES==='maio';
-  const list=isMaio?TOP_CLIENTES_MAIO:TOP_CLIENTES;
+  const list=CRM_MES==='abril'?TOP_CLIENTES:TOP_CLIENTES_MAIO;
   let html='';
   list.slice(0,5).forEach(c=>{
     const col=vendorColor(c.vend);
@@ -2143,16 +2183,15 @@ function setMes(mes, btn){
   renderRanking();
   renderTop5();
   renderDonut('donut-svg','donut-legend');
-  renderDonut('donut-svg-2','donut-legend-2');
   renderAnaliseTable();
   renderComparativo();
   renderCarteira();
   renderVendorDetail(activeVendor);
   // Atualizar labels
   const sub=document.getElementById('analise-section-sub');
-  if(sub) sub.textContent=mes==='maio'?'Carteiras de Maio 2026':'Comparativo Março vs Abril 2026';
+  if(sub) sub.textContent='Carteiras de '+(MES_LABELS[mes]||mes)+' 2026';
   const dt=document.getElementById('dash-donut-title');
-  if(dt) dt.textContent='Distribuição '+(mes==='maio'?'Maio':'Abril');
+  if(dt) dt.textContent='Distribuição '+(MES_LABELS[mes]||mes);
 }
 
 /* ─────────────────────────────────────────
@@ -2193,8 +2232,8 @@ function renderCarteira(){
     return;
   }
   // Fonte de dados conforme mês
-  const clientes=CRM_MES==='maio'?(CARTEIRA_MAIO[cod]||[]):[];
-  const vInfo=VENDEDORES_MAIO.find(v=>v.cod===cod)||VENDEDORES.find(v=>v.cod===cod)||{};
+  const clientes=CRM_MES==='junho'?(CARTEIRA_JUNHO[cod]||[]):CRM_MES==='maio'?(CARTEIRA_MAIO[cod]||[]):[];
+  const vInfo=(CRM_MES==='junho'?VENDEDORES_JUNHO:VENDEDORES_MAIO).find(v=>v.cod===cod)||VENDEDORES.find(v=>v.cod===cod)||{};
   // Filtrar por busca
   const filtered=clientes.filter(c=>
     c.nome.toLowerCase().includes(search)||c.cod.includes(search)
@@ -2237,7 +2276,7 @@ function renderCarteira(){
   // Footer
   if(footer){
     footer.style.display='flex';
-    footCount.textContent=filtered.length+' cliente'+(filtered.length!==1?'s':'')+' · '+CRM_MES.charAt(0).toUpperCase()+CRM_MES.slice(1)+' 2026';
+    footCount.textContent=filtered.length+' cliente'+(filtered.length!==1?'s':'')+' · '+(MES_LABELS[CRM_MES]||CRM_MES)+' 2026';
     footTotal.textContent='Total: '+fBRL(totalFiltrado)+(search?'  (filtrado)':'');
   }
 }
@@ -2248,10 +2287,7 @@ function renderDonut(svgId, legendId){
   const svg=document.getElementById(svgId);
   const legend=document.getElementById(legendId);
   if(!svg||!legend) return;
-  const isMaio=CRM_MES==='maio';
-  const source=isMaio
-    ? VENDEDORES_MAIO.map(v=>({name:v.name,color:v.color,abr:v.total}))
-    : VENDEDORES;
+  const source=getVendedoresForMes(CRM_MES).map(v=>({name:v.name,color:v.color,abr:v.abr}));
   // Filtra apenas quem tem vendas (evita divisão por zero)
   const sorted=[...source].filter(v=>v.abr>0).sort((a,b)=>b.abr-a.abr);
   const total=sorted.reduce((s,v)=>s+v.abr,0);
@@ -2316,10 +2352,13 @@ function renderAgenda(filterTec){
    ANALISE TABLE
 ───────────────────────────────────────── */
 function renderAnaliseTable(){
-  const sorted=[...VENDEDORES].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
+  const src=getVendedoresForMes(CRM_MES);
+  const sorted=[...src].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const maxAbr=sorted.length>0?sorted[0].abr:1;
+  const lblAt=MES_LABELS[CRM_MES]||'Atual';
+  const lblAnt=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
   let html=`<thead><tr>
-    <th>Vendedor</th><th>Abril</th><th>Março</th><th>Var.</th><th>Evolução</th><th>Cli</th>
+    <th>Vendedor</th><th>${lblAt}</th><th>${lblAnt}</th><th>Var.</th><th>Evolução</th><th>Cli</th>
   </tr></thead><tbody>`;
   let tAbr=0, tMar=0;
   sorted.forEach(v=>{
@@ -2356,29 +2395,42 @@ function renderAnaliseTable(){
    COMPARATIVO TABLE
 ───────────────────────────────────────── */
 function renderComparativo(){
-  const sorted=[...VENDEDORES].sort((a,b)=>b.abr-a.abr);
+  const selA=document.getElementById('comp-mes-a');
+  const selB=document.getElementById('comp-mes-b');
+  const mesA=selA?selA.value:'abril';
+  const mesB=selB?selB.value:'maio';
+  const lblA=MES_LABELS[mesA]||mesA;
+  const lblB=MES_LABELS[mesB]||mesB;
+  const titleEl=document.getElementById('comp-title');
+  if(titleEl) titleEl.textContent=`Comparativo ${lblA} vs ${lblB} 2026`;
+  const dataA=getVendedoresForMes(mesA);
+  const dataB=getVendedoresForMes(mesB);
+  const merged=dataA.map(vA=>{
+    const vB=dataB.find(x=>x.cod===vA.cod)||{abr:0,cli:0};
+    return {...vA, valA:vA.abr, valB:vB.abr};
+  }).sort((a,b)=>b.valB-a.valB);
   let html=`<thead><tr>
-    <th>Vendedor</th><th>Março</th><th>Abril</th><th>Diferença R$</th><th>Variação %</th>
+    <th>Vendedor</th><th>${lblA}</th><th>${lblB}</th><th>Diferença R$</th><th>Variação %</th>
   </tr></thead><tbody>`;
-  let tAbr=0,tMar=0;
-  sorted.forEach(v=>{
-    const diff=v.abr-v.mar;
-    const vr=varPct(v.abr,v.mar);
-    tAbr+=v.abr;tMar+=v.mar;
+  let tA=0, tB=0;
+  merged.forEach(v=>{
+    const diff=v.valB-v.valA;
+    const vr=varPct(v.valB,v.valA);
+    tA+=v.valA; tB+=v.valB;
     html+=`<tr>
       <td><span style="font-weight:700">${v.name}${v.warn?' ⚠':''}</span></td>
-      <td style="color:var(--text-dim)">${fBRL(v.mar)}</td>
-      <td style="font-weight:700">${fBRL(v.abr)}</td>
+      <td style="color:var(--text-dim)">${fBRL(v.valA)}</td>
+      <td style="font-weight:700">${fBRL(v.valB)}</td>
       <td style="color:${diff>=0?'var(--mint)':'var(--coral)'}">${diff>=0?'+':''}${fBRL(diff)}</td>
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
     </tr>`;
   });
-  const dTotal=tAbr-tMar, vrT=varPct(tAbr,tMar);
+  const dT=tB-tA, vrT=varPct(tB,tA);
   html+=`</tbody><tfoot><tr class="total-row">
     <td>Total</td>
-    <td>${fBRL(tMar)}</td>
-    <td>${fBRL(tAbr)}</td>
-    <td>${dTotal>=0?'+':''}${fBRL(dTotal)}</td>
+    <td>${fBRL(tA)}</td>
+    <td>${fBRL(tB)}</td>
+    <td>${dT>=0?'+':''}${fBRL(dT)}</td>
     <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
   </tr></tfoot>`;
   document.getElementById('comp-table').innerHTML=html;
@@ -2415,22 +2467,29 @@ function initVendorPills(){
   renderVendorDetail(defaultVendor);
 }
 function renderVendorDetail(name){
-  const isMaio=CRM_MES==='maio';
+  const mes=CRM_MES;
+  const isCompleta=mes==='maio'||mes==='junho';
   const vAbr=VENDEDORES.find(x=>x.name===name);
   const vMaio=VENDEDORES_MAIO.find(x=>x.name===name);
-  const v=isMaio
-    ? {...vMaio, abr:vMaio?.total||0, mar:vAbr?.abr||0, color:vAbr?.color||vMaio?.color}
-    : vAbr;
+  const vJunho=VENDEDORES_JUNHO.find(x=>x.name===name);
+  let v;
+  if(mes==='junho') v={...vJunho, abr:vJunho?.total||0, mar:vMaio?.total||0, color:vAbr?.color||vJunho?.color};
+  else if(mes==='maio') v={...vMaio, abr:vMaio?.total||0, mar:vAbr?.abr||0, color:vAbr?.color||vMaio?.color};
+  else v=vAbr;
   if(!v) return;
 
-  const mesAtual=isMaio?'Maio':'Abril';
-  const mesAnt=isMaio?'Abril':'Março';
-  const mesAntShort=isMaio?'Abr':'Mar';
-  const mesAtualShort=isMaio?'Mai':'Abr';
+  const mesAtual=MES_LABELS[mes]||mes;
+  const mesAnt=mes==='junho'?'Maio':mes==='maio'?'Abril':'Março';
+  const mesAntShort=mes==='junho'?'Mai':mes==='maio'?'Abr':'Mar';
+  const mesAtualShort=mes==='junho'?'Jun':mes==='maio'?'Mai':'Abr';
 
   // Clientes
   let clients;
-  if(isMaio){
+  if(mes==='junho'){
+    const cod=vJunho?.cod;
+    clients=(CARTEIRA_JUNHO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor)
+      .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
+  } else if(mes==='maio'){
     const cod=vMaio?.cod;
     clients=(CARTEIRA_MAIO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor)
       .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
@@ -2451,7 +2510,7 @@ function renderVendorDetail(name){
   });
   tbl+=`</tbody></table>`;
   const nCli=clients.length;
-  document.getElementById('vendor-table-title').textContent=(isMaio?'Carteira Completa':'Top Clientes')+' · '+name+(isMaio?' ('+nCli+' clientes)':'');
+  document.getElementById('vendor-table-title').textContent=(isCompleta?'Carteira Completa':'Top Clientes')+' · '+name+(isCompleta&&nCli?' ('+nCli+' clientes)':'');
   document.getElementById('vendor-table-wrap').innerHTML=tbl;
 
   // Mini KPIs
@@ -2669,20 +2728,22 @@ function applyVendorMode(user){
 }
 
 function renderVendorDashboard(user, vendorKey){
-  const vM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
+  const mesData=getVendedoresForMes(CRM_MES);
+  const vM=mesData.find(v=>v.cod===user.vendId);
   if(!vM) return;
 
-  const sorted=[...VENDEDORES_MAIO].filter(v=>!v.newHire).sort((a,b)=>b.total-a.total);
+  const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
   const isNew=!!vM.newHire;
 
   const metaMap={'093':500000,'094':250000,'115':200000,'116':200000,'117':150000,'107':100000,'119':100000,'118':80000,'120':30000};
   const meta=metaMap[user.vendId]||200000;
-  const pct=Math.min(Math.round((vM.total/meta)*100),100);
+  const pct=Math.min(Math.round((vM.abr/meta)*100),100);
   const mc=pct>=100?'var(--mint)':pct>=80?'var(--mint)':pct>=50?'var(--gold)':'var(--coral)';
   const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
 
-  const carteira=(CARTEIRA_MAIO[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
+  const carteiraMap=CRM_MES==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
+  const carteira=(carteiraMap[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
 
   const now=new Date();
   const fmt=d=>d.toISOString().slice(0,10);
@@ -2693,15 +2754,15 @@ function renderVendorDashboard(user, vendorKey){
     <div class="section-header">
       <div>
         <div class="section-title" id="dash-greeting">Olá, ${user.name} 💼</div>
-        <div class="section-sub" id="dash-subgreeting">Maio 2026 · Cód. ${user.vendId}</div>
+        <div class="section-sub" id="dash-subgreeting">${MES_LABELS[CRM_MES]||'Maio'} 2026 · Cód. ${user.vendId}</div>
       </div>
     </div>
 
     <div class="kpi-grid mb-16">
       <div class="kpi-card kpi-gold">
         <div class="kpi-label">Faturamento Maio</div>
-        <div class="kpi-value" style="color:var(--gold)">${fK(vM.total)}</div>
-        <div class="kpi-sub">${fBRL(vM.total)}</div>
+        <div class="kpi-value" style="color:var(--gold)">${fK(vM.abr)}</div>
+        <div class="kpi-sub">${fBRL(vM.abr)}</div>
         <div class="kpi-change" style="color:var(--text-dim)">${vM.ped} pedidos no mês</div>
       </div>
       <div class="kpi-card kpi-mint">
@@ -2727,14 +2788,14 @@ function renderVendorDashboard(user, vendorKey){
     <div class="card mb-16">
       <div class="card-header">
         <span class="card-title">Progresso da Meta · Maio 2026</span>
-        <span style="font-size:12px;color:${mc};font-weight:700">${fBRL(vM.total)} de ${fBRL(meta)}</span>
+        <span style="font-size:12px;color:${mc};font-weight:700">${fBRL(vM.abr)} de ${fBRL(meta)}</span>
       </div>
       <div style="background:rgba(255,255,255,.08);border-radius:8px;height:14px;overflow:hidden;margin-bottom:8px">
         <div style="height:100%;width:${pct}%;background:${mc};border-radius:8px;transition:width .8s ease"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-dim)">
         <span>R$ 0</span>
-        <span style="color:${mc};font-weight:700">${pct>=100?'Meta atingida!':'Faltam '+fBRL(Math.max(0,meta-vM.total))}</span>
+        <span style="color:${mc};font-weight:700">${pct>=100?'Meta atingida!':'Faltam '+fBRL(Math.max(0,meta-vM.abr))}</span>
         <span>${fBRL(meta)}</span>
       </div>
     </div>
@@ -2849,14 +2910,8 @@ window.addEventListener('resize',()=>{clearTimeout(_rszT);_rszT=setTimeout(autoM
 
 document.addEventListener('DOMContentLoaded',()=>{
   autoMode();
-  renderKPIs();
-  renderRanking();
-  renderTop5();
-  renderDonut('donut-svg','donut-legend');
-  renderDonut('donut-svg-2','donut-legend-2');
+  setMes(CRM_MES); // sincroniza botões ativos e renderiza todos os componentes do mês
   renderAgenda(null);
-  renderAnaliseTable();
-  renderComparativo();
   renderEquipeVendedores();
   // preset form button labels
   document.querySelectorAll('.btn-primary').forEach(b=>{b.dataset.orig=b.textContent});
@@ -2865,19 +2920,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   obs.observe(document.body,{attributes:true,attributeFilter:['class']});
 });
 function openEquipeProfile(name){
-  const isMaio=CRM_MES==='maio';
   const v=VENDEDORES.find(x=>x.name===name);
   if(!v) return;
-  const vM=typeof VENDEDORES_MAIO!=='undefined'?VENDEDORES_MAIO.find(x=>x.cod===v.cod):null;
-  const cur=isMaio&&vM?{...v,abr:vM.total,cli:vM.cli,ped:vM.ped}:v;
-  const prev=isMaio?v.abr:v.mar;
+  const vM=getVendedoresForMes(CRM_MES).find(x=>x.cod===v.cod)||v;
+  const cur={...v,abr:vM.abr,cli:vM.cli||v.cli,ped:vM.ped||v.ped};
+  const prev=vM.mar||0;
   const varPct=prev>0?((cur.abr-prev)/prev*100):null;
-  const src=isMaio&&typeof VENDEDORES_MAIO!=='undefined'
-    ?VENDEDORES_MAIO.map(x=>({...x,abr:x.total}))
-    :VENDEDORES;
+  const src=getVendedoresForMes(CRM_MES);
   const rank=[...src].sort((a,b)=>b.abr-a.abr).findIndex(x=>x.cod===v.cod)+1;
   const ticket=cur.ped>0?cur.abr/cur.ped:0;
-  const mes=isMaio?'Maio':'Abril';
+  const mes=MES_LABELS[CRM_MES]||'Atual';
   const varHTML=varPct===null?'':` <span style="font-size:12px;color:${varPct>=0?'var(--mint)':'var(--coral)'};font-weight:600">${varPct>=0?'▲ +':'▼ '}${Math.abs(varPct).toFixed(1)}%</span>`;
   const statsHTML=cur.abr>0?`
     <div style="margin-bottom:18px">
