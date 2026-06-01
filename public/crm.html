@@ -1091,8 +1091,8 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Filtro de data -->
   <div class="forms-filter-bar" style="margin-top:14px">
-    <label>De <input type="date" id="forms-dt-from" onchange="renderFormsTable()"></label>
-    <label>Até <input type="date" id="forms-dt-to" onchange="renderFormsTable()"></label>
+    <label>De <input type="date" id="forms-dt-from" onchange="formsDateChanged()"></label>
+    <label>Até <input type="date" id="forms-dt-to" onchange="formsDateChanged()"></label>
     <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';renderFormsTable()">✕ Limpar filtro</button>
   </div>
 
@@ -1861,6 +1861,11 @@ function parseCSV(text){
     rows.push(cols);
   }
   return rows;
+}
+
+function formsDateChanged(){
+  if(formsCaches[currentFormsType].length) renderFormsTable();
+  else loadFormsData();
 }
 
 function renderFormsTable(){
