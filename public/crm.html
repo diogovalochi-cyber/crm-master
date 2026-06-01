@@ -1785,14 +1785,14 @@ function closeObsModal(){document.getElementById('obs-modal').style.display='non
 
 const FORMS_CONFIG={
   prospeccoes:{
-    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=RAZÃO SOCIAL r[3]=MÊS r[4]=ENDEREÇO
+    // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
     // r[5]=RESPONSÁVEL r[6]=CONTATOS r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[9]=FOTO r[10]=OBS
     cols:[
       {h:'Data',w:'95px'},{h:'Razão Social',w:''},{h:'Empresa Atual',w:'150px'},
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[2]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
   },
   visitas:{
     // CSV real: r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
