@@ -1783,46 +1783,57 @@ function showObs(btn){
 }
 function closeObsModal(){document.getElementById('obs-modal').style.display='none';}
 
+/* Detecta RAZÃO SOCIAL na linha do CSV: varre colunas iStart..iEnd
+   e retorna a primeira que não seja padrão YYYY/MM, URL ou número puro */
+function _findRS(r,iStart,iEnd){
+  const reMes=/^\d{4}\/\d{2}$/;
+  for(let i=iStart;i<=iEnd;i++){
+    const v=(r[i]||'').trim();
+    if(v&&!reMes.test(v)&&!v.startsWith('http')&&isNaN(Number(v))) return v;
+  }
+  return '';
+}
+
 const FORMS_CONFIG={
   prospeccoes:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
-    // r[5]=RESPONSÁVEL r[6]=CONTATOS r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[9]=FOTO r[10]=OBS
+    // r[0]=VENDEDOR r[1]=Carimbo r[2..3]=MÊS/campos variáveis r[?]=RAZÃO SOCIAL
+    // r detectado dinamicamente; r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[9]=FOTO r[10]=OBS
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'95px'},{h:'Razão Social',w:''},{h:'Empresa Atual',w:'150px'},
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,2,6)}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
   },
   visitas:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
-    // r[6]=DIA VISITA r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5..6]=RAZÃO SOCIAL
+    // r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'95px'},{h:'Cód.',w:'62px'},
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,7)}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4]=NOME CLIENTE
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
     // r[5]=EMPRESA ATUAL r[6]=VOLUME/DIA
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data Preench.',w:'110px'},{h:'Data Apres.',w:'110px'},
       {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'160px'},{h:'Volume/dia',w:'100px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,4,6)}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=CÓDIGO r[3]=MÊS(texto) r[4]=NOME CLIENTE
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=CÓDIGO r[3]=MÊS(texto) r[4..5]=NOME CLIENTE
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'110px'},{h:'Código',w:'90px'},{h:'Nome Cliente',w:''}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${r[4]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${_findRS(r,4,6)}</td>`
   }
 };
 
