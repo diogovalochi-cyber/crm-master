@@ -2538,6 +2538,18 @@ function applySession(user){
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
+
+  // Auto-carrega Forms ao abrir (exceto técnicos que não veem o dashboard)
+  if(user.role!=='TECNICO'){
+    const now=new Date();
+    const y=now.getFullYear(),m=now.getMonth();
+    const fmt=d=>d.toISOString().slice(0,10);
+    const fromEl=document.getElementById('act-dt-from');
+    const toEl  =document.getElementById('act-dt-to');
+    if(fromEl&&!fromEl.value) fromEl.value=fmt(new Date(y,m,1));
+    if(toEl&&!toEl.value)     toEl.value  =fmt(new Date(y,m+1,0));
+    loadAllFormsAndRender();
+  }
 }
 
 function applyTecnicoMode(user){
