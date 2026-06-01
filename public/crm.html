@@ -482,13 +482,13 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .tbl tr:hover td{background:rgba(255,255,255,.03)}
 .tbl .total-row td{border-top:1px solid rgba(255,255,255,.15);font-weight:700;color:var(--gold)}
 #forms-table{width:100%;table-layout:fixed}
-#forms-table th{white-space:nowrap;text-align:center}
-#forms-table td{font-size:13px;vertical-align:middle;white-space:normal;word-break:break-word;text-align:center;padding:7px 8px;line-height:1.4}
-.forms-filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-.forms-filter-bar label{font-size:12px;color:#aaa;display:flex;align-items:center;gap:5px}
-.forms-filter-bar input[type=date]{background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:4px 8px;font-size:12px;font-family:inherit;cursor:pointer;color-scheme:dark}
-.forms-filter-bar .clear-btn{font-size:11px;color:#888;background:none;border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:4px 10px;cursor:pointer;font-family:inherit}
-.forms-filter-bar .clear-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+#forms-table th{white-space:nowrap;text-align:center;padding:10px 12px;font-size:12px;letter-spacing:.4px}
+#forms-table td{font-size:14px;vertical-align:middle;white-space:normal;word-break:break-word;text-align:center;padding:11px 12px;line-height:1.5}
+.forms-filter-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.07)}
+.forms-filter-bar label{font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:8px;font-weight:500}
+.forms-filter-bar input[type=date]{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:7px 10px;font-size:13px;font-family:inherit;cursor:pointer;color-scheme:dark}
+.forms-filter-bar .clear-btn{font-size:12px;color:var(--text-dim);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 14px;cursor:pointer;font-family:inherit;margin-left:auto}
+.forms-filter-bar .clear-btn:hover{color:#fff;border-color:rgba(255,255,255,.5)}
 .obs-btn{font-size:10px;color:var(--gold);background:none;border:1px solid rgba(200,170,80,.3);border-radius:3px;padding:2px 7px;cursor:pointer;font-family:inherit}
 .obs-btn:hover{background:rgba(200,170,80,.12)}
 .foto-link{color:var(--gold);font-size:16px;text-decoration:none;line-height:1}
@@ -626,7 +626,13 @@ body.mode-mobile .pill-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-
 body.mode-mobile .pill-row::-webkit-scrollbar{display:none}
 body.mode-mobile .pill{white-space:nowrap;flex-shrink:0}
 /* Forms table: fixed min-width so overflow-x:auto container scrolls */
-body.mode-mobile #forms-table{min-width:560px}
+body.mode-mobile #forms-table{min-width:620px}
+body.mode-mobile #forms-table td{font-size:13px;padding:10px 8px}
+body.mode-mobile #forms-table th{font-size:11px;padding:8px 6px}
+body.mode-mobile .forms-filter-bar{flex-direction:column;align-items:stretch;gap:10px;padding:14px}
+body.mode-mobile .forms-filter-bar label{background:rgba(255,255,255,.06);border-radius:8px;padding:10px 12px;justify-content:space-between}
+body.mode-mobile .forms-filter-bar input[type=date]{font-size:14px;padding:6px 8px}
+body.mode-mobile .forms-filter-bar .clear-btn{margin-left:0;text-align:center;padding:10px 14px;font-size:13px}
 /* Carteira controls stack on mobile */
 body.mode-mobile #subtab-carteira>div>div:first-child{flex-direction:column;align-items:stretch}
 body.mode-mobile #subtab-carteira .mes-toggle-btn{padding:6px 10px;font-size:11px}
@@ -1142,22 +1148,22 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
   </div>
 
   <!-- Nível 2: Tipo de dado -->
-  <div class="subtab-row" id="reg-type-tabs" style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
-    <button class="subtab active" data-type="prospeccoes" onclick="selectFormsType(this)" style="font-size:12px">Prospecções</button>
-    <button class="subtab" data-type="visitas" onclick="selectFormsType(this)" style="font-size:12px">Visitas</button>
-    <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)" style="font-size:12px">Apresentações</button>
-    <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)" style="font-size:12px">Cadastros</button>
+  <div class="subtab-row" id="reg-type-tabs" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">
+    <button class="subtab active" data-type="prospeccoes" onclick="selectFormsType(this)">Prospecções</button>
+    <button class="subtab" data-type="visitas" onclick="selectFormsType(this)">Visitas</button>
+    <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)">Apresentações</button>
+    <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)">Cadastros</button>
   </div>
 
   <!-- Filtro de data -->
-  <div class="forms-filter-bar" style="margin-top:10px">
+  <div class="forms-filter-bar" style="margin-top:14px">
     <label>De <input type="date" id="forms-dt-from" onchange="renderFormsTable()"></label>
     <label>Até <input type="date" id="forms-dt-to" onchange="renderFormsTable()"></label>
-    <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';renderFormsTable()">✕ Limpar</button>
+    <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';renderFormsTable()">✕ Limpar filtro</button>
   </div>
 
   <!-- Tabela -->
-  <div class="card" style="overflow-x:auto;margin-top:6px">
+  <div class="card" style="overflow-x:auto;margin-top:14px;padding:20px">
     <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Clique em Atualizar para carregar os dados</div>
     <table id="forms-table" class="tbl">
       <thead><tr id="forms-thead-row"></tr></thead>
@@ -1775,10 +1781,21 @@ function showTab(tab, el){
   document.getElementById('tab-'+tab).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
-  // Vendedor: ao abrir Análise, força subtab Por Vendedor
   if(tab==='analise' && window.CRM_VENDOR_ID){
     const pvBtn=document.querySelectorAll('#tab-analise .subtab')[2];
     if(pvBtn) showSubtab('porvendedor',pvBtn);
+  }
+  if(tab==='registrar'){
+    const fromEl=document.getElementById('forms-dt-from');
+    const toEl=document.getElementById('forms-dt-to');
+    if(fromEl&&!fromEl.value&&toEl&&!toEl.value){
+      const now=new Date();
+      const y=now.getFullYear(),m=now.getMonth();
+      const fmt=d=>d.toISOString().slice(0,10);
+      fromEl.value=fmt(new Date(y,m,1));
+      toEl.value=fmt(new Date(y,m+1,0));
+    }
+    if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
   }
 }
 function showTabMobile(tab, el){
@@ -1874,17 +1891,17 @@ const FORMS_CONFIG={
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=DATA APRES(serial) r[3]=MÊS(texto) r[4]=NOME CLIENTE
     // r[5]=EMPRESA ATUAL r[6]=VOLUME/DIA
     cols:[
-      {h:'Data',w:'95px'},{h:'Mês',w:'72px'},{h:'Data Apres.',w:'100px'},
-      {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'150px'},{h:'Volume/dia',w:'90px'}
+      {h:'Data Preench.',w:'110px'},{h:'Data Apres.',w:'110px'},
+      {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'160px'},{h:'Volume/dia',w:'100px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td>${fmtDate(r[2])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${fmtDate(r[2])}</td><td>${r[4]||''}</td><td>${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=CÓDIGO r[4]=NOME CLIENTE
     cols:[
-      {h:'Data',w:'95px'},{h:'Mês',w:'80px'},{h:'Código',w:'80px'},{h:'Nome Cliente',w:''}
+      {h:'Data',w:'110px'},{h:'Código',w:'90px'},{h:'Nome Cliente',w:''}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td>${r[4]||''}</td>`
   }
 };
 
