@@ -26,7 +26,7 @@ input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
   --card:rgba(255,255,255,.05);--card-hover:rgba(255,255,255,.08);
   --border:rgba(255,255,255,.08);
   --radius:12px;--radius-lg:16px;
-  --sidebar-w:210px;--topbar-h:58px;--botnav-h:64px;
+  --sidebar-w:210px;--topbar-h:58px;--botnav-h:68px;
 }
 html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg1);color:var(--text);font-size:14px;line-height:1.5}
 
@@ -287,22 +287,29 @@ body.mode-print{--mode:print}
 #botnav{
   display:none;
   position:fixed;bottom:0;left:0;right:0;z-index:100;
-  height:var(--botnav-h);
-  background:linear-gradient(0deg,#2E0A10 0%,#3A0C15 100%);
-  border-top:1px solid var(--border);
-  box-shadow:0 -2px 20px rgba(0,0,0,.3);
+  background:rgba(16,5,10,.92);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-top:1px solid rgba(255,255,255,.1);
+  box-shadow:0 -4px 32px rgba(0,0,0,.55);
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
-.botnav-inner{display:flex;height:100%}
+.botnav-inner{display:flex;height:var(--botnav-h);padding:0 6px;align-items:center}
 .botnav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;cursor:pointer;padding:4px;
-  color:rgba(255,255,255,.5);transition:.15s;
-  font-size:10px;font-weight:600;letter-spacing:.3px;
+  gap:4px;cursor:pointer;padding:6px 3px;
+  color:rgba(255,255,255,.35);transition:.2s ease;
+  font-size:10px;font-weight:700;letter-spacing:.4px;
+  border-radius:14px;margin:5px 2px;
 }
-.botnav-item svg{opacity:.5;transition:.15s}
-.botnav-item.active{color:#fff}
-.botnav-item.active svg{opacity:1}
-.botnav-item:active{background:rgba(255,255,255,.08)}
+.botnav-item svg{transition:.2s ease;width:22px;height:22px;flex-shrink:0}
+.botnav-item.active{
+  color:#fff;
+  background:rgba(122,24,48,.42);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 2px 14px rgba(0,0,0,.35);
+}
+.botnav-item:active{opacity:.7;transform:scale(.95)}
 
 /* ─── MAIN CONTENT ─── */
 #main{
@@ -316,7 +323,7 @@ body.mode-print{--mode:print}
 
 /* MODE: MOBILE */
 body.mode-mobile #botnav{display:flex}
-body.mode-mobile #main{padding-bottom:calc(var(--botnav-h) + 16px)}
+body.mode-mobile #main{padding-bottom:calc(var(--botnav-h) + env(safe-area-inset-bottom,0px) + 20px)}
 body.mode-mobile .tab-content{animation:fadeIn .2s ease}
 
 /* MODE: DESKTOP */
@@ -605,18 +612,19 @@ body.mode-mobile .grid-3,body.mode-mobile .dash-second-grid,body.mode-mobile .an
 }
 body.mode-mobile .dash-main-grid{grid-template-columns:1fr!important}
 body.mode-mobile .mini-kpi-grid{grid-template-columns:1fr 1fr}
-body.mode-mobile .kpi-value{font-size:18px}
+body.mode-mobile .kpi-value{font-size:20px}
 
 /* ─── MOBILE-SPECIFIC ─── */
 body.mode-mobile .topbar-toggles{display:none!important}
 body.mode-mobile .topbar-brand p{display:none}
 body.mode-mobile .topbar-stats{display:none!important}
-body.mode-mobile .section-title{font-size:17px}
-body.mode-mobile .section-sub{font-size:11px}
-body.mode-mobile .kpi-card{padding:10px 12px}
-body.mode-mobile .kpi-label{font-size:9px}
-body.mode-mobile .kpi-sub{font-size:10px}
-body.mode-mobile .card{padding:12px}
+body.mode-mobile .section-title{font-size:18px}
+body.mode-mobile .section-sub{font-size:12px}
+body.mode-mobile .kpi-card{padding:14px}
+body.mode-mobile .kpi-label{font-size:10px}
+body.mode-mobile .kpi-sub{font-size:11px;white-space:normal}
+body.mode-mobile .kpi-change{font-size:11px;white-space:normal;line-height:1.4}
+body.mode-mobile .card{padding:14px}
 /* Subtab rows scroll horizontally on mobile */
 body.mode-mobile .subtab-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 body.mode-mobile .subtab-row::-webkit-scrollbar{display:none}
@@ -639,10 +647,24 @@ body.mode-mobile #subtab-carteira .mes-toggle-btn{padding:6px 10px;font-size:11p
 /* Section header compact on mobile */
 body.mode-mobile .section-header{margin-bottom:10px}
 body.mode-mobile .section-header button{padding:6px 12px;font-size:12px}
-/* Donut smaller on mobile */
-body.mode-mobile .donut-wrap svg{width:90px;height:90px}
-/* Act grid adjustments */
-body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
+/* Donut on mobile: stack vertically */
+body.mode-mobile .donut-wrap{flex-direction:column;align-items:flex-start;gap:12px}
+body.mode-mobile .donut-wrap svg{width:100px;height:100px}
+body.mode-mobile .donut-legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;width:100%}
+/* Top5 names wrap on mobile */
+body.mode-mobile .top5-name{white-space:normal;overflow:visible;text-overflow:unset;font-size:13px}
+body.mode-mobile .top5-val{font-size:13px}
+body.mode-mobile .top5-item{padding:8px 0;gap:10px}
+/* Act grid: 2 columns on mobile */
+body.mode-mobile .act-grid{grid-template-columns:1fr 1fr}
+body.mode-mobile .act-item{padding:14px 10px}
+body.mode-mobile .act-num{font-size:26px}
+body.mode-mobile .act-label{font-size:11px}
+/* Rank list on mobile */
+body.mode-mobile .rank-bar-wrap{display:none}
+body.mode-mobile .rank-item{gap:8px;padding:8px 0}
+/* Section header on mobile */
+body.mode-mobile .section-header{gap:12px}
 
 /* ─── VENDOR COLORS ─── */
 .c-guilherme{color:#10B981} .c-relson{color:#60A5FA} .c-everaldo{color:#F59E0B}
@@ -848,8 +870,8 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
 <div id="botnav">
   <div class="botnav-inner">
     <div class="botnav-item active" onclick="showTabMobile('dashboard',this)">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dash
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
     </div>
     <div class="botnav-item" onclick="showTabMobile('agenda',this)">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
@@ -860,11 +882,11 @@ body.mode-mobile .act-grid{grid-template-columns:1fr 1fr 1fr}
       Análise
     </div>
     <div class="botnav-item" onclick="showTabMobile('registrar',this)">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-      Google Forms
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+      Forms
     </div>
     <div class="botnav-item" onclick="showTabMobile('equipe',this)">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4"/><circle cx="17" cy="17" r="4"/></svg>
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="19" cy="8" r="3"/><path d="M23 21v-1a3 3 0 0 0-2-2.83"/></svg>
       Equipe
     </div>
   </div>
