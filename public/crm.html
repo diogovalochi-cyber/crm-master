@@ -2462,15 +2462,15 @@ const CREDS=[
   {user:'carlos',   pass:'123', role:'GERENTE',    name:'Carlos',    av:'CA', fullAccess:true},
   {user:'lazaro',   pass:'123', role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true},
   // Vendedores (9 ativos)
-  {user:'guilherme',pass:'123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#00D4AA'},
-  {user:'relson',   pass:'123', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#90CAF9'},
-  {user:'israel',   pass:'123', role:'VENDEDOR',   name:'Israel',    av:'IS', vendId:'115', color:'#C77DFF'},
-  {user:'everaldo', pass:'123', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#FF9A56'},
-  {user:'natalia',  pass:'123', role:'VENDEDOR',   name:'Natália',   av:'NA', vendId:'116', color:'#FF6B6B'},
-  {user:'keller',   pass:'123', role:'VENDEDOR',   name:'Keller',    av:'KE', vendId:'117', color:'#80DEEA'},
-  {user:'althieres',pass:'123', role:'VENDEDOR',   name:'Althieres', av:'AL', vendId:'119', color:'#FFD93D'},
-  {user:'jorge',    pass:'123', role:'VENDEDOR',   name:'Jorge',     av:'JO', vendId:'118', color:'rgba(255,255,255,.75)'},
-  {user:'joao',     pass:'123', role:'VENDEDOR',   name:'João',     av:'JO2',vendId:'120', color:'#A8EDEA'},
+  {user:'guilherme',pass:'123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
+  {user:'relson',   pass:'123', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
+  {user:'israel',   pass:'123', role:'VENDEDOR',   name:'Israel',    av:'IS', vendId:'115', color:'#8B5CF6'},
+  {user:'everaldo', pass:'123', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#F59E0B'},
+  {user:'natalia',  pass:'123', role:'VENDEDOR',   name:'Natália',   av:'NA', vendId:'116', color:'#F472B6'},
+  {user:'keller',   pass:'123', role:'VENDEDOR',   name:'Keller',    av:'KE', vendId:'117', color:'#22D3EE'},
+  {user:'althieres',pass:'123', role:'VENDEDOR',   name:'Althieres', av:'AL', vendId:'119', color:'#FBBF24'},
+  {user:'jorge',    pass:'123', role:'VENDEDOR',   name:'Jorge',     av:'JO', vendId:'118', color:'#94A3B8'},
+  {user:'joao',     pass:'123', role:'VENDEDOR',   name:'João',     av:'JO2',vendId:'120', color:'#2DD4BF', newHire:true},
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
   {user:'rogerio',  pass:'123', role:'TECNICO',    name:'Rogério',   av:'RO', color:'#FF6B6B'},
@@ -2577,49 +2577,133 @@ function applyTecnicoMode(user){
 function applyVendorMode(user){
   window.CRM_VENDOR_ID  =user.vendId;
   window.CRM_VENDOR_NAME=user.name;
-  // Forms tab: oculta abas de outros vendedores
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+
+  // Oculta aba Equipe (sidebar índice 4, botnav índice 4)
+  const navItems=document.querySelectorAll('#sidebar .nav-item');
+  if(navItems[4]) navItems[4].style.display='none';
+  const botItems=document.querySelectorAll('.botnav-item');
+  if(botItems[4]) botItems[4].style.display='none';
+
+  // Forms: mostra apenas aba do próprio vendedor
   currentRegSeller=vendorKey;
   document.querySelectorAll('#reg-seller-tabs .subtab').forEach(btn=>{
-    if(btn.dataset.seller===vendorKey){btn.classList.add('active');}
+    if(btn.dataset.seller===vendorKey) btn.classList.add('active');
     else{btn.style.display='none';btn.classList.remove('active');}
   });
-  // Atividades dashboard: bloqueia seleção de outros vendedores
+
+  // Análise: oculta Visão Geral e Comparativo, mantém só Por Vendedor
   currentActSeller=vendorKey;
-  document.querySelectorAll('#act-seller-tabs .subtab').forEach(btn=>{
-    if(btn.dataset.seller===vendorKey){btn.classList.add('active');}
-    else{btn.style.display='none';btn.classList.remove('active');}
+  document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
+    if(i!==2) btn.style.display='none';
   });
-  // Oculta subtabs de visão geral e comparativo
-  const subtabs=document.querySelectorAll('#tab-analise .subtab');
-  subtabs.forEach((btn,i)=>{ if(i!==2) btn.style.display='none'; });
-  // Mostra banner de performance pessoal
-  const vendData=VENDEDORES.find(v=>v.cod===user.vendId);
-  const banner =document.getElementById('vendor-personal-banner');
-  if(banner && vendData){
-    const rank=[...VENDEDORES].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr).findIndex(v=>v.name===vendData.name)+1;
-    const metaMap={'093':400000,'094':250000,'115':200000,'116':200000,'117':120000,'107':80000,'119':80000,'118':80000};
-    const meta   =metaMap[user.vendId]||200000;
-    const pct    =Math.min(Math.round((vendData.abr/meta)*100),100);
-    const metaColor=pct>=80?'var(--mint)':pct>=50?'var(--gold)':'var(--coral)';
-    banner.style.display='flex';
-    banner.innerHTML=`
-      <div style="flex:1;min-width:200px">
-        <div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🎯 Sua Performance · Abril 2026</div>
-        <div style="display:flex;gap:18px;flex-wrap:wrap">
-          <div><div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase">Faturamento</div><div style="font-size:20px;font-weight:900;color:${vendData.color}">${fBRL(vendData.abr)}</div></div>
-          <div><div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase">Ranking</div><div style="font-size:20px;font-weight:900;color:#fff">#${rank}º</div></div>
-          <div><div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase">Pedidos</div><div style="font-size:20px;font-weight:900;color:#fff">${vendData.ped}</div></div>
-          <div><div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase">Clientes</div><div style="font-size:20px;font-weight:900;color:#fff">${vendData.cli}</div></div>
+
+  // Substitui dashboard pelo painel pessoal do vendedor
+  renderVendorDashboard(user, vendorKey);
+}
+
+function renderVendorDashboard(user, vendorKey){
+  const vM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
+  if(!vM) return;
+
+  const sorted=[...VENDEDORES_MAIO].filter(v=>!v.newHire).sort((a,b)=>b.total-a.total);
+  const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
+  const isNew=!!vM.newHire;
+
+  const metaMap={'093':500000,'094':250000,'115':200000,'116':200000,'117':150000,'107':100000,'119':100000,'118':80000,'120':30000};
+  const meta=metaMap[user.vendId]||200000;
+  const pct=Math.min(Math.round((vM.total/meta)*100),100);
+  const mc=pct>=100?'var(--mint)':pct>=80?'var(--mint)':pct>=50?'var(--gold)':'var(--coral)';
+  const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
+
+  const carteira=(CARTEIRA_MAIO[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
+
+  const now=new Date();
+  const fmt=d=>d.toISOString().slice(0,10);
+  const dtFrom=fmt(new Date(now.getFullYear(),now.getMonth(),1));
+  const dtTo  =fmt(new Date(now.getFullYear(),now.getMonth()+1,0));
+
+  document.getElementById('tab-dashboard').innerHTML=`
+    <div class="section-header">
+      <div>
+        <div class="section-title" id="dash-greeting">Olá, ${user.name} 💼</div>
+        <div class="section-sub" id="dash-subgreeting">Maio 2026 · Cód. ${user.vendId}</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card kpi-gold">
+        <div class="kpi-label">Faturamento Maio</div>
+        <div class="kpi-value" style="color:var(--gold)">${fK(vM.total)}</div>
+        <div class="kpi-sub">${fBRL(vM.total)}</div>
+        <div class="kpi-change" style="color:var(--text-dim)">${vM.ped} pedidos no mês</div>
+      </div>
+      <div class="kpi-card kpi-mint">
+        <div class="kpi-label">Ranking Maio</div>
+        <div class="kpi-value" style="color:${vM.color}">${isNew?'Novo':'#'+rank+'º'}</div>
+        <div class="kpi-sub">${isNew?'Primeiro mês':'de '+sorted.length+' vendedores'}</div>
+        <div class="kpi-change" style="color:var(--text-dim)">Posição atual</div>
+      </div>
+      <div class="kpi-card kpi-sky">
+        <div class="kpi-label">Pedidos</div>
+        <div class="kpi-value">${vM.ped}</div>
+        <div class="kpi-sub">${vM.cli} clientes ativos</div>
+        <div class="kpi-change" style="color:var(--text-dim)">Mês de Maio</div>
+      </div>
+      <div class="kpi-card kpi-peach">
+        <div class="kpi-label">Meta</div>
+        <div class="kpi-value" style="color:${mc}">${pct}%</div>
+        <div class="kpi-sub">${fK(meta)} alvo</div>
+        <div class="kpi-change" style="color:${mc}">${msg}</div>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-header">
+        <span class="card-title">Progresso da Meta · Maio 2026</span>
+        <span style="font-size:12px;color:${mc};font-weight:700">${fBRL(vM.total)} de ${fBRL(meta)}</span>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border-radius:8px;height:14px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${pct}%;background:${mc};border-radius:8px;transition:width .8s ease"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-dim)">
+        <span>R$ 0</span>
+        <span style="color:${mc};font-weight:700">${pct>=100?'Meta atingida!':'Faltam '+fBRL(Math.max(0,meta-vM.total))}</span>
+        <span>${fBRL(meta)}</span>
+      </div>
+    </div>
+
+    <div class="dash-second-grid gap-12">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Seus Top Clientes · Maio</span></div>
+        ${carteira.length?carteira.map((c,i)=>`
+          <div class="top5-item">
+            <div class="top5-rank">${i+1}</div>
+            <div class="top5-name">${c.nome}</div>
+            <div class="top5-val" style="color:${vM.color}">${fBRL(c.valor)}</div>
+          </div>`).join(''):'<div style="color:var(--text-dim);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
+      </div>
+      <div class="card" id="act-card">
+        <div class="card-header">
+          <span class="card-title">Atividades · Forms</span>
+          <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer">↻ Carregar</button>
         </div>
+        <div class="subtab-row" id="act-seller-tabs" style="display:none"></div>
+        <div class="forms-filter-bar" style="margin-bottom:14px">
+          <label>De <input type="date" id="act-dt-from" value="${dtFrom}" onchange="renderActivities()"></label>
+          <label>Até <input type="date" id="act-dt-to" value="${dtTo}" onchange="renderActivities()"></label>
+          <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
+          <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
+          <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
+          <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
+        </div>
+        <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Clique em Carregar para ver os dados dos formulários</div>
       </div>
-      <div style="text-align:center;min-width:88px;padding-left:16px;border-left:1px solid rgba(255,255,255,.1)">
-        <div style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;margin-bottom:4px">Meta</div>
-        <div style="font-size:38px;font-weight:900;line-height:1;color:${metaColor}">${pct}%</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:4px">${fK(meta)}</div>
-      </div>
-    `;
-  }
+    </div>
+  `;
 }
 
 // Allow Enter key to submit
