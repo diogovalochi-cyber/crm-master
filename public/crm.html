@@ -437,38 +437,6 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .alert-text{font-size:12px;color:var(--text-dim)}
 .alert-text strong{color:#fff}
 
-/* ─── AGENDA ITEMS ─── */
-.ag-item{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px 14px;
-  display:flex;flex-direction:column;gap:6px;
-  transition:.15s;
-}
-.ag-item:hover{background:var(--card-hover)}
-.ag-item.reservado{opacity:.45}
-.ag-item-header{display:flex;align-items:center;gap:8px}
-.ag-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ag-name{font-size:13px;font-weight:700}
-.ag-meta{font-size:11px;color:var(--text-dim)}
-.ag-tags{display:flex;flex-wrap:wrap;gap:5px}
-.ag-tag{
-  font-size:10px;padding:2px 8px;border-radius:20px;
-  background:rgba(255,255,255,.1);font-weight:600;
-}
-.ag-obs{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block}
-
-/* ─── FILTER PILLS ─── */
-.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.pill{
-  padding:5px 14px;border-radius:20px;
-  border:1px solid rgba(255,255,255,.2);
-  background:rgba(255,255,255,.06);
-  color:rgba(255,255,255,.7);font-size:12px;font-weight:600;
-  cursor:pointer;transition:.15s;
-}
-.pill:hover{border-color:rgba(255,255,255,.4);color:#fff}
-.pill.active{background:#fff;color:var(--blue);border-color:#fff}
-
 /* ─── SUB TABS ─── */
 .subtab-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .subtab{
@@ -547,24 +515,6 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .donut-legend-item{display:flex;align-items:center;gap:7px;font-size:11px}
 .donut-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
-/* ─── EQUIPE ─── */
-.team-tree{font-size:12px}
-.tree-node{padding:4px 0;display:flex;align-items:center;gap:8px}
-.tree-node-av{
-  width:28px;height:28px;border-radius:6px;
-  background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;flex-shrink:0;
-}
-.tree-children{margin-left:20px;border-left:1px solid var(--border);padding-left:12px}
-.member-row{display:flex;align-items:center;gap:10px}
-.member-av{
-  width:36px;height:36px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:900;flex-shrink:0;
-}
-.member-info{flex:1}
-.member-name{font-size:13px;font-weight:700}
-.member-meta{font-size:10px;color:var(--text-dim)}
 .role-badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;background:rgba(255,255,255,.1);white-space:nowrap}
 .warn-badge{background:rgba(255,107,107,.2);color:var(--coral)}
 
@@ -715,8 +665,6 @@ body.mode-mobile .section-header{gap:12px}
 .member-row{cursor:pointer;border-radius:8px;margin:0 -8px;padding:8px;transition:.15s;border-bottom:1px solid rgba(255,255,255,.05)}
 .member-row:last-child{border-bottom:none}
 .member-row:hover{background:rgba(255,255,255,.06);border-bottom-color:transparent}
-#equipe-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
-#equipe-modal-box{background:#1E000F;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;max-width:400px;width:92%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6)}
 .ep-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px}
 .ep-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);font-weight:600;margin-bottom:5px}
 .ep-stat-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
@@ -854,10 +802,6 @@ body.mode-mobile .section-header{gap:12px}
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
     Dashboard
   </div>
-  <div class="nav-item" onclick="showTab('agenda',this)">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    Agenda Técnica
-  </div>
   <div class="sidebar-section">Operacional</div>
   <div class="nav-item" onclick="showTab('analise',this)">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
@@ -866,10 +810,6 @@ body.mode-mobile .section-header{gap:12px}
   <div class="nav-item" onclick="showTab('registrar',this)">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     Google Forms
-  </div>
-  <div class="nav-item" onclick="showTab('equipe',this)">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4"/><circle cx="17" cy="17" r="4"/></svg>
-    Equipe
   </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
@@ -884,10 +824,6 @@ body.mode-mobile .section-header{gap:12px}
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
       Dashboard
     </div>
-    <div class="botnav-item" onclick="showTabMobile('agenda',this)">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      Agenda
-    </div>
     <div class="botnav-item" onclick="showTabMobile('analise',this)">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
       Análise
@@ -895,10 +831,6 @@ body.mode-mobile .section-header{gap:12px}
     <div class="botnav-item" onclick="showTabMobile('registrar',this)">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
       Forms
-    </div>
-    <div class="botnav-item" onclick="showTabMobile('equipe',this)">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="19" cy="8" r="3"/><path d="M23 21v-1a3 3 0 0 0-2-2.83"/></svg>
-      Equipe
     </div>
   </div>
 </div>
@@ -974,30 +906,6 @@ body.mode-mobile .section-header{gap:12px}
 </div>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- ABA 2: AGENDA -->
-<!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-agenda">
-  <div class="section-header">
-    <div>
-      <div class="section-title">Agenda Técnica</div>
-      <div class="section-sub">Treinamentos, cafés e apresentações</div>
-    </div>
-    <button class="btn-outline">+ Novo</button>
-  </div>
-
-  <!-- Filter pills -->
-  <div class="pill-row" id="agenda-pills">
-    <div class="pill active" onclick="filterAgenda('todos',this)">Todos</div>
-    <div class="pill" onclick="filterAgenda('Juan',this)">Juan</div>
-    <div class="pill" onclick="filterAgenda('Rogério',this)">Rogério</div>
-    <div class="pill" onclick="filterAgenda('Matheus',this)">Matheus</div>
-    <div class="pill" onclick="filterAgenda('Marcelo',this)">Marcelo</div>
-    <div class="pill" onclick="filterAgenda('Gabriel',this)">Gabriel</div>
-  </div>
-
-  <div id="agenda-grid" style="display:grid;gap:12px"></div>
-</div>
-
 <!-- ══════════════════════════════════════════ -->
 <!-- ABA 3: ANÁLISE COMERCIAL -->
 <!-- ══════════════════════════════════════════ -->
@@ -1210,92 +1118,6 @@ body.mode-mobile .section-header{gap:12px}
 </div>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- ABA 5: EQUIPE -->
-<!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-equipe">
-  <div class="section-header">
-    <div>
-      <div class="section-title">Equipe</div>
-      <div class="section-sub">Hierarquia, vendedores e técnicos</div>
-    </div>
-  </div>
-
-  <div class="grid-3 gap-12" style="align-items:start">
-    <!-- Hierarquia -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">Hierarquia</span></div>
-      <div class="team-tree">
-        <!-- Carlos -->
-        <div class="tree-node">
-          <div class="tree-node-av" style="background:#C9A84C;color:#000">CA</div>
-          <div><strong>Carlos</strong> <span style="font-size:10px;color:var(--text-dim)">Gerente</span></div>
-        </div>
-        <div class="tree-children">
-          <div class="tree-node">
-            <div class="tree-node-av" style="background:rgba(255,255,255,.15)">LZ</div>
-            <div><strong>Lázaro</strong> <span style="font-size:10px;color:var(--text-dim)">Supervisor</span></div>
-          </div>
-          <div class="tree-node">
-            <div class="tree-node-av" style="background:var(--sky);color:#000">DI</div>
-            <div><strong>Diogo</strong> <span style="font-size:10px;color:var(--text-dim)">Analista</span></div>
-          </div>
-          <div style="margin-top:8px;padding:8px;background:rgba(255,255,255,.04);border-radius:8px">
-            <div style="font-size:10px;color:var(--text-muted);font-weight:700;margin-bottom:6px">VENDEDORES</div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px">
-              <span style="background:rgba(201,168,76,.15);color:#C9A84C;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Felipe</span>
-              <span style="background:rgba(16,185,129,.15);color:#10B981;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Guilherme</span>
-              <span style="background:rgba(96,165,250,.15);color:#60A5FA;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Relson</span>
-              <span style="background:rgba(139,92,246,.15);color:#8B5CF6;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Israel</span>
-              <span style="background:rgba(245,158,11,.15);color:#F59E0B;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Everaldo</span>
-              <span style="background:rgba(244,114,182,.15);color:#F472B6;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Natália</span>
-              <span style="background:rgba(34,211,238,.15);color:#22D3EE;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600">Keller</span>
-              <span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">Alex ⚠</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vendedores -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">Vendedores</span></div>
-      <div id="equipe-vendedores"></div>
-    </div>
-
-    <!-- Técnicos -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">Técnicos de Panificação</span></div>
-      <div>
-        <div class="member-row" onclick="openTecnicoProfile('Matheus','Guarulhos','MA','#2DD4BF')">
-          <div class="member-av" style="background:#2DD4BF;color:#000">MA</div>
-          <div class="member-info"><div class="member-name">Matheus</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(45,212,191,.15);color:#2DD4BF">Guarulhos</div>
-        </div>
-        <div class="member-row" onclick="openTecnicoProfile('Juan','Zona Leste','JU','#FB923C')">
-          <div class="member-av" style="background:#FB923C;color:#000">JU</div>
-          <div class="member-info"><div class="member-name">Juan</div><div class="member-meta">Técnico · Zona Leste</div></div>
-          <div class="role-badge" style="background:rgba(251,146,60,.15);color:#FB923C">Zona Leste</div>
-        </div>
-        <div class="member-row" onclick="openTecnicoProfile('Gabriel','Guarulhos','GA','#60A5FA')">
-          <div class="member-av" style="background:#60A5FA;color:#000">GA</div>
-          <div class="member-info"><div class="member-name">Gabriel</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(96,165,250,.15);color:#60A5FA">Guarulhos</div>
-        </div>
-        <div class="member-row" onclick="openTecnicoProfile('Marcelo','Guarulhos','MC','#A78BFA')">
-          <div class="member-av" style="background:#A78BFA;color:#000">MC</div>
-          <div class="member-info"><div class="member-name">Marcelo</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(167,139,250,.15);color:#A78BFA">Guarulhos</div>
-        </div>
-        <div class="member-row" onclick="openTecnicoProfile('Rogério','Guarulhos','RO','#F87171')">
-          <div class="member-av" style="background:#F87171;color:#fff">RO</div>
-          <div class="member-info"><div class="member-name">Rogério</div><div class="member-meta">Técnico · Guarulhos</div></div>
-          <div class="role-badge" style="background:rgba(248,113,113,.15);color:#F87171">Guarulhos</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 </div><!-- /main -->
 
 <script>
@@ -1810,25 +1632,6 @@ const VENDEDORES_JUNHO = [
 ];
 const CARTEIRA_JUNHO = {};
 
-const AGENDA = [
-  {dates:'04–05 Mai', days:'Seg/Ter', nome:'MULTI PANE',          tipo:'Treinamento',     tec:'Juan',    vend:'Keller',   local:'Mogi'},
-  {dates:'08–09 Mai', days:'Sex/Sáb', nome:'ARMAZÉM BRASILÂNDIA', tipo:'Café',            tec:'Juan',    vend:'Guilherme',local:'Brasilândia'},
-  {dates:'04–05 Abr', days:'Seg/Ter', nome:'PADARIA SERRA DO LUAR',tipo:'Apresentação',   tec:'Rogério', vend:'Israel',   local:'Itapecerica da Serra'},
-  {dates:'06–07 Abr', days:'Qua/Qui', nome:'MERCADO MARIA',       tipo:'Apresentação',    tec:'Rogério', vend:'Natália',  local:'Zona Leste'},
-  {dates:'04–05 Abr', days:'Seg/Ter', nome:'1909 VILA REAL LJ 2', tipo:'Treinamento',     tec:'Matheus', vend:'Theo',     local:'Itaquá'},
-  {dates:'05–06 Abr', days:'Ter/Qua', nome:'PADARIA GAROTO',      tipo:'Apresentação',    tec:'Matheus', vend:'Ricardo',  local:'Brás'},
-  {dates:'08–09 Mai', days:'Sex/Sáb', nome:'MIX KEMEL 4697',      tipo:'Café',            tec:'Matheus', vend:'Moab',     local:'Itaquaquecetuba'},
-  {dates:'04–05 Abr', days:'Seg/Ter', nome:'PASTORINHO',          tipo:'Treinamento',     tec:'Marcelo', vend:'Natália',  local:'Zona Sul'},
-  {dates:'05–06 Abr', days:'Ter/Qua', nome:'PASTORINHO',          tipo:'Treinamento',     tec:'Marcelo', vend:'Natália',  local:'Zona Sul'},
-  {dates:'08–09 Mai', days:'Sex/Sáb', nome:'4190 SEMPRE JUNTOS',  tipo:'Café',            tec:'Marcelo', vend:'Guilherme',local:'Itaquera'},
-  {dates:'04–05 Mai', days:'Seg/Ter', nome:'JACOMÉ',              tipo:'Apresentação',    tec:'Gabriel', vend:'Keller',   local:'Mogi'},
-  {dates:'05–06 Mai', days:'Ter/Qua', nome:'RESERVADO',           tipo:'Reservado',       tec:'Gabriel', vend:'—',        local:'—'},
-];
-
-const TEC_COLORS = {Juan:'#80DEEA',Rogério:'#FF6B6B',Matheus:'#00D4AA',Marcelo:'#C77DFF',Leonardo:'#FF9A56',Caio:'#FFD93D',Gabriel:'#90CAF9'};
-const TIPO_COLORS = {Treinamento:'rgba(0,212,170,.15)',Café:'rgba(255,217,61,.15)',Apresentação:'rgba(144,202,249,.15)',Reservado:'rgba(255,255,255,.08)'};
-const TIPO_TEXT   = {Treinamento:'#00D4AA',Café:'#FFD93D',Apresentação:'#90CAF9',Reservado:'#fff'};
-
 /* ─────────────────────────────────────────
    MÊS HELPER
 ───────────────────────────────────────── */
@@ -1873,7 +1676,6 @@ function setMode(mode){
   ['mobile','desktop','print'].forEach(m=>{
     document.getElementById('btn-'+m).classList.toggle('active',m===mode);
   });
-  if(_appInitialized) renderAgenda(null); // re-layout agenda grid (1 vs 2 col)
   if(mode==='print') setTimeout(()=>window.print(),300);
 }
 
@@ -2133,15 +1935,6 @@ function submitForm(btn){
 }
 
 /* ─────────────────────────────────────────
-   PILLS
-───────────────────────────────────────── */
-function filterAgenda(filter,el){
-  document.querySelectorAll('#agenda-pills .pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  renderAgenda(filter==='todos'?null:filter);
-}
-
-/* ─────────────────────────────────────────
    RANKING
 ───────────────────────────────────────── */
 function renderRanking(){
@@ -2346,36 +2139,6 @@ function renderDonut(svgId, legendId){
 }
 
 /* ─────────────────────────────────────────
-   AGENDA
-───────────────────────────────────────── */
-function renderAgenda(filterTec){
-  const grid=document.getElementById('agenda-grid');
-  const isDesktop=document.body.classList.contains('mode-desktop');
-  grid.style.gridTemplateColumns=isDesktop?'1fr 1fr':'1fr';
-  const items=filterTec?AGENDA.filter(a=>a.tec===filterTec):AGENDA;
-  let html='';
-  items.forEach(a=>{
-    const tecCol=TEC_COLORS[a.tec]||'#fff';
-    const tipoBg=TIPO_COLORS[a.tipo]||'rgba(255,255,255,.08)';
-    const tipoCol=TIPO_TEXT[a.tipo]||'#fff';
-    const isRes=a.tipo==='Reservado';
-    html+=`<div class="ag-item${isRes?' reservado':''}">
-      <div class="ag-item-header">
-        <div class="ag-dot" style="background:${tecCol}"></div>
-        <div class="ag-name">${a.nome}</div>
-      </div>
-      <div class="ag-meta">${a.dates} · ${a.days} · ${a.local}</div>
-      <div class="ag-tags">
-        <span class="ag-obs" style="background:${tipoBg};color:${tipoCol}">${a.tipo}</span>
-        <span class="ag-tag" style="color:${tecCol}">🔧 ${a.tec}</span>
-        ${a.vend!=='—'?`<span class="ag-tag" style="color:${vendorColor(a.vend)}">${a.vend}</span>`:''}
-      </div>
-    </div>`;
-  });
-  grid.innerHTML=html||'<div style="color:var(--text-dim);font-size:13px;padding:20px 0">Nenhum agendamento encontrado.</div>';
-}
-
-/* ─────────────────────────────────────────
    ANALISE TABLE
 ───────────────────────────────────────── */
 function renderAnaliseTable(){
@@ -2571,28 +2334,6 @@ function renderVendorDetail(name){
 }
 
 /* ─────────────────────────────────────────
-   EQUIPE VENDEDORES
-───────────────────────────────────────── */
-function renderEquipeVendedores(){
-  const sorted=[...VENDEDORES].sort((a,b)=>b.abr-a.abr);
-  let html='';
-  sorted.forEach(v=>{
-    html+=`<div class="member-row" onclick="openEquipeProfile('${v.name}')">
-      <div class="member-av" style="background:${v.color}33;color:#fff">${v.av}</div>
-      <div class="member-info">
-        <div class="member-name">${v.name}</div>
-        <div class="member-meta">Abr: ${fK(v.abr)} · ${v.cli} cli</div>
-      </div>
-      ${v.warn
-        ? `<div class="role-badge warn-badge">Sem dono ⚠</div>`
-        : `<div class="role-badge">Vendedor</div>`
-      }
-    </div>`;
-  });
-  document.getElementById('equipe-vendedores').innerHTML=html;
-}
-
-/* ─────────────────────────────────────────
    INIT
 ───────────────────────────────────────── */
 /* ─────────────────────────────────────────
@@ -2715,32 +2456,23 @@ function applySession(user){
 }
 
 function applyTecnicoMode(user){
-  // Redireciona para Agenda
+  // Técnicos veem apenas o Dashboard
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-agenda').classList.add('active');
-  // Sidebar: exibe apenas Agenda
+  document.getElementById('tab-dashboard').classList.add('active');
   const navItems=document.querySelectorAll('#sidebar .nav-item');
-  navItems.forEach((item,i)=>{ item.classList.remove('active'); if(i!==1) item.style.display='none'; });
-  if(navItems[1]) navItems[1].classList.add('active');
-  // Bottom nav: exibe apenas Agenda
+  navItems.forEach(item=>item.classList.remove('active'));
+  if(navItems[0]) navItems[0].classList.add('active');
   const botItems=document.querySelectorAll('.botnav-item');
-  botItems.forEach((item,i)=>{ item.classList.remove('active'); if(i!==1) item.style.display='none'; });
-  if(botItems[1]) botItems[1].classList.add('active');
-  // Rodapé sidebar
+  botItems.forEach(item=>item.classList.remove('active'));
+  if(botItems[0]) botItems[0].classList.add('active');
   const sf=document.querySelector('.sidebar-footer');
-  if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Apenas Agenda</span>';
+  if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
 }
 
 function applyVendorMode(user){
   window.CRM_VENDOR_ID  =user.vendId;
   window.CRM_VENDOR_NAME=user.name;
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-
-  // Oculta aba Equipe (sidebar índice 4, botnav índice 4)
-  const navItems=document.querySelectorAll('#sidebar .nav-item');
-  if(navItems[4]) navItems[4].style.display='none';
-  const botItems=document.querySelectorAll('.botnav-item');
-  if(botItems[4]) botItems[4].style.display='none';
 
   // Forms: mostra apenas aba do próprio vendedor
   currentRegSeller=vendorKey;
@@ -3002,61 +2734,12 @@ function _initApp(){
   if(_appInitialized) return;
   _appInitialized=true;
   setMes(CRM_MES);
-  renderAgenda(null);
-  renderEquipeVendedores();
 }
 document.addEventListener('DOMContentLoaded',()=>{
   autoMode();
   // preset form button labels (safe before login)
   document.querySelectorAll('.btn-primary').forEach(b=>{b.dataset.orig=b.textContent});
 });
-function openEquipeProfile(name){
-  const v=VENDEDORES.find(x=>x.name===name);
-  if(!v) return;
-  const vM=getVendedoresForMes(CRM_MES).find(x=>x.cod===v.cod)||v;
-  const cur={...v,abr:vM.abr,cli:vM.cli||v.cli,ped:vM.ped||v.ped};
-  const prev=vM.mar||0;
-  const varPct=prev>0?((cur.abr-prev)/prev*100):null;
-  const src=getVendedoresForMes(CRM_MES);
-  const rank=[...src].sort((a,b)=>b.abr-a.abr).findIndex(x=>x.cod===v.cod)+1;
-  const ticket=cur.ped>0?cur.abr/cur.ped:0;
-  const mes=MES_LABELS[CRM_MES]||'Atual';
-  const varHTML=varPct===null?'':` <span style="font-size:12px;color:${varPct>=0?'var(--mint)':'var(--coral)'};font-weight:600">${varPct>=0?'▲ +':'▼ '}${Math.abs(varPct).toFixed(1)}%</span>`;
-  const statsHTML=cur.abr>0?`
-    <div style="margin-bottom:18px">
-      <div class="ep-stat-label">Faturamento ${mes} 2026</div>
-      <div style="font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2">${fBRL(cur.abr)}${varHTML}</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="ep-stat"><div class="ep-stat-label">Ranking</div><div class="ep-stat-val">#${rank}º</div></div>
-      <div class="ep-stat"><div class="ep-stat-label">Pedidos</div><div class="ep-stat-val">${cur.ped}</div></div>
-      <div class="ep-stat"><div class="ep-stat-label">Clientes</div><div class="ep-stat-val">${cur.cli}</div></div>
-      <div class="ep-stat"><div class="ep-stat-label">Ticket Médio</div><div class="ep-stat-val">${fK(ticket)}</div></div>
-    </div>`
-    :`<div style="padding:24px;text-align:center;color:rgba(255,255,255,.35);font-size:13px">Novo vendedor — sem dados de faturamento ainda</div>`;
-  document.getElementById('equipe-modal-box').innerHTML=`
-    <button onclick="closeEquipeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;line-height:1;padding:0;transition:.15s">✕</button>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)">
-      <div style="width:46px;height:46px;border-radius:12px;background:${v.color}22;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${v.av}</div>
-      <div><div style="font-size:16px;font-weight:700">${v.name}</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Vendedor · Cód. ${v.cod} · ${mes} 2026</div></div>
-    </div>
-    ${statsHTML}`;
-  document.getElementById('equipe-modal').style.display='flex';
-}
-
-function openTecnicoProfile(name,area,av,color){
-  document.getElementById('equipe-modal-box').innerHTML=`
-    <button onclick="closeEquipeModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;line-height:1;padding:0">✕</button>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)">
-      <div style="width:46px;height:46px;border-radius:12px;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${av}</div>
-      <div><div style="font-size:16px;font-weight:700">${name}</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Técnico de Panificação</div></div>
-    </div>
-    <div class="ep-stat"><div class="ep-stat-label">Área de atuação</div><div style="font-size:15px;font-weight:600;margin-top:4px">${area}</div></div>`;
-  document.getElementById('equipe-modal').style.display='flex';
-}
-
-function closeEquipeModal(){document.getElementById('equipe-modal').style.display='none';}
-
 /* ─── COPY / SCREENSHOT PROTECTION ─── */
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('copy',e=>e.preventDefault());
@@ -3070,8 +2753,5 @@ document.addEventListener('keydown',e=>{
 });
 
 </script>
-<div id="equipe-modal" onclick="if(event.target===this)closeEquipeModal()">
-  <div id="equipe-modal-box"></div>
-</div>
 </body>
 </html>
