@@ -87,7 +87,6 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 .login-logo-img{
   width:200px;height:200px;object-fit:contain;
   margin-bottom:4px;
-  mix-blend-mode:multiply;
   filter:drop-shadow(0 6px 32px rgba(0,0,0,.6));
   border-radius:0;
 }
@@ -727,6 +726,7 @@ body.mode-mobile .section-header{gap:12px}
         src="assets/logo.png"
         alt="Valochi Sousa"
         id="logo-img"
+        onload="removeLogoBg(this)"
         onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'"
       >
       <div class="login-logo-fallback" id="logo-fallback" style="display:none">
@@ -1264,6 +1264,40 @@ body.mode-mobile .section-header{gap:12px}
 </div><!-- /main -->
 
 <script>
+/* ─────────────────────────────────────────
+   LOGO — REMOVE FUNDO BRANCO (flood-fill dos cantos)
+───────────────────────────────────────── */
+function removeLogoBg(img){
+  try{
+    const c=document.createElement('canvas');
+    c.width=img.naturalWidth; c.height=img.naturalHeight;
+    const ctx=c.getContext('2d');
+    ctx.drawImage(img,0,0);
+    const d=ctx.getImageData(0,0,c.width,c.height);
+    const px=d.data, w=c.width, h=c.height;
+    const vis=new Uint8Array(w*h);
+    // Sementes: 4 cantos da imagem
+    const q=[0, w-1, w*(h-1), w*h-1];
+    while(q.length){
+      const i=q.pop();
+      if(vis[i]) continue;
+      vis[i]=1;
+      const p=i*4;
+      // Se pixel for branco ou quase branco (threshold 210)
+      if(px[p]>210 && px[p+1]>210 && px[p+2]>210){
+        px[p+3]=0; // transparente
+        const x=i%w, y=(i/w)|0;
+        if(x>0)   q.push(i-1);
+        if(x<w-1) q.push(i+1);
+        if(y>0)   q.push(i-w);
+        if(y<h-1) q.push(i+w);
+      }
+    }
+    ctx.putImageData(d,0,0);
+    img.src=c.toDataURL('image/png');
+  }catch(e){}
+}
+
 let CRM_MES = 'maio'; // 'abril' | 'maio' — declarado aqui para estar acessível por todas as funções
 /* ─────────────────────────────────────────
    DATA
