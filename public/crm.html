@@ -6,7 +6,8 @@
 <title>Valochi Sousa — Sistema Comercial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
@@ -597,6 +598,17 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes draw{from{stroke-dashoffset:var(--total)}to{stroke-dashoffset:var(--offset)}}
 
+/* ─── PERFORMANCE HINTS ─── */
+button,a,[onclick]{touch-action:manipulation}
+.login-particle{will-change:transform,opacity;contain:layout style}
+.login-card{will-change:transform;contain:layout style}
+.card{contain:layout style}
+.botnav-item,.nav-item,.rank-item,.top5-item{contain:layout style}
+@media(max-width:767px){
+  #botnav{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .login-card{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+}
+
 /* ─── SECTION HEADER ─── */
 .section-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -1098,7 +1110,7 @@ body.mode-mobile .section-header{gap:12px}
         <select id="carteira-vend-select" class="fi" style="flex:1;min-width:160px;max-width:260px" onchange="renderCarteira()">
           <option value="">Selecione um vendedor...</option>
         </select>
-        <input id="carteira-search" class="fi" type="text" placeholder="🔍 Buscar cliente..." style="flex:1;min-width:140px;max-width:260px" oninput="renderCarteira()">
+        <input id="carteira-search" class="fi" type="text" placeholder="🔍 Buscar cliente..." style="flex:1;min-width:140px;max-width:260px" oninput="debRenderCarteira()">
       </div>
       <!-- Tabela -->
       <div id="carteira-table-wrap" style="overflow-x:auto">
@@ -1831,6 +1843,7 @@ function getVendedoresForMes(mes){
 /* ─────────────────────────────────────────
    UTILS
 ───────────────────────────────────────── */
+let _debCT; function debRenderCarteira(){clearTimeout(_debCT);_debCT=setTimeout(renderCarteira,150);}
 function fK(v){
   if(v>=1e6) return 'R$'+( v/1e6).toFixed(2)+'M';
   if(v>=1e3) return 'R$'+Math.round(v/1e3)+'k';
@@ -1860,23 +1873,31 @@ function setMode(mode){
   ['mobile','desktop','print'].forEach(m=>{
     document.getElementById('btn-'+m).classList.toggle('active',m===mode);
   });
-  if(mode==='print'){
-    document.body.classList.add('mode-print');
-    setTimeout(()=>window.print(),300);
-  }
+  if(_appInitialized) renderAgenda(null); // re-layout agenda grid (1 vs 2 col)
+  if(mode==='print') setTimeout(()=>window.print(),300);
 }
 
 /* ─────────────────────────────────────────
    TAB NAVIGATION
 ───────────────────────────────────────── */
+let _analiseNeedsRender=false;
 function showTab(tab, el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
-  if(tab==='analise' && window.CRM_VENDOR_ID){
-    const pvBtn=document.querySelectorAll('#tab-analise .subtab')[2];
-    if(pvBtn) showSubtab('porvendedor',pvBtn);
+  if(tab==='analise'){
+    if(window.CRM_VENDOR_ID){
+      const pvBtn=document.querySelectorAll('#tab-analise .subtab')[2];
+      if(pvBtn) showSubtab('porvendedor',pvBtn);
+    }
+    if(_analiseNeedsRender){
+      _analiseNeedsRender=false;
+      renderAnaliseTable();
+      renderComparativo();
+      renderVendorDetail(activeVendor);
+      renderCarteira();
+    }
   }
   if(tab==='registrar'){
     const fromEl=document.getElementById('forms-dt-from');
@@ -2178,16 +2199,21 @@ function renderTop5(){
 function setMes(mes, btn){
   CRM_MES=mes;
   document.querySelectorAll('.mes-toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.mes===mes));
-  // Atualizar todos os componentes dinâmicos
+  // Dashboard components — always visible
   renderKPIs();
   renderRanking();
   renderTop5();
   renderDonut('donut-svg','donut-legend');
-  renderAnaliseTable();
-  renderComparativo();
-  renderCarteira();
-  renderVendorDetail(activeVendor);
-  // Atualizar labels
+  // Analise tab — lazy: only render when the tab is open
+  if(document.getElementById('tab-analise')?.classList.contains('active')){
+    renderAnaliseTable();
+    if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
+    if(document.getElementById('subtab-porvendedor')?.style.display!=='none') renderVendorDetail(activeVendor);
+    renderCarteira();
+  } else {
+    _analiseNeedsRender=true;
+  }
+  // Labels
   const sub=document.getElementById('analise-section-sub');
   if(sub) sub.textContent='Carteiras de '+(MES_LABELS[mes]||mes)+' 2026';
   const dt=document.getElementById('dash-donut-title');
@@ -2650,6 +2676,11 @@ function doLogin(){
 }
 
 function applySession(user){
+  // Init app on first login (lazy — nothing rendered before this)
+  _initApp();
+  // Remove login particles from DOM to free GPU
+  const pContainer=document.getElementById('login-particles');
+  if(pContainer) pContainer.innerHTML='';
   const roleEmoji={VENDEDOR:'💼',TECNICO:'🔧',GERENTE:'🏆',SUPERVISOR:'📋',ANALISTA:'📈'};
   // Avatar topbar
   const avEl=document.getElementById('topbar-av');
@@ -2819,20 +2850,20 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// Generate floating particles
+// Generate floating particles — fewer on mobile for GPU budget
 (function(){
   const container=document.getElementById('login-particles');
   if(!container) return;
-  for(let i=0;i<28;i++){
+  const count=window.innerWidth<768?12:24;
+  const frag=document.createDocumentFragment();
+  for(let i=0;i<count;i++){
     const p=document.createElement('div');
     p.className='login-particle';
     const size=Math.random()*3+1;
-    p.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;
-      animation-duration:${Math.random()*12+8}s;
-      animation-delay:${Math.random()*10}s;
-      opacity:${Math.random()*.4+.1}`;
-    container.appendChild(p);
+    p.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*.4+.1}`;
+    frag.appendChild(p);
   }
+  container.appendChild(frag);
 })();
 
 /* ─────────────────────────────────────────
@@ -2908,16 +2939,18 @@ function autoMode(){
 let _rszT;
 window.addEventListener('resize',()=>{clearTimeout(_rszT);_rszT=setTimeout(autoMode,150);});
 
-document.addEventListener('DOMContentLoaded',()=>{
-  autoMode();
-  setMes(CRM_MES); // sincroniza botões ativos e renderiza todos os componentes do mês
+let _appInitialized=false;
+function _initApp(){
+  if(_appInitialized) return;
+  _appInitialized=true;
+  setMes(CRM_MES);
   renderAgenda(null);
   renderEquipeVendedores();
-  // preset form button labels
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  autoMode();
+  // preset form button labels (safe before login)
   document.querySelectorAll('.btn-primary').forEach(b=>{b.dataset.orig=b.textContent});
-  // responsive agenda re-render on mode change
-  const obs=new MutationObserver(()=>renderAgenda(null));
-  obs.observe(document.body,{attributes:true,attributeFilter:['class']});
 });
 function openEquipeProfile(name){
   const v=VENDEDORES.find(x=>x.name===name);
