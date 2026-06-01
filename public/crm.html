@@ -82,12 +82,13 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   to{opacity:1;transform:none}
 }
 .login-logo-wrap{
-  display:flex;flex-direction:column;align-items:center;margin-bottom:28px;
+  display:flex;flex-direction:column;align-items:center;margin-bottom:16px;
 }
 .login-logo-img{
-  width:96px;height:96px;object-fit:contain;
-  margin-bottom:12px;
-  filter:drop-shadow(0 4px 24px rgba(0,0,0,.55));
+  width:200px;height:200px;object-fit:contain;
+  margin-bottom:4px;
+  mix-blend-mode:multiply;
+  filter:drop-shadow(0 6px 32px rgba(0,0,0,.6));
   border-radius:0;
 }
 .login-logo-fallback{
@@ -736,8 +737,7 @@ body.mode-mobile .section-header{gap:12px}
           <rect x="14" y="14" width="7" height="7" rx="1.5"/>
         </svg>
       </div>
-      <div class="login-brand">Valochi Sousa</div>
-      <div class="login-subbrand">Sistema Comercial · CRM</div>
+      <div class="login-subbrand" style="margin-top:0">Sistema Comercial · CRM</div>
     </div>
 
     <!-- Form -->
