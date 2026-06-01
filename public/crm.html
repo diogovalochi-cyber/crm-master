@@ -953,37 +953,6 @@ body.mode-mobile .section-header{gap:12px}
     </div>
   </div>
 
-  <!-- Atividades (dinâmico — Google Forms) -->
-  <div class="card mt-16" id="act-card">
-    <div class="card-header">
-      <span class="card-title">Atividades · Google Forms</span>
-      <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s">↻ Carregar</button>
-    </div>
-    <div class="subtab-row" id="act-seller-tabs" style="margin-bottom:10px">
-      <button class="subtab active" data-seller="GERAL" onclick="selectActSeller(this)">Geral</button>
-      <button class="subtab" data-seller="GUILHERME" onclick="selectActSeller(this)">Guilherme</button>
-      <button class="subtab" data-seller="RELSON" onclick="selectActSeller(this)">Relson</button>
-      <button class="subtab" data-seller="EVERALDO" onclick="selectActSeller(this)">Everaldo</button>
-      <button class="subtab" data-seller="ISRAEL" onclick="selectActSeller(this)">Israel</button>
-      <button class="subtab" data-seller="NATALIA" onclick="selectActSeller(this)">Natália</button>
-      <button class="subtab" data-seller="KELLER" onclick="selectActSeller(this)">Keller</button>
-      <button class="subtab" data-seller="JORGE" onclick="selectActSeller(this)">Jorge</button>
-      <button class="subtab" data-seller="ALTHIERES" onclick="selectActSeller(this)">Althieres</button>
-      <button class="subtab" data-seller="JOAO" onclick="selectActSeller(this)">João</button>
-    </div>
-    <div class="forms-filter-bar" style="margin-bottom:14px">
-      <label>De <input type="date" id="act-dt-from" onchange="renderActivities()"></label>
-      <label>Até <input type="date" id="act-dt-to" onchange="renderActivities()"></label>
-      <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
-      <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
-      <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
-    </div>
-    <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Clique em Carregar para ver os dados dos formulários</div>
-  </div>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1027,6 +996,7 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
     <button class="subtab" onclick="showSubtab('carteira',this)">📂 Carteira</button>
+    <button class="subtab" onclick="showSubtab('atividades',this)">Atividades</button>
   </div>
 
   <!-- SUB: Visão Geral -->
@@ -1037,36 +1007,9 @@ body.mode-mobile .section-header{gap:12px}
       <div class="kpi-card kpi-mint"><div class="kpi-label">Maior Alta</div><div class="kpi-value">Israel</div><div class="kpi-sub"><span class="badge-up">▲ +20,1%</span> M/M</div></div>
       <div class="kpi-card kpi-peach"><div class="kpi-label">Única Queda</div><div class="kpi-value">Relson</div><div class="kpi-sub"><span class="badge-dn">▼ -6,1%</span> M/M</div></div>
     </div>
-
-    <div class="analise-main-grid gap-12">
-      <div class="card">
-        <div class="card-header"><span class="card-title">Ranking Completo</span></div>
-        <div style="overflow-x:auto">
-          <table class="tbl" id="analise-table"></table>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div class="card">
-          <div class="card-header"><span class="card-title">Distribuição Abril</span></div>
-          <div class="donut-wrap">
-            <svg id="donut-svg-2" width="110" height="110" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="18"/>
-            </svg>
-            <div class="donut-legend" id="donut-legend-2"></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><span class="card-title">Atividades</span></div>
-          <div class="act-grid">
-            <div class="act-item"><div class="act-num">47</div><div class="act-label">Visitas</div></div>
-            <div class="act-item"><div class="act-num">23</div><div class="act-label">Prospecções</div></div>
-            <div class="act-item"><div class="act-num">15</div><div class="act-label">Apres.</div></div>
-            <div class="act-item"><div class="act-num">9</div><div class="act-label">Cadastros</div></div>
-            <div class="act-item"><div class="act-num">3</div><div class="act-label">Cafés</div></div>
-            <div class="act-item"><div class="act-num">8</div><div class="act-label">Técnicos</div></div>
-          </div>
-        </div>
-      </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Ranking Completo</span></div>
+      <div style="overflow-x:auto"><table class="tbl" id="analise-table"></table></div>
     </div>
   </div>
 
@@ -1077,6 +1020,40 @@ body.mode-mobile .section-header{gap:12px}
       <div style="overflow-x:auto">
         <table class="tbl" id="comp-table"></table>
       </div>
+    </div>
+  </div>
+
+  <!-- SUB: Atividades Google Forms -->
+  <div id="subtab-atividades" style="display:none">
+    <div class="card" id="act-card">
+      <div class="card-header">
+        <span class="card-title">Atividades · Google Forms</span>
+        <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer">↻ Atualizar</button>
+      </div>
+      <div class="subtab-row" id="act-seller-tabs" style="margin-bottom:12px">
+        <button class="subtab active" data-seller="GERAL" onclick="selectActSeller(this)">Geral</button>
+        <button class="subtab" data-seller="GUILHERME" onclick="selectActSeller(this)">Guilherme</button>
+        <button class="subtab" data-seller="RELSON" onclick="selectActSeller(this)">Relson</button>
+        <button class="subtab" data-seller="EVERALDO" onclick="selectActSeller(this)">Everaldo</button>
+        <button class="subtab" data-seller="ISRAEL" onclick="selectActSeller(this)">Israel</button>
+        <button class="subtab" data-seller="NATALIA" onclick="selectActSeller(this)">Natália</button>
+        <button class="subtab" data-seller="KELLER" onclick="selectActSeller(this)">Keller</button>
+        <button class="subtab" data-seller="JORGE" onclick="selectActSeller(this)">Jorge</button>
+        <button class="subtab" data-seller="ALTHIERES" onclick="selectActSeller(this)">Althieres</button>
+        <button class="subtab" data-seller="JOAO" onclick="selectActSeller(this)">João</button>
+      </div>
+      <div class="forms-filter-bar" style="margin-bottom:16px">
+        <label>De <input type="date" id="act-dt-from" onchange="renderActivities()"></label>
+        <label>Até <input type="date" id="act-dt-to" onchange="renderActivities()"></label>
+        <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
+        <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
+        <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
+        <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
+      </div>
+      <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:12px;text-align:center">Carregando dados...</div>
     </div>
   </div>
 
@@ -1816,13 +1793,13 @@ function showTabMobile(tab, el){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  // Vendedor só pode ver Por Vendedor ou Carteira
+  // Vendedor só pode ver Por Vendedor, Atividades (e Carteira via seletor)
   if(window.CRM_VENDOR_ID && (id==='visao'||id==='comparativo')){
     id='porvendedor';
     const pvBtns=document.querySelectorAll('#tab-analise .subtab');
     el=pvBtns[2]||el;
   }
-  ['visao','comparativo','porvendedor','carteira'].forEach(s=>{
+  ['visao','comparativo','porvendedor','carteira','atividades'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
@@ -1830,6 +1807,7 @@ function showSubtab(id,el){
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
   if(id==='carteira') initCarteiraSelect();
+  if(id==='atividades') loadAllFormsAndRender();
 }
 let currentRegSeller='GUILHERME';
 let currentFormsType='prospeccoes';
@@ -2587,10 +2565,10 @@ function applyVendorMode(user){
     else{btn.style.display='none';btn.classList.remove('active');}
   });
 
-  // Análise: oculta Visão Geral e Comparativo, mantém só Por Vendedor
+  // Análise: mostra apenas Por Vendedor (2) e Atividades (4)
   currentActSeller=vendorKey;
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i!==2) btn.style.display='none';
+    if(i!==2&&i!==4) btn.style.display='none';
   });
 
   // Substitui dashboard pelo painel pessoal do vendedor
@@ -2668,35 +2646,14 @@ function renderVendorDashboard(user, vendorKey){
       </div>
     </div>
 
-    <div class="dash-second-grid gap-12">
-      <div class="card">
-        <div class="card-header"><span class="card-title">Seus Top Clientes · Maio</span></div>
-        ${carteira.length?carteira.map((c,i)=>`
-          <div class="top5-item">
-            <div class="top5-rank">${i+1}</div>
-            <div class="top5-name">${c.nome}</div>
-            <div class="top5-val" style="color:${vM.color}">${fBRL(c.valor)}</div>
-          </div>`).join(''):'<div style="color:var(--text-dim);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
-      </div>
-      <div class="card" id="act-card">
-        <div class="card-header">
-          <span class="card-title">Atividades · Forms</span>
-          <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer">↻ Carregar</button>
-        </div>
-        <div class="subtab-row" id="act-seller-tabs" style="display:none"></div>
-        <div class="forms-filter-bar" style="margin-bottom:14px">
-          <label>De <input type="date" id="act-dt-from" value="${dtFrom}" onchange="renderActivities()"></label>
-          <label>Até <input type="date" id="act-dt-to" value="${dtTo}" onchange="renderActivities()"></label>
-          <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
-          <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
-          <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
-          <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
-        </div>
-        <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Clique em Carregar para ver os dados dos formulários</div>
-      </div>
+    <div class="card mt-16">
+      <div class="card-header"><span class="card-title">Seus Top Clientes · Maio</span></div>
+      ${carteira.length?carteira.map((c,i)=>`
+        <div class="top5-item">
+          <div class="top5-rank">${i+1}</div>
+          <div class="top5-name">${c.nome}</div>
+          <div class="top5-val" style="color:${vM.color}">${fBRL(c.valor)}</div>
+        </div>`).join(''):'<div style="color:var(--text-dim);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
     </div>
   `;
 }
