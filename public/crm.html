@@ -2080,6 +2080,7 @@ function setMes(mes, btn){
   renderAnaliseTable();
   renderComparativo();
   renderCarteira();
+  renderVendorDetail(activeVendor);
   // Atualizar label
   const sub=document.getElementById('analise-section-sub');
   if(sub) sub.textContent=mes==='maio'?'Carteiras de Maio 2026':'Comparativo Março vs Abril 2026';
@@ -2345,46 +2346,70 @@ function initVendorPills(){
   renderVendorDetail(defaultVendor);
 }
 function renderVendorDetail(name){
-  const v=VENDEDORES.find(x=>x.name===name);
-  const clients=VENDOR_TOP5[name]||[];
+  const isMaio=CRM_MES==='maio';
+  const vAbr=VENDEDORES.find(x=>x.name===name);
+  const vMaio=VENDEDORES_MAIO.find(x=>x.name===name);
+  const v=isMaio
+    ? {...vMaio, abr:vMaio?.total||0, mar:vAbr?.abr||0, color:vAbr?.color||vMaio?.color}
+    : vAbr;
+  if(!v) return;
+
+  const mesAtual=isMaio?'Maio':'Abril';
+  const mesAnt=isMaio?'Abril':'Março';
+  const mesAntShort=isMaio?'Abr':'Mar';
+  const mesAtualShort=isMaio?'Mai':'Abr';
+
+  // Top clients
+  let clients;
+  if(isMaio){
+    const cod=vMaio?.cod;
+    clients=(CARTEIRA_MAIO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5)
+      .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
+  } else {
+    clients=VENDOR_TOP5[name]||[];
+  }
+
   // Table
-  let tbl=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>Abril</th><th>Março</th><th>Var.</th></tr></thead><tbody>`;
+  let tbl=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>${mesAtual}</th><th>${mesAnt}</th><th>Var.</th></tr></thead><tbody>`;
   clients.forEach((c,i)=>{
-    const vr=varPct(c.abr,c.mar);
+    const hasMar=c.mar!==null&&c.mar>0;
+    const vr=hasMar?varPct(c.abr,c.mar):{up:true,str:'—'};
     tbl+=`<tr><td style="color:var(--text-muted)">${i+1}</td><td>${c.cli}</td>
       <td style="font-weight:700">${fK(c.abr)}</td>
-      <td style="color:var(--text-dim)">${fK(c.mar)}</td>
-      <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
+      <td style="color:var(--text-dim)">${hasMar?fK(c.mar):'—'}</td>
+      <td>${hasMar?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:'—'}</td>
     </tr>`;
   });
   tbl+=`</tbody></table>`;
   document.getElementById('vendor-table-title').textContent='Top Clientes · '+name;
   document.getElementById('vendor-table-wrap').innerHTML=tbl;
+
   // Mini KPIs
   const vr=varPct(v.abr,v.mar);
   const diff=v.abr-v.mar;
   document.getElementById('vendor-mini-kpis').innerHTML=`
-    <div class="mini-kpi"><div class="mini-kpi-label">Abril</div><div class="mini-kpi-value">${fK(v.abr)}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">Março</div><div class="mini-kpi-value" style="color:var(--text-dim)">${fK(v.mar)}</div></div>
+    <div class="mini-kpi"><div class="mini-kpi-label">${mesAtual}</div><div class="mini-kpi-value">${fK(v.abr)}</div></div>
+    <div class="mini-kpi"><div class="mini-kpi-label">${mesAnt}</div><div class="mini-kpi-value" style="color:var(--text-dim)">${fK(v.mar)}</div></div>
     <div class="mini-kpi"><div class="mini-kpi-label">Variação</div><div class="mini-kpi-value ${vr.up?'up':'dn'}">${vr.str}</div></div>
     <div class="mini-kpi"><div class="mini-kpi-label">Diferença</div><div class="mini-kpi-value" style="color:${diff>=0?'var(--mint)':'var(--coral)'}">${diff>=0?'+':''}${fK(diff)}</div></div>
   `;
+
   // Bar chart
-  const maxVal=Math.max(v.abr,v.mar);
-  const hAbr=Math.round((v.abr/maxVal)*80);
-  const hMar=Math.round((v.mar/maxVal)*80);
+  const maxVal=Math.max(v.abr,v.mar)||1;
+  const hAtual=Math.round((v.abr/maxVal)*80);
+  const hAnt=Math.round((v.mar/maxVal)*80);
   document.getElementById('vendor-bars').innerHTML=`
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hMar}px;width:36px;background:${v.color}44;border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:var(--text-dim)">Mar</div>
+      <div style="height:${hAnt}px;width:36px;background:${v.color}44;border-radius:6px 6px 0 0;transition:.4s"></div>
+      <div style="font-size:10px;color:var(--text-dim)">${mesAntShort}</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hAbr}px;width:36px;background:${v.color};border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:var(--text-dim)">Abr</div>
+      <div style="height:${hAtual}px;width:36px;background:${v.color};border-radius:6px 6px 0 0;transition:.4s"></div>
+      <div style="font-size:10px;color:var(--text-dim)">${mesAtualShort}</div>
     </div>
     <div style="flex:1;padding-left:12px;font-size:11px;color:var(--text-dim);align-self:center">
       <div style="font-weight:700;color:#fff;font-size:15px">${fBRL(v.abr)}</div>
-      <div>vs ${fBRL(v.mar)} em Mar</div>
+      <div>vs ${fBRL(v.mar)} em ${mesAnt}</div>
     </div>
   `;
 }
