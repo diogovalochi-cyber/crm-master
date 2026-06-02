@@ -6,8 +6,9 @@
 <title>Valochi Sousa — Sistema Comercial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"></noscript>
+<script>
+(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap';document.head.appendChild(l);})();
+</script>
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
@@ -280,24 +281,26 @@ body.mode-print{--mode:print}
   border-top:1px solid rgba(255,255,255,.14);
   box-shadow:0 -2px 24px rgba(0,0,0,.45);
   padding-bottom:env(safe-area-inset-bottom,0px);
+  will-change:transform;
+  transform:translateZ(0);
 }
-.botnav-inner{display:flex;height:74px;padding:0;align-items:stretch}
+.botnav-inner{display:flex;width:100%;height:66px;padding:0;align-items:stretch}
 .botnav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:5px;cursor:pointer;padding:10px 6px 8px;
-  color:rgba(255,255,255,.45);transition:.18s ease;
-  font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
-  border-radius:14px;position:relative;
+  flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;cursor:pointer;padding:8px 2px 10px;
+  color:rgba(255,255,255,.45);transition:.14s ease;
+  font-size:10px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;
+  position:relative;overflow:hidden;
 }
-.botnav-item svg{transition:.18s ease;width:24px;height:24px;flex-shrink:0;stroke-width:1.8}
+.botnav-item svg{transition:.14s ease;width:22px;height:22px;flex-shrink:0;stroke-width:1.8}
 .botnav-item::after{
-  content:'';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+  content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
   width:0;height:3px;border-radius:2px;background:#fff;
-  transition:.18s ease;opacity:0;
+  transition:.14s ease;opacity:0;
 }
 .botnav-item.active{color:#fff;}
-.botnav-item.active svg{filter:drop-shadow(0 0 6px rgba(255,255,255,.4))}
-.botnav-item.active::after{width:20px;opacity:1}
+.botnav-item.active svg{filter:drop-shadow(0 0 5px rgba(255,255,255,.4))}
+.botnav-item.active::after{width:22px;opacity:1}
 .botnav-item:active{opacity:.6;transform:scale(.93)}
 
 /* ─── MAIN CONTENT ─── */
@@ -313,7 +316,7 @@ body.mode-print{--mode:print}
 /* MODE: MOBILE */
 body.mode-mobile #botnav{display:flex}
 body.mode-mobile #main{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px) + 20px)}
-body.mode-mobile .tab-content{animation:fadeIn .2s ease}
+body.mode-mobile .tab-content{animation:fadeInMobile .15s ease}
 
 /* MODE: DESKTOP */
 body.mode-desktop #sidebar{display:block}
@@ -536,17 +539,20 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 
 /* ─── ANIM ─── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fadeInMobile{from{opacity:0}to{opacity:1}}
 @keyframes draw{from{stroke-dashoffset:var(--total)}to{stroke-dashoffset:var(--offset)}}
 
 /* ─── PERFORMANCE HINTS ─── */
-button,a,[onclick]{touch-action:manipulation}
+button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .login-particle{will-change:transform,opacity;contain:layout style}
 .login-card{will-change:transform;contain:layout style}
 .card{contain:layout style}
 .botnav-item,.nav-item,.rank-item,.top5-item{contain:layout style}
+.tab-content{contain:layout style}
 @media(max-width:767px){
-  #botnav{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-  .login-card{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  /* Remove expensive blur on mobile — solid bg instead */
+  #botnav{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(7,40,105,.97)}
+  .login-card{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 }
 
 /* ─── SECTION HEADER ─── */
@@ -566,6 +572,8 @@ body.mode-mobile .mini-kpi-grid{grid-template-columns:1fr 1fr}
 body.mode-mobile .kpi-value{font-size:20px}
 
 /* ─── MOBILE-SPECIFIC ─── */
+body.mode-mobile{overscroll-behavior:none}
+body.mode-mobile *{text-shadow:none!important}
 body.mode-mobile .topbar-toggles{display:none!important}
 body.mode-mobile .topbar-brand p{display:none}
 body.mode-mobile .topbar-stats{display:none!important}
@@ -1583,19 +1591,85 @@ const TOP_CLIENTES_MAIO = [
   {r:10,nome:'IPAVA RAIO SUPERMERCADO LTDA',        vend:'Israel',    val:23626.12},
 ];
 
-// Junho 2026 — preencher conforme dados chegam
+// Top clientes Junho 2026 — parcial (Guilherme + Israel)
+const TOP_CLIENTES_JUNHO = [
+  {r:1, nome:'INTECS JARDIM JARAGUA',               vend:'Guilherme', val:11895.66},
+  {r:2, nome:'INTECS CIDADE TIRADENTES',             vend:'Guilherme', val: 7865.63},
+  {r:3, nome:'INTECS CITY JARAGUA',                  vend:'Guilherme', val: 6691.76},
+  {r:4, nome:'INTECS GUAIANASES',                    vend:'Guilherme', val: 6327.05},
+  {r:5, nome:'INTECS M BOI MIRIM',                   vend:'Guilherme', val: 6229.72},
+  {r:6, nome:'BLACK BOI',                            vend:'Israel',    val: 4738.04},
+  {r:7, nome:'IPAVA RAIO SUPERMERCADO LTDA',         vend:'Israel',    val: 4265.03},
+  {r:8, nome:'INTECS SAO MIGUEL PAULISTA',           vend:'Guilherme', val: 3436.78},
+  {r:9, nome:'MERCADO PERNAMBUCO',                   vend:'Guilherme', val: 3005.99},
+  {r:10,nome:'BLACK BOI JD RECORD',                  vend:'Israel',    val: 2761.95},
+];
+
+// Junho 2026 — dados parciais (mês em curso)
 const VENDEDORES_JUNHO = [
-  {name:'Guilherme', av:'GU', color:'#10B981', total:0, cli:0, ped:0, cod:'093'},
+  {name:'Guilherme', av:'GU', color:'#10B981', total:74174.43, cli:30, ped:30, cod:'093'},
   {name:'Relson',    av:'RE', color:'#60A5FA', total:0, cli:0, ped:0, cod:'094'},
   {name:'Natália',   av:'NA', color:'#F472B6', total:0, cli:0, ped:0, cod:'116'},
-  {name:'Israel',    av:'IS', color:'#8B5CF6', total:0, cli:0, ped:0, cod:'115'},
+  {name:'Israel',    av:'IS', color:'#8B5CF6', total:27247.27, cli:17, ped:17, cod:'115'},
   {name:'Keller',    av:'KE', color:'#22D3EE', total:0, cli:0, ped:0, cod:'117'},
   {name:'Everaldo',  av:'EV', color:'#F59E0B', total:0, cli:0, ped:0, cod:'107'},
   {name:'Althieres', av:'AL', color:'#FBBF24', total:0, cli:0, ped:0, cod:'119', newHire:true},
   {name:'Jorge',     av:'JO', color:'#94A3B8', total:0, cli:0, ped:0, cod:'118', newHire:true},
   {name:'João',     av:'JO2',color:'#2DD4BF', total:0, cli:0, ped:0, cod:'120', newHire:true},
 ];
-const CARTEIRA_JUNHO = {};
+const CARTEIRA_JUNHO = {
+'115':[
+  {cod:'4296', nome:'BLACK BOI',                              valor: 4738.04},
+  {cod:'2495', nome:'IPAVA RAIO SUPERMERCADO LTDA',           valor: 4265.03},
+  {cod:'4723', nome:'BLACK BOI JD RECORD',                    valor: 2761.95},
+  {cod:'4508', nome:'PADARIA TRES IRMÃOS VISTA ALEGRE',       valor: 1901.25},
+  {cod:'3437', nome:'MERCADO ENERGIA POSITIVA',               valor: 1849.43},
+  {cod:'4832', nome:'MERCADINHO RIOS CARNEIRO LTDA',          valor: 1624.65},
+  {cod:'4093', nome:'PADARIA BAR DO ZE',                      valor: 1466.73},
+  {cod:'4893', nome:'MERCADO SOUZA LIMA',                     valor: 1391.48},
+  {cod:'4134', nome:'DUBOM CAFE',                             valor: 1199.25},
+  {cod:'2230', nome:'MERCADINHO VILA CLELIA',                 valor:  965.95},
+  {cod:'2128', nome:'PADARIA NOVA GEOGRAFOS',                 valor:  887.42},
+  {cod:'1657', nome:'MERCADO SANTA FE',                       valor:  803.00},
+  {cod:'4513', nome:'BOI FORT',                               valor:  799.39},
+  {cod:'4568', nome:'EMPORIO DOS ALIMENTOS',                  valor:  725.48},
+  {cod:'4685', nome:'EMPORIO DANI E CIA',                     valor:  665.22},
+  {cod:'2808', nome:'MERCEARIA 3 IRMÃOS',                     valor:  650.79},
+  {cod:'2249', nome:'BASE DE ADMINISTRACAO E APOIO DO IBIRAPUERA', valor: 552.21},
+],
+'093':[
+  {cod:'4313', nome:'INTECS JARDIM JARAGUA',               valor:11895.66},
+  {cod:'4316', nome:'INTECS CIDADE TIRADENTES',            valor: 7865.63},
+  {cod:'4315', nome:'INTECS GUAIANASES',                   valor: 6327.05},
+  {cod:'4311', nome:'INTECS CITY JARAGUA',                 valor: 6691.76},
+  {cod:'4534', nome:'INTECS M BOI MIRIM',                  valor: 6229.72},
+  {cod:'4314', nome:'INTECS SAO MIGUEL PAULISTA',          valor: 3436.78},
+  {cod:'4063', nome:'MERCADO PERNAMBUCO',                  valor: 3005.99},
+  {cod:'119',  nome:'SAMUEL DE OLIVEIRA CHAGAS',           valor: 2616.02},
+  {cod:'258',  nome:'LUIZ JACAREÍ',                        valor: 2596.81},
+  {cod:'4864', nome:'PADARIA E CONFEITARIA SAO LUIS',      valor: 2371.49},
+  {cod:'4164', nome:'MERCADINHO LUIGI',                    valor: 1862.68},
+  {cod:'4136', nome:'MERCADINHO NITEROI',                  valor: 1615.00},
+  {cod:'4250', nome:'JM MERCADO',                          valor: 1560.00},
+  {cod:'4726', nome:'MERCADO PRECIOSO',                    valor: 1458.61},
+  {cod:'3382', nome:'MERCADO MAIA',                        valor: 1097.61},
+  {cod:'4701', nome:'MERCADO ALCANTARA',                   valor: 1351.72},
+  {cod:'4633', nome:'MERCADO ANA MARIA',                   valor: 1091.25},
+  {cod:'4190', nome:'SUPERMERCADOS SEMPRE JUNTO',          valor: 1018.23},
+  {cod:'4000', nome:'TENESSE CARNES GUABIROBA',            valor: 1506.65},
+  {cod:'3933', nome:'WL SUPERMERCADO JACUTINGA',           valor:  806.67},
+  {cod:'4380', nome:'MERCADO PROGRESSO',                   valor:  845.72},
+  {cod:'4012', nome:'MERCADO SAO FRANCISCO DE PAULA',      valor:  826.15},
+  {cod:'4310', nome:'INTECS BRASILANDIA',                  valor:  819.00},
+  {cod:'4710', nome:'MERCADO JL',                          valor:  805.25},
+  {cod:'4387', nome:'MERCADO ICHIBAN',                     valor:  763.04},
+  {cod:'3998', nome:'AÇOUGUE TENESSE',                     valor:  735.62},
+  {cod:'3999', nome:'TENESSE CARNES RAGUEB',               valor:  625.98},
+  {cod:'4489', nome:'PLANALTO',                            valor:  554.78},
+  {cod:'781',  nome:'OSVALDO XAVIER DE MACEDO JUNIOR',     valor:  546.00},
+  {cod:'4964', nome:'MERCADO PROGRESSO LOJA 03',           valor: 1247.56},
+],
+};
 
 /* ─────────────────────────────────────────
    MÊS HELPER
@@ -2031,7 +2105,7 @@ function renderRanking(){
    TOP 5
 ───────────────────────────────────────── */
 function renderTop5(){
-  const list=CRM_MES==='abril'?TOP_CLIENTES:TOP_CLIENTES_MAIO;
+  const list=CRM_MES==='junho'?TOP_CLIENTES_JUNHO:CRM_MES==='abril'?TOP_CLIENTES:TOP_CLIENTES_MAIO;
   let html='';
   list.slice(0,5).forEach(c=>{
     const col=vendorColor(c.vend);
@@ -2387,7 +2461,7 @@ const CREDS=[
   {user:'carlos',   pass:'123', role:'GERENTE',    name:'Carlos',    av:'CA', fullAccess:true},
   {user:'lazaro',   pass:'123', role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true},
   // Vendedores (9 ativos)
-  {user:'guilherme',pass:'123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
+  {user:'guilherme',pass:'martins123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
   {user:'relson',   pass:'123', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
   {user:'israel',   pass:'123', role:'VENDEDOR',   name:'Israel',    av:'IS', vendId:'115', color:'#8B5CF6'},
   {user:'everaldo', pass:'123', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#F59E0B'},
@@ -2664,19 +2738,6 @@ function renderVendorDashboard(user, vendorKey){
             <div class="top5-name">${c.nome}</div>
             <div class="top5-val" style="color:#fff">${fBRL(c.valor)}</div>
           </div>`).join(''):'<div style="color:rgba(255,255,255,.6);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Atividades · ${mesLabel}</span>
-          ${!hasF?'<span style="font-size:10px;color:rgba(255,255,255,.6)">Carregue os Forms</span>':''}
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div class="act-item"><div class="act-num">${actVal(nVis)}</div><div class="act-label">Visitas</div></div>
-          <div class="act-item"><div class="act-num">${actVal(nPro)}</div><div class="act-label">Prospecções</div></div>
-          <div class="act-item"><div class="act-num">${actVal(nApr)}</div><div class="act-label">Apresentações</div></div>
-          <div class="act-item"><div class="act-num">${actVal(nCad)}</div><div class="act-label">Cadastros</div></div>
-        </div>
-
       </div>
     </div>
 
