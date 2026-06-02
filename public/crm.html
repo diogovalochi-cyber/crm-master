@@ -781,19 +781,8 @@ body.mode-mobile .section-header{gap:12px}
 <div id="topbar">
   <div class="topbar-logo"><span></span><span></span><span></span><span></span></div>
   <div class="topbar-brand"><h1>Valochi Sousa</h1><p>CRM Comercial</p></div>
-  <div class="topbar-stats" id="topbar-stats">
-    <div class="topbar-stat">Total Abr <strong id="topbar-total">R$1,11M</strong></div>
-    <div class="topbar-stat"><span id="topbar-var" class="up">▲+4,6%</span> vs Março</div>
-    <div class="topbar-stat"><strong id="topbar-count">6</strong> vendedores ativos</div>
-  </div>
-  <div class="topbar-toggles">
-    <button class="btn-toggle" onclick="setMode('mobile')" id="btn-mobile">📱 Mobile</button>
-    <button class="btn-toggle active" onclick="setMode('desktop')" id="btn-desktop">🖥 Desktop</button>
+  <div style="margin-left:auto">
     <button class="btn-toggle" onclick="setMode('print')" id="btn-print">🖨 Imprimir</button>
-  </div>
-  <div class="topbar-avatar" id="avatar-btn" onclick="this.querySelector('.topbar-avatar-label').style.display=this.querySelector('.topbar-avatar-label').style.display==='block'?'none':'block'">
-    <span id="topbar-av">DI</span>
-    <div class="topbar-avatar-label" style="display:none">Diogo · Analista</div>
   </div>
 </div>
 
@@ -1658,7 +1647,8 @@ function vendorInitials(name){
 function setMode(mode){
   document.body.className='mode-'+mode;
   ['mobile','desktop','print'].forEach(m=>{
-    document.getElementById('btn-'+m).classList.toggle('active',m===mode);
+    const b=document.getElementById('btn-'+m);
+    if(b) b.classList.toggle('active',m===mode);
   });
   if(mode==='print') setTimeout(()=>window.print(),300);
 }
@@ -1687,10 +1677,10 @@ function showTab(tab, el){
     const fromEl=document.getElementById('forms-dt-from');
     const toEl=document.getElementById('forms-dt-to');
     if(fromEl&&!fromEl.value&&toEl&&!toEl.value){
-      const br=nowBR(); const y=br.year,m=br.month;
+      const br=nowBR();
       const fmtLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      fromEl.value=fmtLocal(new Date(y,m,1));
-      toEl.value=fmtLocal(new Date(y,m+1,0));
+      fromEl.value=fmtLocal(new Date(br.year,br.month,br.day-6));
+      toEl.value=fmtLocal(new Date(br.year,br.month,br.day));
     }
     if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
   }
