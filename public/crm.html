@@ -1648,8 +1648,8 @@ function showTab(tab, el){
   if(el) el.classList.add('active');
   if(tab==='analise'){
     if(window.CRM_VENDOR_ID){
-      const pvBtn=document.querySelectorAll('#tab-analise .subtab')[1];
-      if(pvBtn) showSubtab('porvendedor',pvBtn);
+      const compBtn=document.querySelectorAll('#tab-analise .subtab')[0];
+      if(compBtn) showSubtab('comparativo',compBtn);
     }
     if(_analiseNeedsRender){
       _analiseNeedsRender=false;
@@ -1679,11 +1679,6 @@ function showTabMobile(tab, el){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  if(window.CRM_VENDOR_ID && id!=='porvendedor'){
-    id='porvendedor';
-    const pvBtns=document.querySelectorAll('#tab-analise .subtab');
-    el=pvBtns[1]||el;
-  }
   ['comparativo','porvendedor'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
@@ -2065,6 +2060,10 @@ function setMes(mes, btn){
   if(sub) sub.textContent='Carteiras de '+(MES_LABELS[mes]||mes)+' 2026';
   const dt=document.getElementById('dash-donut-title');
   if(dt) dt.textContent='Distribuição '+(MES_LABELS[mes]||mes);
+  if(window.CRM_VENDOR_ID&&window.CRM_USER){
+    const vk=window.CRM_USER.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    renderVendorDashboard(window.CRM_USER,vk);
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -2164,10 +2163,11 @@ function renderComparativo(){
   if(titleEl) titleEl.textContent=`Comparativo ${lblA} vs ${lblB} 2026`;
   const dataA=getVendedoresForMes(mesA);
   const dataB=getVendedoresForMes(mesB);
-  const merged=dataA.map(vA=>{
+  let merged=dataA.map(vA=>{
     const vB=dataB.find(x=>x.cod===vA.cod)||{abr:0,cli:0};
     return {...vA, valA:vA.abr, valB:vB.abr};
   }).sort((a,b)=>b.valB-a.valB);
+  if(window.CRM_VENDOR_ID) merged=merged.filter(v=>v.cod===window.CRM_VENDOR_ID);
   let html=`<thead><tr>
     <th>Vendedor</th><th>${lblA}</th><th>${lblB}</th><th>Diferença R$</th><th>Variação %</th>
   </tr></thead><tbody>`;
@@ -2184,14 +2184,18 @@ function renderComparativo(){
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
     </tr>`;
   });
-  const dT=tB-tA, vrT=varPct(tB,tA);
-  html+=`</tbody><tfoot><tr class="total-row">
-    <td>Total</td>
-    <td>${fBRL(tA)}</td>
-    <td>${fBRL(tB)}</td>
-    <td>${dT>=0?'+':''}${fBRL(dT)}</td>
-    <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
-  </tr></tfoot>`;
+  if(!window.CRM_VENDOR_ID){
+    const dT=tB-tA, vrT=varPct(tB,tA);
+    html+=`</tbody><tfoot><tr class="total-row">
+      <td>Total</td>
+      <td>${fBRL(tA)}</td>
+      <td>${fBRL(tB)}</td>
+      <td>${dT>=0?'+':''}${fBRL(dT)}</td>
+      <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
+    </tr></tfoot>`;
+  } else {
+    html+=`</tbody>`;
+  }
   document.getElementById('comp-table').innerHTML=html;
 }
 
@@ -2455,30 +2459,34 @@ function applyVendorMode(user){
     else{btn.style.display='none';btn.classList.remove('active');}
   });
 
-  // Análise: mostra apenas Por Vendedor (índice 1)
+  // Análise: mostra apenas Comparativo (índice 0), oculta Por Vendedor (índice 1)
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i!==1) btn.style.display='none';
+    if(i!==0) btn.style.display='none';
   });
+
+  // Detecta mês efetivo (último com dados reais) e seta CRM_MES
+  const vRawM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
+  const vRawJ=VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
+  if(vRawJ&&(vRawJ.total||0)>0) CRM_MES='junho';
+  else if(vRawM&&(vRawM.total||0)>0) CRM_MES='maio';
+  else CRM_MES='abril';
+  document.querySelectorAll('.mes-select').forEach(s=>s.value=CRM_MES);
 
   // Substitui dashboard pelo painel pessoal do vendedor
   renderVendorDashboard(user, vendorKey);
 }
 
 function renderVendorDashboard(user, vendorKey){
-  // Detecta o mês mais recente com dados reais para esse vendedor
   const vRawAbr   = VENDEDORES.find(v=>v.cod===user.vendId);
   const vRawMaio  = VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
   const vRawJunho = VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
-  let effectiveMes='abril';
-  if(vRawMaio  &&(vRawMaio.total ||0)>0) effectiveMes='maio';
-  if(vRawJunho &&(vRawJunho.total||0)>0) effectiveMes='junho';
 
-  const mesData=getVendedoresForMes(effectiveMes);
+  const mesData=getVendedoresForMes(CRM_MES);
   const vM=mesData.find(v=>v.cod===user.vendId);
   if(!vM) return;
 
-  const mesLabel=MES_LABELS[effectiveMes]||'Maio';
-  const mesAnt=effectiveMes==='junho'?'Maio':effectiveMes==='maio'?'Abril':'Março';
+  const mesLabel=MES_LABELS[CRM_MES]||'Maio';
+  const mesAnt=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -2495,7 +2503,7 @@ function renderVendorDashboard(user, vendorKey){
   const pct=Math.min(Math.round((vM.abr/meta)*100),100);
   const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
 
-  const carteiraMap=effectiveMes==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
+  const carteiraMap=CRM_MES==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
   const carteira=(carteiraMap[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
   const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
 
@@ -2525,7 +2533,7 @@ function renderVendorDashboard(user, vendorKey){
   if(vRawMaio&&(vRawMaio.total||0)>0) histMeses.push({label:'Maio',abr:vRawMaio.total,ped:vRawMaio.ped||0,cli:vRawMaio.cli||0,prev:vRawAbr?.abr||0,prevLabel:'Abril'});
   if(vRawJunho&&(vRawJunho.total||0)>0) histMeses.push({label:'Junho',abr:vRawJunho.total,ped:vRawJunho.ped||0,cli:vRawJunho.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'});
   const histHtml=histMeses.map(m=>{
-    const isAct=m.label.toLowerCase()===effectiveMes;
+    const isAct=m.label.toLowerCase()===CRM_MES;
     const varP=m.prev>0?((m.abr-m.prev)/m.prev*100):null;
     const varS=varP!==null?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);margin-top:5px">${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}% vs ${m.prevLabel}</div>`:'';
     return `<div style="background:${isAct?'rgba(255,255,255,.16)':'rgba(255,255,255,.06)'};border:1px solid ${isAct?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)'};border-radius:14px;padding:16px 14px">
@@ -2540,11 +2548,14 @@ function renderVendorDashboard(user, vendorKey){
     <div class="section-header">
       <div>
         <div class="section-title" id="dash-greeting">Olá, ${user.name} 💼</div>
-        <div class="section-sub" id="dash-subgreeting">${mesLabel} 2026 · Cód. ${user.vendId}</div>
+        <div class="section-sub" id="dash-subgreeting">Cód. ${user.vendId}</div>
       </div>
+      <select class="mes-select" onchange="setMes(this.value)">
+        ${['abril','maio','junho'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
+      </select>
     </div>
 
-    <div class="kpi-grid mb-16">
+    <div class="kpi-grid mb-16" style="grid-template-columns:1fr 1fr">
       <div class="kpi-card kpi-gold">
         <div class="kpi-label" style="color:rgba(255,255,255,.6)">Faturamento ${mesLabel}</div>
         <div class="kpi-value" style="color:#fff">${fK(vM.abr)}</div>
@@ -2555,13 +2566,7 @@ function renderVendorDashboard(user, vendorKey){
         <div class="kpi-label" style="color:rgba(255,255,255,.6)">Pedidos ${mesLabel}</div>
         <div class="kpi-value" style="color:#fff">${vM.ped}</div>
         <div class="kpi-sub" style="color:rgba(255,255,255,.7)">${vM.cli} clientes ativos</div>
-        <div class="kpi-change" style="color:rgba(255,255,255,.7)">Ticket médio: ${vM.ped>0?fK(vM.abr/vM.ped):'—'}</div>
-      </div>
-      <div class="kpi-card kpi-peach">
-        <div class="kpi-label" style="color:rgba(255,255,255,.6)">Meta ${mesLabel}</div>
-        <div class="kpi-value" style="color:#fff">${pct}%</div>
-        <div class="kpi-sub" style="color:rgba(255,255,255,.7)">${fK(meta)} alvo</div>
-        <div class="kpi-change" style="color:#fff">${msg}</div>
+        <div class="kpi-change" style="color:rgba(255,255,255,.7)">Ticket: ${vM.ped>0?fK(vM.abr/vM.ped):'—'}</div>
       </div>
     </div>
 
