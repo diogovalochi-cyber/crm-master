@@ -462,7 +462,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 #obs-modal-box{background:#0A3D8A;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
 #obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.7);margin-bottom:10px}
 #obs-modal-text{color:var(--text);font-size:14px;line-height:1.65;white-space:pre-wrap;margin:0}
-#obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;line-height:1;padding:0}
+#obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;line-height:1;padding:0}
 #obs-modal-close:hover{color:#fff}
 .tbl-bar{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;width:60px;display:inline-block;vertical-align:middle}
 .tbl-bar-fill{height:100%;border-radius:4px}
@@ -1011,11 +1011,11 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Tabela -->
   <div class="card" style="overflow-x:auto;margin-top:14px;padding:20px">
-    <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Carregando...</div>
+    <div id="forms-status" style="color:rgba(255,255,255,.7);font-size:12px;margin-bottom:8px">Carregando...</div>
     <table id="forms-table" class="tbl">
       <thead><tr id="forms-thead-row"></tr></thead>
       <tbody id="forms-tbody">
-        <tr><td colspan="8" style="text-align:center;color:#888;padding:24px">—</td></tr>
+        <tr><td colspan="8" style="text-align:center;color:rgba(255,255,255,.55);padding:24px">—</td></tr>
       </tbody>
     </table>
   </div>
@@ -1818,7 +1818,7 @@ function selectFormsType(el){
   if(!FORMS_CSV[currentFormsType]){
     document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
     const _cfg=FORMS_CONFIG[currentFormsType];
-    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="${_cfg.cols.length}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
+    document.getElementById('forms-tbody').innerHTML=`<tr><td colspan="${_cfg.cols.length}" style="text-align:center;color:rgba(255,255,255,.55);padding:24px">—</td></tr>`;
     document.getElementById('forms-thead-row').innerHTML=_cfg.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.h}</th>`).join('');
     renderFormsSummary();
     return;
@@ -1861,7 +1861,7 @@ function renderFormsTable(){
   thead.innerHTML=cfg.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.h}</th>`).join('');
   if(!cache.length){
     status.textContent='Carregando...';
-    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:rgba(255,255,255,.55);padding:24px">—</td></tr>`;
     return;
   }
   const fromVal=document.getElementById('forms-dt-from')?.value;
@@ -1887,7 +1887,7 @@ function renderFormsTable(){
   });
   if(!rows.length){
     const msg=sellerRows.length?'Nenhum registro no período selecionado':'Nenhum registro para este vendedor';
-    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">${msg}</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:rgba(255,255,255,.55);padding:24px">${msg}</td></tr>`;
     status.textContent=`${sellerRows.length} registro(s) para este vendedor — ${cache.length} no total`;
     return;
   }
@@ -2518,12 +2518,10 @@ function applyVendorMode(user){
   window.CRM_VENDOR_NAME=user.name;
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 
-  // Forms: mostra apenas aba do próprio vendedor
+  // Forms: oculta row de seleção de vendedor (vendedor só vê os próprios dados)
   currentRegSeller=vendorKey;
-  document.querySelectorAll('#reg-seller-tabs .subtab').forEach(btn=>{
-    if(btn.dataset.seller===vendorKey) btn.classList.add('active');
-    else{btn.style.display='none';btn.classList.remove('active');}
-  });
+  const regSellerTabs=document.getElementById('reg-seller-tabs');
+  if(regSellerTabs) regSellerTabs.style.display='none';
 
   // Análise: mostra apenas Comparativo (índice 0), oculta Por Vendedor (índice 1)
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
