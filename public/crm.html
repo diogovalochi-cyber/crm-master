@@ -1711,9 +1711,9 @@ function showTab(tab, el){
     if(fromEl&&!fromEl.value&&toEl&&!toEl.value){
       const now=new Date();
       const y=now.getFullYear(),m=now.getMonth();
-      const fmt=d=>d.toISOString().slice(0,10);
-      fromEl.value=fmt(new Date(y,m,1));
-      toEl.value=fmt(new Date(y,m+1,0));
+      const fmtLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      fromEl.value=fmtLocal(new Date(y,m,1));
+      toEl.value=fmtLocal(new Date(y,m+1,0));
     }
     if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
   }
@@ -1760,7 +1760,8 @@ function fmtDate(v){
   const s=String(v).replace(',','.');
   const n=parseFloat(s);
   if(!isNaN(n)&&n>40000&&n<60000){
-    return new Date(Math.round((n-25569)*86400000)).toLocaleDateString('pt-BR');
+    const d=new Date(Math.round((n-25569)*86400000));
+    return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')+'/'+d.getUTCFullYear();
   }
   return s.split(' ')[0];
 }
@@ -1788,14 +1789,25 @@ function showObs(btn){
 function closeObsModal(){document.getElementById('obs-modal').style.display='none';}
 
 /* Detecta RAZÃO SOCIAL na linha do CSV: varre colunas iStart..iEnd
-   e retorna a primeira que não seja padrão YYYY/MM, URL ou número puro */
+   retorna a primeira que não seja data, URL, número ou nome de mês */
 function _findRS(r,iStart,iEnd){
-  const reMes=/^\d{4}\/\d{2}$/;
+  const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)/i;
   for(let i=iStart;i<=iEnd;i++){
     const v=(r[i]||'').trim();
-    if(v&&!reMes.test(v)&&!v.startsWith('http')&&isNaN(Number(v))) return v;
+    if(v&&v.length>=3&&!reSkip.test(v)&&!v.startsWith('http')&&isNaN(Number(v.replace(/[.,]/g,'')))) return v;
   }
   return '';
+}
+
+/* Compara nome de vendedor: lida com nomes completos, espaços extras, variações */
+function _vendMatch(rv,sv){
+  if(!rv||rv==='#N/A'||rv.length<2) return false;
+  if(rv===sv) return true;
+  if(rv.startsWith(sv+' ')||rv.startsWith(sv+'-')) return true;
+  if(sv.startsWith(rv+' ')||sv.startsWith(rv+'-')) return true;
+  const fw=s=>s.split(/[\s\-,]+/)[0];
+  const f1=fw(rv),f2=fw(sv);
+  return f1.length>=3&&f1===f2;
 }
 
 const FORMS_CONFIG={
@@ -1808,7 +1820,7 @@ const FORMS_CONFIG={
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,2,6)}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,2,12)}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[9])}${obsCell(r[10],'Obs.','Observação')}`
   },
   visitas:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5..6]=RAZÃO SOCIAL
@@ -1819,7 +1831,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,7)}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,12)}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -1829,7 +1841,7 @@ const FORMS_CONFIG={
       {h:'Data Preench.',w:'110px'},{h:'Data Apres.',w:'110px'},
       {h:'Nome Cliente',w:''},{h:'Empresa Atual',w:'160px'},{h:'Volume/dia',w:'100px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,4,6)}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,3,10)}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=CÓDIGO r[3]=MÊS(texto) r[4..5]=NOME CLIENTE
@@ -1837,7 +1849,7 @@ const FORMS_CONFIG={
     cols:[
       {h:'Data',w:'110px'},{h:'Código',w:'90px'},{h:'Nome Cliente',w:''}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${_findRS(r,4,6)}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${_findRS(r,3,10)}</td>`
   }
 };
 
@@ -1905,15 +1917,14 @@ function renderFormsTable(){
   const toVal=document.getElementById('forms-dt-to')?.value;
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   const vc=cfg.vendCol??0;
   const dc=cfg.dateCol??1;
   const sv=_nm(currentRegSeller);
   const sellerRows=cache.filter(r=>{
-    const rv=_nm(r[vc]);
-    if(!rv||rv==='#N/A') return false;
-    // casa nome exato, ou nome completo que começa pelo código do vendedor (ex: "GUILHERME SILVA" → "GUILHERME")
-    return rv===sv||rv.startsWith(sv+' ')||sv.startsWith(rv+' ');
+    // tenta vendCol configurado; se vazio, tenta col 0 e 1 como fallback
+    const tryCol=ci=>_vendMatch(_nm(r[ci]||''),sv);
+    return tryCol(vc)||(vc!==0&&tryCol(0))||(vc!==1&&tryCol(1));
   });
   const rows=sellerRows.filter(r=>{
     if(!dtFrom&&!dtTo) return true;
@@ -1945,7 +1956,7 @@ function renderFormsSummary(){
   const toVal=document.getElementById('forms-dt-to')?.value;
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   const sv=_nm(currentRegSeller);
 
   const countType=type=>{
@@ -1953,9 +1964,8 @@ function renderFormsSummary(){
     const cfg=FORMS_CONFIG[type];
     const vc=cfg.vendCol??0, dc=cfg.dateCol??1;
     return c.filter(r=>{
-      const rv=_nm(r[vc]||'');
-      if(!rv||rv==='#N/A') return false;
-      if(!(rv===sv||rv.startsWith(sv+' ')||sv.startsWith(rv+' '))) return false;
+      const tryCol=ci=>_vendMatch(_nm(r[ci]||''),sv);
+      if(!tryCol(vc)&&!((vc!==0)&&tryCol(0))&&!((vc!==1)&&tryCol(1))) return false;
       if(!dtFrom&&!dtTo) return true;
       const d=toDate(r[dc]);
       if(!d) return true;
@@ -2543,11 +2553,11 @@ function applySession(user){
   if(user.role!=='TECNICO'){
     const now=new Date();
     const y=now.getFullYear(),m=now.getMonth();
-    const fmt=d=>d.toISOString().slice(0,10);
+    const fmtLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const fromEl=document.getElementById('act-dt-from');
     const toEl  =document.getElementById('act-dt-to');
-    if(fromEl&&!fromEl.value) fromEl.value=fmt(new Date(y,m,1));
-    if(toEl&&!toEl.value)     toEl.value  =fmt(new Date(y,m+1,0));
+    if(fromEl&&!fromEl.value) fromEl.value=fmtLocal(new Date(y,m,1));
+    if(toEl&&!toEl.value)     toEl.value  =fmtLocal(new Date(y,m+1,0));
     loadAllFormsAndRender();
   }
 }
@@ -2616,16 +2626,15 @@ function renderVendorDashboard(user, vendorKey){
   const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
 
   // Atividades do mês (dos formsCaches já carregados)
-  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-  const vNorm=_nm(user.name);
+  const _nm2=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+  const vNorm=_nm2(user.name);
   const now2=new Date(); const cm=now2.getMonth(),cy=now2.getFullYear();
-  const _vendMatch=(rv,sv)=>rv===sv||rv.startsWith(sv+' ')||sv.startsWith(rv+' ');
   const countF=type=>{
     const dc=FORMS_CONFIG[type]?.dateCol??1;
     const vc=FORMS_CONFIG[type]?.vendCol??0;
     return formsCaches[type].filter(r=>{
-      const rv=_nm(r[vc]||'');
-      if(!rv||rv==='#N/A'||!_vendMatch(rv,vNorm)) return false;
+      const tryCol=ci=>_vendMatch(_nm2(r[ci]||''),vNorm);
+      if(!tryCol(vc)&&!((vc!==0)&&tryCol(0))&&!((vc!==1)&&tryCol(1))) return false;
       const d=toDate(r[dc]); return d&&d.getMonth()===cm&&d.getFullYear()===cy;
     }).length;
   };
@@ -2783,16 +2792,21 @@ function renderActivities(){
   const toVal=document.getElementById('act-dt-to')?.value;
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const norm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   const types=['visitas','prospeccoes','apresentacoes','cadastros'];
   const loaded=types.some(t=>formsCaches[t].length>0);
   let total=0;
   types.forEach(t=>{
+    const vc=FORMS_CONFIG[t]?.vendCol??0;
+    const dc=FORMS_CONFIG[t]?.dateCol??1;
+    const sv=currentActSeller;
     const n=formsCaches[t].filter(r=>{
-      if(!r[0]||r[1]==='#N/A') return false;
-      if(currentActSeller!=='GERAL'&&norm(r[0].trim())!==currentActSeller) return false;
+      if(sv!=='GERAL'){
+        const tryCol=ci=>_vendMatch(norm(r[ci]||''),sv);
+        if(!tryCol(vc)&&!((vc!==0)&&tryCol(0))&&!((vc!==1)&&tryCol(1))) return false;
+      }
       if(dtFrom||dtTo){
-        const d=toDate(r[1]); if(!d) return false;
+        const d=toDate(r[dc]); if(!d) return false;
         if(dtFrom&&d<dtFrom) return false;
         if(dtTo&&d>dtTo) return false;
       }
