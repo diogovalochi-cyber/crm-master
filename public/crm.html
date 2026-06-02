@@ -638,10 +638,24 @@ body.mode-mobile .section-header{gap:12px}
 .flex-1{flex:1}.w-full{width:100%}.text-right{text-align:right}
 /* Vendor colors extra */
 .bg-joao{background:#2DD4BF}
-/* Mês toggle btn */
-.mes-toggle-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
-.mes-toggle-btn.active{background:rgba(255,255,255,.15);color:#fff}
-.mes-toggle-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+/* Mês select dropdown */
+.mes-select{
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  font-family:Inter,sans-serif;font-size:13px;font-weight:700;
+  padding:7px 32px 7px 14px;
+  border-radius:9px;cursor:pointer;outline:none;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.7)' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  transition:.15s;
+  text-shadow:none;
+}
+.mes-select:hover{background-color:rgba(0,0,0,.35);border-color:rgba(255,255,255,.3)}
+.mes-select:focus{border-color:rgba(255,255,255,.45);background-color:rgba(0,0,0,.35)}
+.mes-select option{background:#cc1a1a;color:#fff;font-weight:600}
 /* Comparativo mês selector */
 .comp-mes-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
 .comp-mes-sel option{background:#cc1a1a;color:#fff}
@@ -861,11 +875,11 @@ body.mode-mobile .section-header{gap:12px}
   <div class="card mb-16">
     <div class="card-header">
       <span class="card-title" id="ranking-title">Ranking de Faturamento — Maio 2026</span>
-      <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
-        <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
-        <button class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
-        <button class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">Junho</button>
-      </div>
+      <select class="mes-select" onchange="setMes(this.value)">
+        <option value="abril">Abril</option>
+        <option value="maio">Maio</option>
+        <option value="junho">Junho</option>
+      </select>
     </div>
     <div id="ranking-list"></div>
     <div class="rank-total">
@@ -903,11 +917,11 @@ body.mode-mobile .section-header{gap:12px}
       <div class="section-title">Análise Comercial</div>
       <div class="section-sub" id="analise-section-sub">Carteiras de Maio 2026</div>
     </div>
-    <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
-      <button class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">Abril</button>
-      <button class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">Maio</button>
-      <button class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">Junho</button>
-    </div>
+    <select class="mes-select" onchange="setMes(this.value)">
+      <option value="abril">Abril</option>
+      <option value="maio">Maio</option>
+      <option value="junho">Junho</option>
+    </select>
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
@@ -2068,7 +2082,7 @@ function renderTop5(){
 ───────────────────────────────────────── */
 function setMes(mes, btn){
   CRM_MES=mes;
-  document.querySelectorAll('.mes-toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.mes===mes));
+  document.querySelectorAll('.mes-select').forEach(s=>s.value=mes);
   // Dashboard components — always visible
   renderKPIs();
   renderRanking();
