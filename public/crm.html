@@ -2160,14 +2160,45 @@ function renderComparativo(){
   const lblA=MES_LABELS[mesA]||mesA;
   const lblB=MES_LABELS[mesB]||mesB;
   const titleEl=document.getElementById('comp-title');
+  const tblEl=document.getElementById('comp-table');
+
+  // Modo vendedor: mostra carteira de clientes do mês selecionado
+  if(window.CRM_VENDOR_ID){
+    const carteiraB=mesB==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
+    const carteiraA=mesA==='junho'?CARTEIRA_JUNHO:mesA==='maio'?CARTEIRA_MAIO:null;
+    const clientsB=(carteiraB[window.CRM_VENDOR_ID]||[]).slice().sort((a,b)=>b.valor-a.valor);
+    const totalB=clientsB.reduce((s,c)=>s+c.valor,0);
+    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${lblB} 2026`;
+    let html=`<thead><tr><th>#</th><th>Cliente</th><th>${lblB}</th><th>% do Total</th></tr></thead><tbody>`;
+    if(!clientsB.length){
+      html+=`<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para ${lblB}</td></tr>`;
+    } else {
+      clientsB.forEach((c,i)=>{
+        const pct=totalB>0?((c.valor/totalB)*100).toFixed(1):0;
+        const prevC=carteiraA?(carteiraA[window.CRM_VENDOR_ID]||[]).find(x=>x.cod===c.cod||x.nome===c.nome):null;
+        const diff=prevC?c.valor-prevC.valor:null;
+        const diffHtml=diff!==null?`<span style="font-size:11px;font-weight:600;color:${diff>=0?'rgba(255,255,255,.85)':'rgba(255,100,100,.9)'}">${diff>=0?'▲':'▼'} ${fBRL(Math.abs(diff))}</span>`:'';
+        html+=`<tr>
+          <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
+          <td style="font-weight:600">${c.nome}${diffHtml?'<br>'+diffHtml:''}</td>
+          <td style="font-weight:700;color:#fff">${fBRL(c.valor)}</td>
+          <td style="color:rgba(255,255,255,.65)">${pct}%</td>
+        </tr>`;
+      });
+      html+=`</tbody><tfoot><tr class="total-row"><td colspan="2">Total</td><td>${fBRL(totalB)}</td><td>100%</td></tr></tfoot>`;
+    }
+    tblEl.innerHTML=html;
+    return;
+  }
+
+  // Modo gestor: comparativo de vendedores entre dois meses
   if(titleEl) titleEl.textContent=`Comparativo ${lblA} vs ${lblB} 2026`;
   const dataA=getVendedoresForMes(mesA);
   const dataB=getVendedoresForMes(mesB);
-  let merged=dataA.map(vA=>{
+  const merged=dataA.map(vA=>{
     const vB=dataB.find(x=>x.cod===vA.cod)||{abr:0,cli:0};
     return {...vA, valA:vA.abr, valB:vB.abr};
   }).sort((a,b)=>b.valB-a.valB);
-  if(window.CRM_VENDOR_ID) merged=merged.filter(v=>v.cod===window.CRM_VENDOR_ID);
   let html=`<thead><tr>
     <th>Vendedor</th><th>${lblA}</th><th>${lblB}</th><th>Diferença R$</th><th>Variação %</th>
   </tr></thead><tbody>`;
@@ -2184,19 +2215,13 @@ function renderComparativo(){
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
     </tr>`;
   });
-  if(!window.CRM_VENDOR_ID){
-    const dT=tB-tA, vrT=varPct(tB,tA);
-    html+=`</tbody><tfoot><tr class="total-row">
-      <td>Total</td>
-      <td>${fBRL(tA)}</td>
-      <td>${fBRL(tB)}</td>
-      <td>${dT>=0?'+':''}${fBRL(dT)}</td>
-      <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
-    </tr></tfoot>`;
-  } else {
-    html+=`</tbody>`;
-  }
-  document.getElementById('comp-table').innerHTML=html;
+  const dT=tB-tA, vrT=varPct(tB,tA);
+  html+=`</tbody><tfoot><tr class="total-row">
+    <td>Total</td><td>${fBRL(tA)}</td><td>${fBRL(tB)}</td>
+    <td>${dT>=0?'+':''}${fBRL(dT)}</td>
+    <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
+  </tr></tfoot>`;
+  tblEl.innerHTML=html;
 }
 
 /* ─────────────────────────────────────────
