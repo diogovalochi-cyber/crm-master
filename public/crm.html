@@ -2170,30 +2170,60 @@ function renderComparativo(){
   const titleEl=document.getElementById('comp-title');
   const tblEl=document.getElementById('comp-table');
 
-  // Modo vendedor: mostra carteira de clientes do mês selecionado
+  // Modo vendedor: carteira de clientes com comparativo entre os dois meses
   if(window.CRM_VENDOR_ID){
-    const carteiraB=mesB==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
-    const carteiraA=mesA==='junho'?CARTEIRA_JUNHO:mesA==='maio'?CARTEIRA_MAIO:null;
-    const clientsB=(carteiraB[window.CRM_VENDOR_ID]||[]).slice().sort((a,b)=>b.valor-a.valor);
-    const totalB=clientsB.reduce((s,c)=>s+c.valor,0);
-    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${lblB} 2026`;
-    let html=`<thead><tr><th>#</th><th>Cliente</th><th>${lblB}</th><th>% do Total</th></tr></thead><tbody>`;
-    if(!clientsB.length){
-      html+=`<tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para ${lblB}</td></tr>`;
+    const getCart=mes=>{
+      if(mes==='junho') return (CARTEIRA_JUNHO[window.CRM_VENDOR_ID]||[]);
+      if(mes==='maio')  return (CARTEIRA_MAIO[window.CRM_VENDOR_ID]||[]);
+      return []; // abril/março — sem dados de carteira por cliente
+    };
+    const cartA=getCart(mesA);
+    const cartB=getCart(mesB);
+    const hasA=cartA.length>0;
+    const hasB=cartB.length>0;
+
+    // Merge clientes dos dois meses pelo nome
+    const map=new Map();
+    cartB.forEach(c=>map.set(c.nome,{nome:c.nome,valB:c.valor,valA:0}));
+    cartA.forEach(c=>{
+      if(map.has(c.nome)) map.get(c.nome).valA=c.valor;
+      else map.set(c.nome,{nome:c.nome,valB:0,valA:c.valor});
+    });
+    const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
+    const totA=clients.reduce((s,c)=>s+c.valA,0);
+    const totB=clients.reduce((s,c)=>s+c.valB,0);
+
+    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${hasA&&hasB?lblA+' vs '+lblB:hasB?lblB:lblA} 2026`;
+
+    const ncols=2+(hasA?1:0)+(hasB?1:0)+(hasA&&hasB?1:0);
+    let html=`<thead><tr>
+      <th>#</th><th>Cliente</th>
+      ${hasA?`<th>${lblA}</th>`:''}
+      ${hasB?`<th>${lblB}</th>`:''}
+      ${hasA&&hasB?'<th>Variação %</th>':'<th>% do Total</th>'}
+    </tr></thead><tbody>`;
+
+    if(!clients.length){
+      html+=`<tr><td colspan="${ncols}" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
     } else {
-      clientsB.forEach((c,i)=>{
-        const pct=totalB>0?((c.valor/totalB)*100).toFixed(1):0;
-        const prevC=carteiraA?(carteiraA[window.CRM_VENDOR_ID]||[]).find(x=>x.cod===c.cod||x.nome===c.nome):null;
-        const diff=prevC?c.valor-prevC.valor:null;
-        const diffHtml=diff!==null?`<span style="font-size:11px;font-weight:600;color:${diff>=0?'rgba(255,255,255,.85)':'rgba(255,100,100,.9)'}">${diff>=0?'▲':'▼'} ${fBRL(Math.abs(diff))}</span>`:'';
+      clients.forEach((c,i)=>{
+        const vr=(hasA&&hasB&&c.valA>0)?varPct(c.valB,c.valA):null;
+        const pct=(totB>0)?((c.valB/totB)*100).toFixed(1):(totA>0)?((c.valA/totA)*100).toFixed(1):'0';
+        const dc=vr?(vr.up?'#4ade80':'#f87171'):'rgba(255,255,255,.65)';
         html+=`<tr>
           <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
-          <td style="font-weight:600">${c.nome}${diffHtml?'<br>'+diffHtml:''}</td>
-          <td style="font-weight:700;color:#fff">${fBRL(c.valor)}</td>
-          <td style="color:rgba(255,255,255,.65)">${pct}%</td>
+          <td style="font-weight:600">${c.nome}</td>
+          ${hasA?`<td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>`:''}
+          ${hasB?`<td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>`:''}
+          <td style="color:${dc}">${vr?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:pct+'%'}</td>
         </tr>`;
       });
-      html+=`</tbody><tfoot><tr class="total-row"><td colspan="2">Total</td><td>${fBRL(totalB)}</td><td>100%</td></tr></tfoot>`;
+      html+=`</tbody><tfoot><tr class="total-row">
+        <td colspan="2">Total</td>
+        ${hasA?`<td>${totA>0?fBRL(totA):'—'}</td>`:''}
+        ${hasB?`<td>${totB>0?fBRL(totB):'—'}</td>`:''}
+        <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
+      </tr></tfoot>`;
     }
     tblEl.innerHTML=html;
     return;
