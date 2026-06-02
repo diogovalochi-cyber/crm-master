@@ -641,6 +641,15 @@ body.mode-mobile .section-header{gap:12px}
 .rota-cod{color:rgba(255,255,255,.4);font-size:11px;font-weight:700;min-width:36px;font-variant-numeric:tabular-nums}
 .rota-nome{flex:1;color:#fff;font-weight:500}
 .rota-freq{font-size:10px;color:rgba(255,255,255,.38);font-weight:700;white-space:nowrap;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px}
+.rota-visited{background:rgba(16,185,129,.12)!important}
+.rota-visited:hover{background:rgba(16,185,129,.2)!important}
+.rota-visited .rota-nome{color:rgba(255,255,255,.55);text-decoration:line-through}
+.rota-pending{background:rgba(248,113,113,.08)!important}
+.rota-pending:hover{background:rgba(248,113,113,.15)!important}
+.rota-status-dot{font-size:11px;min-width:18px;text-align:center;font-weight:700;flex-shrink:0}
+.rota-visited .rota-status-dot{color:#10B981}
+.rota-pending .rota-status-dot{color:#F87171}
+.rota-today-badge{font-size:10px;background:rgba(255,255,255,.15);padding:1px 7px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
 
 /* ─── VENDOR COLORS ─── */
 .bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
@@ -2289,6 +2298,9 @@ function renderRota(){
     {key:'quinta', label:'Quinta-feira'},
     {key:'sexta',  label:'Sexta-feira'},
   ];
+  const _DOW=['domingo','segunda','terca','quarta','quinta','sexta','sabado'];
+  const todayKey=_DOW[new Date().getDay()];
+
   const vend=VENDEDORES.find(v=>v.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')===currentRegSeller);
   const cod=vend?.cod||'';
   const rota=ROTAS[cod];
@@ -2300,18 +2312,59 @@ function renderRota(){
     grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.4);padding:32px;font-size:14px">Rota ainda não cadastrada para este vendedor</div>`;
     return;
   }
+
+  // Se cache de visitas ainda não carregou, busca em background e re-renderiza
+  if(formsCaches.visitas.length===0 && FORMS_CSV.visitas){
+    fetch(FORMS_CSV.visitas)
+      .then(r=>r.text())
+      .then(text=>{formsCaches.visitas=parseCSV(text).filter(r=>r[0]&&r[0].trim());renderRota();})
+      .catch(()=>{});
+  }
+
+  // Constrói Set dos cods visitados hoje por este vendedor
+  const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const todayMid=new Date();todayMid.setHours(0,0,0,0);
+  const visitedToday=new Set(
+    formsCaches.visitas
+      .filter(r=>{
+        if(_nm(r[0])!==currentRegSeller) return false;
+        const d=toDate(r[1]);if(!d) return false;
+        const dc=new Date(d);dc.setHours(0,0,0,0);
+        return dc.getTime()===todayMid.getTime();
+      })
+      .map(r=>String(r[4]||'').trim())
+  );
+
   grid.innerHTML=DIAS.map(d=>{
     const clientes=rota[d.key]||[];
-    const rows=clientes.map(c=>`
-      <div class="rota-client">
+    const isToday=d.key===todayKey;
+    const visitedCount=isToday?clientes.filter(c=>visitedToday.has(c.cod)).length:0;
+
+    const rows=clientes.map(c=>{
+      if(isToday){
+        const visited=visitedToday.has(c.cod);
+        return `<div class="rota-client ${visited?'rota-visited':'rota-pending'}">
+          <span class="rota-status-dot">${visited?'✓':'○'}</span>
+          <span class="rota-cod">${c.cod}</span>
+          <span class="rota-nome">${c.nome}</span>
+          ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
+        </div>`;
+      }
+      return `<div class="rota-client">
         <span class="rota-cod">${c.cod}</span>
         <span class="rota-nome">${c.nome}</span>
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
-      </div>`).join('');
-    return `<div class="rota-day">
-      <div class="rota-day-hdr">
-        <span class="rota-day-name">${d.label}</span>
-        <span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>
+      </div>`;
+    }).join('');
+
+    const hdrRight=isToday&&clientes.length
+      ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientes.length} visitado${visitedCount!==1?'s':''}</span>`
+      :`<span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>`;
+
+    return `<div class="rota-day" style="${isToday?'border-color:rgba(255,255,255,.22)':''}">
+      <div class="rota-day-hdr" style="${isToday?'background:rgba(255,255,255,.11)':''}">
+        <span class="rota-day-name">${d.label}${isToday?'<span class="rota-today-badge">HOJE</span>':''}</span>
+        ${hdrRight}
       </div>
       ${rows||'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>'}
     </div>`;
