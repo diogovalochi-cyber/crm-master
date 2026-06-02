@@ -2676,24 +2676,7 @@ function renderVendorDashboard(user, vendorKey){
           <div class="act-item"><div class="act-num">${actVal(nApr)}</div><div class="act-label">Apresentações</div></div>
           <div class="act-item"><div class="act-num">${actVal(nCad)}</div><div class="act-label">Cadastros</div></div>
         </div>
-        ${vM.mar>0?`
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)">
-          <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Comparativo</div>
-          <div style="display:flex;align-items:flex-end;gap:16px;height:48px">
-            <div style="flex:1;height:${Math.round((vM.mar/Math.max(vM.abr,vM.mar))*48)}px;background:rgba(255,255,255,.25);border-radius:4px 4px 0 0;min-height:4px"></div>
-            <div style="flex:1;height:${Math.round((vM.abr/Math.max(vM.abr,vM.mar))*48)}px;background:rgba(255,255,255,.65);border-radius:4px 4px 0 0;min-height:4px"></div>
-          </div>
-          <div style="display:flex;gap:16px;margin-top:6px">
-            <div style="flex:1;text-align:center">
-              <div style="font-size:9px;color:rgba(255,255,255,.7)">${mesAnt}</div>
-              <div style="font-size:10px;font-weight:700;color:#fff">${fK(vM.mar)}</div>
-            </div>
-            <div style="flex:1;text-align:center">
-              <div style="font-size:9px;color:rgba(255,255,255,.7)">${mesLabel}</div>
-              <div style="font-size:10px;font-weight:700;color:#fff">${fK(vM.abr)}</div>
-            </div>
-          </div>
-        </div>`:''}
+
       </div>
     </div>
 
