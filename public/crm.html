@@ -630,6 +630,18 @@ body.mode-mobile .rank-item{gap:8px;padding:8px 0}
 /* Section header on mobile */
 body.mode-mobile .section-header{gap:12px}
 
+/* ─── ROTA DE VISITAS ─── */
+.rota-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.rota-day{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;overflow:hidden}
+.rota-day-hdr{padding:11px 16px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.rota-day-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.rota-day-count{font-size:11px;color:rgba(255,255,255,.45);font-weight:600}
+.rota-client{display:flex;align-items:baseline;gap:8px;padding:7px 16px;border-top:1px solid rgba(255,255,255,.05);font-size:13px}
+.rota-client:hover{background:rgba(255,255,255,.04)}
+.rota-cod{color:rgba(255,255,255,.4);font-size:11px;font-weight:700;min-width:36px;font-variant-numeric:tabular-nums}
+.rota-nome{flex:1;color:#fff;font-weight:500}
+.rota-freq{font-size:10px;color:rgba(255,255,255,.38);font-weight:700;white-space:nowrap;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px}
+
 /* ─── VENDOR COLORS ─── */
 .bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
 .bg-israel{background:#8B5CF6} .bg-natalia{background:#F472B6} .bg-keller{background:#22D3EE}
@@ -1008,8 +1020,10 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab" data-type="visitas" onclick="selectFormsType(this)">Visitas</button>
     <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)">Apresentações</button>
     <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)">Cadastros</button>
+    <button class="subtab" data-type="rota" onclick="selectFormsType(this)">Rota</button>
   </div>
 
+  <div id="forms-content-wrap">
   <!-- Filtro de data -->
   <div class="forms-filter-bar" style="margin-top:14px">
     <label>De <input type="date" id="forms-dt-from" onchange="formsDateChanged()"></label>
@@ -1030,6 +1044,13 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Resumo de atividades -->
   <div id="forms-summary" style="display:none;margin-top:14px"></div>
+  </div><!-- /forms-content-wrap -->
+
+  <!-- Rota de visitas -->
+  <div id="rota-section" style="display:none;margin-top:16px">
+    <div id="rota-vendor-name" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px"></div>
+    <div class="rota-grid" id="rota-grid"></div>
+  </div>
 
   <!-- Modal de observação -->
   <div id="obs-modal" onclick="if(event.target===this)closeObsModal()">
@@ -1957,6 +1978,71 @@ const FORMS_CSV={
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv'
 };
 
+const ROTAS={
+  '093':{
+    segunda:[
+      {cod:'4864',nome:'Padaria São Luís',freq:'2x/mês'},
+      {cod:'4063',nome:'Pernambuco'},
+      {cod:'4633',nome:'Ana Maria'},
+      {cod:'4136',nome:'Niterói'},
+      {cod:'4164',nome:'Luigi'},
+      {cod:'258', nome:'Luis Jacareí'},
+    ],
+    terca:[
+      {cod:'119', nome:'Samuel'},
+      {cod:'3933',nome:'WL'},
+      {cod:'852', nome:'Ultra economia'},
+      {cod:'4964',nome:'Progresso LJ03'},
+      {cod:'4849',nome:'Bem estar'},
+      {cod:'4190',nome:'Sempre juntos'},
+      {cod:'3998',nome:'Tenesse Ragueb'},
+      {cod:'3999',nome:'Tenesse são Matheus'},
+      {cod:'4000',nome:'Tenesse guabiroba'},
+      {cod:'4380',nome:'Progresso LJ05'},
+      {cod:'3382',nome:'Maia'},
+      {cod:'4986',nome:'Padaria Dona Ana'},
+      {cod:'4983',nome:'Delícias do trigo'},
+    ],
+    quarta:[
+      {cod:'4316',nome:'Armazém Tiradentes'},
+      {cod:'4315',nome:'Armazém Guaianases'},
+      {cod:'4314',nome:'Armazém São Miguel'},
+      {cod:'4336',nome:'Michelito',freq:'1x/mês'},
+      {cod:'4534',nome:'Armazém Mboi',freq:'2x/mês'},
+      {cod:'4313',nome:'Armazém Jaraguá'},
+      {cod:'4311',nome:'Armazém city'},
+      {cod:'4701',nome:'Alcântara'},
+      {cod:'4310',nome:'Armazém Brasilândia'},
+    ],
+    quinta:[
+      {cod:'4190',nome:'Sempre juntos'},
+      {cod:'4962',nome:'Progresso LJ01'},
+      {cod:'4963',nome:'Progresso LJ02'},
+      {cod:'4489',nome:'Planalto'},
+      {cod:'4387',nome:'Ichiban',freq:'1x/mês'},
+      {cod:'4735',nome:'Economix',freq:'1x/mês'},
+      {cod:'3998',nome:'Tenesse Ragueb'},
+      {cod:'3999',nome:'Tenesse são Matheus'},
+      {cod:'3382',nome:'Mercado maia'},
+      {cod:'4380',nome:'Progresso LJ05'},
+      {cod:'4983',nome:'Delícias do trigo'},
+      {cod:'4986',nome:'Padaria Dona Ana'},
+    ],
+    sexta:[
+      {cod:'4710',nome:'JL',freq:'1x/mês'},
+      {cod:'4250',nome:'JM',freq:'1x/mês'},
+      {cod:'4726',nome:'Precioso'},
+      {cod:'550', nome:'Patrícia AP'},
+      {cod:'4012',nome:'São Francisco'},
+      {cod:'781', nome:'Osvaldo'},
+      {cod:'852', nome:'Ultra economia'},
+      {cod:'119', nome:'Samuel'},
+      {cod:'4983',nome:'Delícias do trigo'},
+      {cod:'4993',nome:'Elite pães'},
+    ],
+  },
+};
+
 function fmtDate(v){
   if(!v) return '';
   const s=String(v).replace(',','.');
@@ -2059,13 +2145,23 @@ function selectRegSeller(el){
   currentRegSeller=el.dataset.seller;
   document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  renderFormsTable();
+  if(currentFormsType==='rota') renderRota(); else renderFormsTable();
 }
 
 function selectFormsType(el){
   currentFormsType=el.dataset.type;
   document.querySelectorAll('#reg-type-tabs .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  const _rotaSec=document.getElementById('rota-section');
+  const _formsSec=document.getElementById('forms-content-wrap');
+  if(currentFormsType==='rota'){
+    if(_rotaSec) _rotaSec.style.display='block';
+    if(_formsSec) _formsSec.style.display='none';
+    renderRota();
+    return;
+  }
+  if(_rotaSec) _rotaSec.style.display='none';
+  if(_formsSec) _formsSec.style.display='';
   if(!FORMS_CSV[currentFormsType]){
     document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
     const _cfg=FORMS_CONFIG[currentFormsType];
@@ -2079,6 +2175,43 @@ function selectFormsType(el){
 }
 
 const PROSPECCOES_CSV=FORMS_CSV.prospeccoes;
+
+function renderRota(){
+  const DIAS=[
+    {key:'segunda',label:'Segunda-feira'},
+    {key:'terca',  label:'Terça-feira'},
+    {key:'quarta', label:'Quarta-feira'},
+    {key:'quinta', label:'Quinta-feira'},
+    {key:'sexta',  label:'Sexta-feira'},
+  ];
+  const vend=VENDEDORES.find(v=>v.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')===currentRegSeller);
+  const cod=vend?.cod||'';
+  const rota=ROTAS[cod];
+  const grid=document.getElementById('rota-grid');
+  const nameEl=document.getElementById('rota-vendor-name');
+  if(nameEl) nameEl.textContent=vend?`Rota de Visitas — ${vend.name}`:'';
+  if(!grid) return;
+  if(!rota){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.4);padding:32px;font-size:14px">Rota ainda não cadastrada para este vendedor</div>`;
+    return;
+  }
+  grid.innerHTML=DIAS.map(d=>{
+    const clientes=rota[d.key]||[];
+    const rows=clientes.map(c=>`
+      <div class="rota-client">
+        <span class="rota-cod">${c.cod}</span>
+        <span class="rota-nome">${c.nome}</span>
+        ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
+      </div>`).join('');
+    return `<div class="rota-day">
+      <div class="rota-day-hdr">
+        <span class="rota-day-name">${d.label}</span>
+        <span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>
+      </div>
+      ${rows||'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>'}
+    </div>`;
+  }).join('');
+}
 
 function parseCSV(text){
   const rows=[];
