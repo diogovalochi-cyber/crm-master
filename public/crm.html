@@ -377,9 +377,9 @@ body.mode-mobile #analise-kpi-grid{grid-template-columns:1fr 1fr}
 .kpi-value{font-size:22px;font-weight:900;margin:4px 0 2px;line-height:1;color:#fff}
 .kpi-sub{font-size:11px;color:rgba(255,255,255,.75)}
 .kpi-change{font-size:11px;margin-top:4px;color:rgba(255,255,255,.75)}
-.up{color:#fff}.dn{color:#fff}
-.badge-up{background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
-.badge-dn{background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
+.up{color:#4ade80}.dn{color:#f87171}
+.badge-up{background:rgba(34,197,94,.18);color:#4ade80;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(34,197,94,.25)}
+.badge-dn{background:rgba(239,68,68,.18);color:#f87171;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid rgba(239,68,68,.25)}
 
 /* ─── GRIDS ─── */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -654,7 +654,15 @@ body.mode-mobile .section-header{gap:12px}
 .mes-select:focus{border-color:rgba(255,255,255,.45);background-color:rgba(0,0,0,.35)}
 .mes-select option{background:#0A3D8A;color:#fff;font-weight:600}
 /* Comparativo mês selector */
-.comp-mes-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
+.comp-mes-sel{
+  background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.18);
+  color:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:700;
+  padding:6px 26px 6px 10px;border-radius:8px;cursor:pointer;outline:none;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.7)' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;transition:.15s;
+}
+.comp-mes-sel:hover{background-color:rgba(0,0,0,.35);border-color:rgba(255,255,255,.3)}
 .comp-mes-sel option{background:#0A3D8A;color:#fff}
 
 
@@ -663,8 +671,8 @@ body.mode-mobile .section-header{gap:12px}
 .section-title{font-size:17px;font-weight:700}
 .kpi-value{font-size:20px;font-weight:700;margin:6px 0 2px;line-height:1.1}
 .card-title{font-size:11px;letter-spacing:.7px}
-.badge-up{background:rgba(255,255,255,.18);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
-.badge-dn{background:rgba(255,255,255,.18);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
+.badge-up{background:rgba(34,197,94,.18);color:#4ade80;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;border:1px solid rgba(34,197,94,.25)}
+.badge-dn{background:rgba(239,68,68,.18);color:#f87171;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;border:1px solid rgba(239,68,68,.25)}
 .rank-pos{width:26px;text-align:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.3px;flex-shrink:0;font-variant-numeric:tabular-nums;font-family:'SF Mono',ui-monospace,monospace}
 .rank-pos.top{color:#fff}
 .member-row{cursor:pointer;border-radius:8px;margin:0 -8px;padding:8px;transition:.15s;border-bottom:1px solid rgba(255,255,255,.05)}
@@ -2207,18 +2215,22 @@ function renderComparativo(){
     const diff=v.valB-v.valA;
     const vr=varPct(v.valB,v.valA);
     tA+=v.valA; tB+=v.valB;
+    const dc=diff>0?'#4ade80':diff<0?'#f87171':'#fff';
+    const di=diff>0?'▲ +':diff<0?'▼ ':'+';
     html+=`<tr>
       <td><span style="font-weight:700">${v.name}${v.warn?' ⚠':''}</span></td>
       <td style="color:rgba(255,255,255,.65)">${fBRL(v.valA)}</td>
       <td style="font-weight:700;color:#fff">${fBRL(v.valB)}</td>
-      <td style="color:#fff;font-weight:600">${diff>=0?'+':''}${fBRL(diff)}</td>
+      <td style="color:${dc};font-weight:700">${di}${fBRL(Math.abs(diff))}</td>
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
     </tr>`;
   });
   const dT=tB-tA, vrT=varPct(tB,tA);
+  const dTc=dT>0?'#4ade80':dT<0?'#f87171':'#fff';
+  const dTi=dT>0?'▲ +':dT<0?'▼ ':'+';
   html+=`</tbody><tfoot><tr class="total-row">
     <td>Total</td><td>${fBRL(tA)}</td><td>${fBRL(tB)}</td>
-    <td>${dT>=0?'+':''}${fBRL(dT)}</td>
+    <td style="color:${dTc};font-weight:700">${dTi}${fBRL(Math.abs(dT))}</td>
     <td><span class="${vrT.up?'badge-up':'badge-dn'}">${vrT.str}</span></td>
   </tr></tfoot>`;
   tblEl.innerHTML=html;
