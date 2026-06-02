@@ -979,7 +979,6 @@ body.mode-mobile .section-header{gap:12px}
       <div class="section-title">Google Forms</div>
       <div class="section-sub">Dados preenchidos pelos vendedores</div>
     </div>
-    <button onclick="loadFormsData()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit">↻ Atualizar</button>
   </div>
 
   <!-- Nível 1: Vendedor -->
@@ -1012,7 +1011,7 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Tabela -->
   <div class="card" style="overflow-x:auto;margin-top:14px;padding:20px">
-    <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Clique em Atualizar para carregar os dados</div>
+    <div id="forms-status" style="color:#888;font-size:12px;margin-bottom:8px">Carregando...</div>
     <table id="forms-table" class="tbl">
       <thead><tr id="forms-thead-row"></tr></thead>
       <tbody id="forms-tbody">
@@ -1675,6 +1674,7 @@ function showTab(tab, el){
       toEl.value=fmtLocal(new Date(br.year,br.month,br.day));
     }
     if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
+    else loadFormsData();
   }
 }
 function showTabMobile(tab, el){
@@ -1860,7 +1860,7 @@ function renderFormsTable(){
   const ncols=cfg.cols.length;
   thead.innerHTML=cfg.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.h}</th>`).join('');
   if(!cache.length){
-    status.textContent='Clique em Atualizar para carregar os dados';
+    status.textContent='Carregando...';
     tbody.innerHTML=`<tr><td colspan="${ncols}" style="text-align:center;color:#888;padding:24px">—</td></tr>`;
     return;
   }
