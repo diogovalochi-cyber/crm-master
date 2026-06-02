@@ -591,7 +591,15 @@ body.mode-mobile .card{padding:14px}
 body.mode-mobile .subtab-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 body.mode-mobile .subtab-row::-webkit-scrollbar{display:none}
 body.mode-mobile .subtab{white-space:nowrap;flex-shrink:0}
-/* Pill rows (Por Vendedor) scroll horizontally */
+/* Pill rows (Por Vendedor) */
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.pill{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.65);font-family:Inter,sans-serif;font-size:12px;font-weight:600;
+  padding:7px 16px;border-radius:20px;cursor:pointer;transition:.18s;user-select:none;
+}
+.pill:hover{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.28)}
+.pill.active{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.5);color:#fff}
 body.mode-mobile .pill-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 body.mode-mobile .pill-row::-webkit-scrollbar{display:none}
 body.mode-mobile .pill{white-space:nowrap;flex-shrink:0}
@@ -987,7 +995,7 @@ body.mode-mobile .section-header{gap:12px}
             <div class="mini-kpi-grid" id="vendor-mini-kpis"></div>
           </div>
           <div class="card" id="vendor-bars-card">
-            <div class="card-header"><span class="card-title">Evolução Mar vs Abr</span></div>
+            <div class="card-header"><span class="card-title" id="vendor-bars-title">Evolução</span></div>
             <div id="vendor-bars" style="display:flex;align-items:flex-end;gap:20px;height:100px;padding:0 10px"></div>
           </div>
         </div>
@@ -2306,6 +2314,8 @@ function renderVendorDetail(name){
   tbl+=`</tbody></table>`;
   const nCli=clients.length;
   document.getElementById('vendor-table-title').textContent=(isCompleta?'Carteira Completa':'Top Clientes')+' · '+name+(isCompleta&&nCli?' ('+nCli+' clientes)':'');
+  const barsTitle=document.getElementById('vendor-bars-title');
+  if(barsTitle) barsTitle.textContent='Evolução '+mesAnt+' vs '+mesAtual;
   document.getElementById('vendor-table-wrap').innerHTML=tbl;
 
   // Mini KPIs
