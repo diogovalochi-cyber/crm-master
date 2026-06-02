@@ -848,18 +848,12 @@ body.mode-mobile .section-header{gap:12px}
   <div id="vendor-personal-banner" style="display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:16px 20px;margin-bottom:16px;flex-wrap:wrap;gap:12px;align-items:center"></div>
 
   <!-- KPI Cards -->
-  <div class="kpi-grid mb-16" style="grid-template-columns:1fr 1fr">
+  <div class="kpi-grid mb-16" style="grid-template-columns:1fr">
     <div class="kpi-card kpi-gold">
-      <div class="kpi-label">Total do Mês</div>
+      <div class="kpi-label" id="kpi-total-lbl">Total do Mês</div>
       <div class="kpi-value" id="kpi-total-val">R$1,11M</div>
       <div class="kpi-sub" id="kpi-total-sub">R$ 1.113.506,46</div>
       <div class="kpi-change" id="kpi-total-change"><span class="badge-up">▲ +4,6%</span> vs Março</div>
-    </div>
-    <div class="kpi-card kpi-sky">
-      <div class="kpi-label">Pedidos</div>
-      <div class="kpi-value" id="kpi-pedidos-val">389</div>
-      <div class="kpi-sub" id="kpi-pedidos-sub">179 clientes ativos</div>
-      <div class="kpi-change">Base consolidada</div>
     </div>
   </div>
 
@@ -1094,12 +1088,18 @@ function removeLogoBg(img){
    FUSO HORÁRIO — sempre Brasília (America/Sao_Paulo)
 ───────────────────────────────────────── */
 function nowBR(){
+  const now=new Date();
   const iso=new Intl.DateTimeFormat('en-CA',{
     timeZone:'America/Sao_Paulo',
     year:'numeric',month:'2-digit',day:'2-digit'
-  }).format(new Date());
+  }).format(now);
+  const tStr=new Intl.DateTimeFormat('en-US',{
+    timeZone:'America/Sao_Paulo',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+  }).format(now);
   const [y,mo,d]=iso.split('-').map(Number);
-  return {year:y,month:mo-1,day:d}; // month 0-indexed como JS Date
+  const [h,mn,sc]=tStr.split(':').map(Number);
+  return {year:y,month:mo-1,day:d,hour:h%24,minute:mn,second:sc};
 }
 function nowBRDateStr(){
   // "02/06/2026"
@@ -1118,6 +1118,22 @@ function nowBRDateTime(){
     hour:'2-digit',minute:'2-digit',second:'2-digit',
     hour12:false
   }).format(new Date());
+}
+
+function updateGreetingClock(userName, roleEmoji){
+  const br=nowBR();
+  const h=br.hour;
+  const saudacao=h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite';
+  const dateLong=new Intl.DateTimeFormat('pt-BR',{
+    timeZone:'America/Sao_Paulo',
+    weekday:'long',day:'numeric',month:'long',year:'numeric'
+  }).format(new Date());
+  const dateStr=dateLong.charAt(0).toUpperCase()+dateLong.slice(1);
+  const timeStr=String(br.hour).padStart(2,'0')+':'+String(br.minute).padStart(2,'0');
+  const greet=document.getElementById('dash-greeting');
+  const sub=document.getElementById('dash-subgreeting');
+  if(greet) greet.textContent=(userName?saudacao+', '+userName:saudacao)+' '+(roleEmoji||'☀️');
+  if(sub) sub.textContent=dateStr+' · '+timeStr+' (Brasília)';
 }
 
 let CRM_MES = (()=>{const b=nowBR();return b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
@@ -1163,16 +1179,13 @@ function renderKPIs(){
   const mesTitle=MES_LABELS[CRM_MES]||'Abril';
 
   // Dashboard KPIs
+  if($('kpi-total-lbl'))  $('kpi-total-lbl').textContent='Total — '+mesTitle+' 2026';
   if($('kpi-total-val'))  $('kpi-total-val').textContent=fK(totalAbr);
   if($('kpi-total-sub'))  $('kpi-total-sub').textContent=fBRL(totalAbr);
   if($('kpi-total-change')) $('kpi-total-change').innerHTML=`<span class="${cls(varPct)}">${arrow(varPct)}${Math.abs(varPct).toFixed(1)}%</span> ${mesLabel}`;
   if($('kpi-lider-val'))  $('kpi-lider-val').textContent=lider?.name||'—';
   if($('kpi-lider-sub'))  $('kpi-lider-sub').textContent=fK(lider?.abr||0)+' · '+(lider?.cli||0)+' clientes';
   if($('kpi-lider-change')) $('kpi-lider-change').innerHTML=`<span class="${cls(liderVar)}">${arrow(liderVar)}${Math.abs(liderVar).toFixed(1)}%</span> ${mesLabel}`;
-  if($('kpi-pedidos-val'))$('kpi-pedidos-val').textContent=totalPed.toLocaleString('pt-BR');
-  if($('kpi-pedidos-sub'))$('kpi-pedidos-sub').textContent=totalCli+' clientes ativos';
-  if($('kpi-ticket-val')) $('kpi-ticket-val').textContent=fK(ticketMedio);
-  if($('kpi-ticket-sub')) $('kpi-ticket-sub').textContent='por pedido · '+mesTitle+' 2026';
   // Rank total
   if($('rank-total-dynamic')) $('rank-total-dynamic').textContent=fBRL(totalAbr);
   // Topbar stats
@@ -2407,9 +2420,9 @@ function applySession(user){
   if(avEl) avEl.textContent=user.av||user.name.slice(0,2).toUpperCase();
   const avLabel=document.querySelector('.topbar-avatar-label');
   if(avLabel) avLabel.textContent=user.name+' · '+user.role;
-  // Greeting
-  const greet=document.getElementById('dash-greeting');
-  if(greet) greet.textContent='Bom dia, '+user.name+' '+(roleEmoji[user.role]||'☀️');
+  // Greeting + relógio ao vivo
+  updateGreetingClock(user.name, roleEmoji[user.role]||'☀️');
+  if(!window._clockInterval) window._clockInterval=setInterval(()=>updateGreetingClock(CRM_USER?.name, roleEmoji[CRM_USER?.role]||'☀️'), 60000);
   // Sidebar footer
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · '+user.role+'</strong><span>Abril 2026</span>';
@@ -2646,6 +2659,7 @@ let _appInitialized=false;
 function _initApp(){
   if(_appInitialized) return;
   _appInitialized=true;
+  updateGreetingClock();
   setMes(CRM_MES);
 }
 document.addEventListener('DOMContentLoaded',()=>{
