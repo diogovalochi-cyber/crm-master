@@ -16,6 +16,7 @@ input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
 
 /* ─── RESET & BASE ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+input,button,select,textarea,svg{text-shadow:none}
 :root{
   --bg1:#FF2C2C;--bg2:#e82020;--bg3:#cc1a1a;
   --blue:#3D0018;--blue-light:#540024;--accent:#C50032;
@@ -27,7 +28,7 @@ input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
   --radius:12px;--radius-lg:16px;
   --sidebar-w:210px;--topbar-h:58px;--botnav-h:68px;
 }
-html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg1);color:var(--text);font-size:14px;line-height:1.5}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg1);color:var(--text);font-size:14px;line-height:1.5;text-shadow:0 1px 3px rgba(0,0,0,.55)}
 
 /* ─── LOGIN SCREEN ─── */
 #login-screen{
