@@ -933,27 +933,12 @@ body.mode-mobile .section-header{gap:12px}
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
-    <button class="subtab active" onclick="showSubtab('visao',this)">Visão Geral</button>
-    <button class="subtab" onclick="showSubtab('comparativo',this)">Comparativo</button>
+    <button class="subtab active" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
   </div>
 
-  <!-- SUB: Visão Geral -->
-  <div id="subtab-visao">
-    <div class="kpi-grid mb-16" id="analise-kpi-grid">
-      <div class="kpi-card kpi-gold"><div class="kpi-label">Total Abril</div><div class="kpi-value">R$1,67M</div><div class="kpi-sub">R$ 1.669.419,80</div></div>
-      <div class="kpi-card kpi-sky"><div class="kpi-label">Total Março</div><div class="kpi-value">R$1,61M</div><div class="kpi-sub">R$ 1.605.694,66</div></div>
-      <div class="kpi-card kpi-mint"><div class="kpi-label">Maior Alta</div><div class="kpi-value">Israel</div><div class="kpi-sub"><span class="badge-up">▲ +20,1%</span> M/M</div></div>
-      <div class="kpi-card kpi-peach"><div class="kpi-label">Única Queda</div><div class="kpi-value">Relson</div><div class="kpi-sub"><span class="badge-dn">▼ -6,1%</span> M/M</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Ranking Completo</span></div>
-      <div style="overflow-x:auto"><table class="tbl" id="analise-table"></table></div>
-    </div>
-  </div>
-
   <!-- SUB: Comparativo -->
-  <div id="subtab-comparativo" style="display:none">
+  <div id="subtab-comparativo">
     <div class="card">
       <div class="card-header">
         <span class="card-title" id="comp-title">Comparativo Abril vs Maio 2026</span>
@@ -1689,12 +1674,11 @@ function showTab(tab, el){
   if(el) el.classList.add('active');
   if(tab==='analise'){
     if(window.CRM_VENDOR_ID){
-      const pvBtn=document.querySelectorAll('#tab-analise .subtab')[2];
+      const pvBtn=document.querySelectorAll('#tab-analise .subtab')[1];
       if(pvBtn) showSubtab('porvendedor',pvBtn);
     }
     if(_analiseNeedsRender){
       _analiseNeedsRender=false;
-      renderAnaliseTable();
       renderComparativo();
       renderVendorDetail(activeVendor);
     }
@@ -1721,13 +1705,12 @@ function showTabMobile(tab, el){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  // Vendedor só pode ver Por Vendedor, Atividades (e Carteira via seletor)
-  if(window.CRM_VENDOR_ID && (id==='visao'||id==='comparativo')){
+  if(window.CRM_VENDOR_ID && id!=='porvendedor'){
     id='porvendedor';
     const pvBtns=document.querySelectorAll('#tab-analise .subtab');
-    el=pvBtns[2]||el;
+    el=pvBtns[1]||el;
   }
-  ['visao','comparativo','porvendedor'].forEach(s=>{
+  ['comparativo','porvendedor'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
@@ -2098,7 +2081,6 @@ function setMes(mes, btn){
   renderDonut('donut-svg','donut-legend');
   // Analise tab — lazy: only render when the tab is open
   if(document.getElementById('tab-analise')?.classList.contains('active')){
-    renderAnaliseTable();
     if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
     if(document.getElementById('subtab-porvendedor')?.style.display!=='none') renderVendorDetail(activeVendor);
   } else {
@@ -2499,9 +2481,9 @@ function applyVendorMode(user){
     else{btn.style.display='none';btn.classList.remove('active');}
   });
 
-  // Análise: mostra apenas Por Vendedor (índice 2)
+  // Análise: mostra apenas Por Vendedor (índice 1)
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i!==2) btn.style.display='none';
+    if(i!==1) btn.style.display='none';
   });
 
   // Substitui dashboard pelo painel pessoal do vendedor
