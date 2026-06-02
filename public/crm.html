@@ -230,7 +230,7 @@ body.mode-print{--mode:print}
   font-size:12px;color:rgba(255,255,255,.7);
 }
 .topbar-stat strong{color:#fff;font-weight:700}
-.topbar-stat .up{color:var(--mint)}
+.topbar-stat .up{color:#fff}
 .topbar-toggles{margin-left:auto;display:flex;gap:6px}
 .topbar-stats + .topbar-toggles{margin-left:0}
 .btn-toggle{
@@ -279,7 +279,7 @@ body.mode-print{--mode:print}
 .sidebar-footer{
   position:absolute;bottom:0;left:0;right:0;
   padding:12px 16px;border-top:1px solid var(--border);
-  font-size:11px;color:var(--text-dim);
+  font-size:11px;color:rgba(255,255,255,.75);
 }
 .sidebar-footer strong{display:block;color:#fff}
 
@@ -364,8 +364,8 @@ body.mode-print .bar-fill{print-color-adjust:exact;-webkit-print-color-adjust:ex
 }
 .card:hover{background:var(--card-hover)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.card-title{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-dim)}
-.card-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.1);color:var(--text-dim)}
+.card-title{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.card-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75)}
 
 /* ─── KPI CARDS ─── */
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
@@ -380,17 +380,17 @@ body.mode-mobile #analise-kpi-grid{grid-template-columns:1fr 1fr}
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   border-radius:var(--radius-lg) var(--radius-lg) 0 0;
 }
-.kpi-gold::before{background:var(--gold)}
-.kpi-mint::before{background:var(--mint)}
-.kpi-sky::before{background:var(--sky)}
-.kpi-peach::before{background:var(--peach)}
-.kpi-label{font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.kpi-value{font-size:22px;font-weight:900;margin:4px 0 2px;line-height:1}
-.kpi-sub{font-size:11px;color:var(--text-dim)}
-.kpi-change{font-size:11px;margin-top:4px}
-.up{color:var(--mint)}.dn{color:var(--coral)}
-.badge-up{background:rgba(0,212,170,.2);color:var(--mint);padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
-.badge-dn{background:rgba(255,107,107,.2);color:var(--coral);padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
+.kpi-gold::before{background:rgba(255,255,255,.35)}
+.kpi-mint::before{background:rgba(255,255,255,.35)}
+.kpi-sky::before{background:rgba(255,255,255,.35)}
+.kpi-peach::before{background:rgba(255,255,255,.35)}
+.kpi-label{font-size:10px;color:rgba(255,255,255,.7);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.kpi-value{font-size:22px;font-weight:900;margin:4px 0 2px;line-height:1;color:#fff}
+.kpi-sub{font-size:11px;color:rgba(255,255,255,.75)}
+.kpi-change{font-size:11px;margin-top:4px;color:rgba(255,255,255,.75)}
+.up{color:#fff}.dn{color:#fff}
+.badge-up{background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-dn{background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:20px;font-size:10px;font-weight:700}
 
 /* ─── GRIDS ─── */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -405,7 +405,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);
 }
 .rank-item:last-child{border-bottom:none}
-.rank-num{width:18px;text-align:center;font-size:11px;color:var(--text-muted);flex-shrink:0}
+.rank-num{width:18px;text-align:center;font-size:11px;color:rgba(255,255,255,.6);flex-shrink:0}
 .rank-av{
   width:32px;height:32px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
@@ -414,7 +414,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 }
 .rank-info{flex:1;min-width:0}
 .rank-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rank-meta{font-size:10px;color:var(--text-dim)}
+.rank-meta{font-size:10px;color:rgba(255,255,255,.65)}
 .rank-bar-wrap{flex:1;background:rgba(255,255,255,.08);border-radius:4px;height:5px;overflow:hidden;max-width:100px}
 .rank-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
 .rank-value{text-align:right;flex-shrink:0}
@@ -424,7 +424,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   display:flex;justify-content:space-between;padding:10px 0 0;
   border-top:1px solid rgba(255,255,255,.1);margin-top:4px;
 }
-.rank-total-label{font-size:12px;color:var(--text-dim);font-weight:700}
+.rank-total-label{font-size:12px;color:rgba(255,255,255,.75);font-weight:700}
 .rank-total-val{font-size:16px;font-weight:900}
 
 /* ─── ALERTS ─── */
@@ -432,10 +432,10 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .alert-item:last-child{border-bottom:none}
 .alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .alert-dot.urg{background:#FF4444}
-.alert-dot.warn{background:var(--gold)}
-.alert-dot.ok{background:var(--mint)}
-.alert-dot.info{background:var(--sky)}
-.alert-text{font-size:12px;color:var(--text-dim)}
+.alert-dot.warn{background:rgba(255,255,255,.6)}
+.alert-dot.ok{background:rgba(255,255,255,.9)}
+.alert-dot.info{background:rgba(255,255,255,.4)}
+.alert-text{font-size:12px;color:rgba(255,255,255,.8)}
 .alert-text strong{color:#fff}
 
 /* ─── SUB TABS ─── */
@@ -451,27 +451,27 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 
 /* ─── TABLE ─── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border);font-weight:700}
+.tbl th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.7);border-bottom:1px solid var(--border);font-weight:700}
 .tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:rgba(255,255,255,.03)}
-.tbl .total-row td{border-top:1px solid rgba(255,255,255,.15);font-weight:700;color:var(--gold)}
+.tbl .total-row td{border-top:1px solid rgba(255,255,255,.15);font-weight:700;color:#fff}
 #forms-table{width:100%;min-width:720px}
 #forms-table th{white-space:nowrap;text-align:center;padding:10px 14px;font-size:12px;letter-spacing:.4px}
 #forms-table td{font-size:14px;vertical-align:middle;white-space:nowrap;text-align:center;padding:11px 14px;line-height:1.4}
 #forms-table td.td-wrap{white-space:normal;word-break:break-word;min-width:140px}
 .forms-filter-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.07)}
-.forms-filter-bar label{font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:8px;font-weight:500}
+.forms-filter-bar label{font-size:13px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:8px;font-weight:500}
 .forms-filter-bar input[type=date]{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:7px 10px;font-size:13px;font-family:inherit;cursor:pointer;color-scheme:dark}
-.forms-filter-bar .clear-btn{font-size:12px;color:var(--text-dim);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 14px;cursor:pointer;font-family:inherit;margin-left:auto}
+.forms-filter-bar .clear-btn{font-size:12px;color:rgba(255,255,255,.75);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 14px;cursor:pointer;font-family:inherit;margin-left:auto}
 .forms-filter-bar .clear-btn:hover{color:#fff;border-color:rgba(255,255,255,.5)}
-.obs-btn{font-size:11px;color:var(--gold);background:none;border:1px solid rgba(200,170,80,.3);border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
-.obs-btn:hover{background:rgba(200,170,80,.12)}
-.foto-link{color:var(--gold);font-size:16px;text-decoration:none;line-height:1}
+.obs-btn{font-size:11px;color:rgba(255,255,255,.8);background:none;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.obs-btn:hover{background:rgba(255,255,255,.1)}
+.foto-link{color:#fff;font-size:16px;text-decoration:none;line-height:1}
 .foto-link:hover{opacity:.75}
 #obs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center}
 #obs-modal-box{background:#cc1a1a;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:24px 28px;max-width:500px;width:92%;max-height:70vh;overflow-y:auto;position:relative}
-#obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:10px}
+#obs-modal-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.7);margin-bottom:10px}
 #obs-modal-text{color:var(--text);font-size:14px;line-height:1.65;white-space:pre-wrap;margin:0}
 #obs-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;line-height:1;padding:0}
 #obs-modal-close:hover{color:#fff}
@@ -517,7 +517,7 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 .donut-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
 .role-badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;background:rgba(255,255,255,.1);white-space:nowrap}
-.warn-badge{background:rgba(255,107,107,.2);color:var(--coral)}
+.warn-badge{background:rgba(255,255,255,.15);color:rgba(255,255,255,.9)}
 
 /* ─── TOP 5 ─── */
 .top5-item{
@@ -525,10 +525,10 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   border-bottom:1px solid rgba(255,255,255,.05);
 }
 .top5-item:last-child{border-bottom:none}
-.top5-rank{font-size:10px;font-weight:700;color:var(--text-muted);width:16px;text-align:center}
+.top5-rank{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);width:16px;text-align:center}
 .top5-name{flex:1;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.top5-seller{font-size:10px;color:var(--text-dim);white-space:nowrap}
-.top5-val{font-size:12px;font-weight:700;white-space:nowrap;text-align:right}
+.top5-seller{font-size:10px;color:rgba(255,255,255,.65);white-space:nowrap}
+.top5-val{font-size:12px;font-weight:700;white-space:nowrap;text-align:right;color:#fff}
 
 /* ─── ACTIVITY GRID ─── */
 .act-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -536,14 +536,14 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
   background:rgba(255,255,255,.05);border-radius:10px;
   padding:10px;text-align:center;
 }
-.act-num{font-size:24px;font-weight:700;color:var(--text)}
-.act-label{font-size:10px;color:var(--text-dim);font-weight:600;margin-top:2px}
+.act-num{font-size:24px;font-weight:700;color:#fff}
+.act-label{font-size:10px;color:rgba(255,255,255,.7);font-weight:600;margin-top:2px}
 
 /* ─── MINI KPIS ─── */
 .mini-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mini-kpi{background:rgba(255,255,255,.05);border-radius:10px;padding:12px;text-align:center}
-.mini-kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:700}
-.mini-kpi-value{font-size:16px;font-weight:900;margin-top:3px}
+.mini-kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.7);font-weight:700}
+.mini-kpi-value{font-size:16px;font-weight:900;margin-top:3px;color:#fff}
 
 /* ─── ANIM ─── */
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -566,7 +566,7 @@ button,a,[onclick]{touch-action:manipulation}
   margin-bottom:16px;flex-wrap:wrap;gap:8px;
 }
 .section-title{font-size:20px;font-weight:900}
-.section-sub{font-size:12px;color:var(--text-dim);margin-top:1px}
+.section-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:1px}
 
 /* ─── RESPONSIVE ADJUSTMENTS ─── */
 body.mode-mobile .grid-3,body.mode-mobile .dash-second-grid,body.mode-mobile .analise-main-grid{
@@ -659,10 +659,10 @@ body.mode-mobile .section-header{gap:12px}
 .section-title{font-size:17px;font-weight:700}
 .kpi-value{font-size:20px;font-weight:700;margin:6px 0 2px;line-height:1.1}
 .card-title{font-size:11px;letter-spacing:.7px}
-.badge-up{background:rgba(0,212,170,.12);color:var(--mint);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
-.badge-dn{background:rgba(255,107,107,.12);color:var(--coral);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
-.rank-pos{width:26px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.3px;flex-shrink:0;font-variant-numeric:tabular-nums;font-family:'SF Mono',ui-monospace,monospace}
-.rank-pos.top{color:var(--gold)}
+.badge-up{background:rgba(255,255,255,.18);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
+.badge-dn{background:rgba(255,255,255,.18);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;border:none}
+.rank-pos{width:26px;text-align:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.3px;flex-shrink:0;font-variant-numeric:tabular-nums;font-family:'SF Mono',ui-monospace,monospace}
+.rank-pos.top{color:#fff}
 .member-row{cursor:pointer;border-radius:8px;margin:0 -8px;padding:8px;transition:.15s;border-bottom:1px solid rgba(255,255,255,.05)}
 .member-row:last-child{border-bottom:none}
 .member-row:hover{background:rgba(255,255,255,.06);border-bottom-color:transparent}
@@ -866,7 +866,7 @@ body.mode-mobile .section-header{gap:12px}
       <div class="kpi-label">Pedidos</div>
       <div class="kpi-value" id="kpi-pedidos-val">389</div>
       <div class="kpi-sub" id="kpi-pedidos-sub">179 clientes ativos</div>
-      <div class="kpi-change" style="color:var(--text-dim)">Base consolidada</div>
+      <div class="kpi-change">Base consolidada</div>
     </div>
   </div>
 
@@ -1994,15 +1994,15 @@ function renderFormsSummary(){
     return `<div style="flex:1;min-width:110px;background:${isActive?'rgba(255,255,255,.12)':'rgba(255,255,255,.05)'};border:1px solid ${isActive?'rgba(255,255,255,.25)':'rgba(255,255,255,.08)'};border-radius:10px;padding:12px 14px;text-align:center">
       <div style="font-size:18px;margin-bottom:4px">${t.icon}</div>
       <div style="font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:${isActive?'#fff':'rgba(255,255,255,.75)'}">${n===null?'—':n}</div>
-      <div style="font-size:10px;color:var(--text-muted);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">${t.label}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">${t.label}</div>
     </div>`;
   }).join('');
 
   el.style.display='block';
   el.innerHTML=`<div class="card" style="padding:16px 20px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Resumo · ${period}</span>
-      <span style="font-size:13px;font-weight:700;color:var(--gold)">${total} atividade${total!==1?'s':''}</span>
+      <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px">Resumo · ${period}</span>
+      <span style="font-size:13px;font-weight:700;color:#fff">${total} atividade${total!==1?'s':''}</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">${cardsHtml}</div>
   </div>`;
@@ -2055,15 +2055,15 @@ function renderRanking(){
     const varPctV=v.mar>0?((v.abr-v.mar)/v.mar*100):null;
     html+=`<div class="rank-item">
       <div class="rank-pos ${i<3&&!isNew?'top':''}">${String(i+1).padStart(2,'0')}</div>
-      <div class="rank-av" style="background:${isNew?'rgba(255,255,255,.08)':v.color+'22'};color:#fff">${v.av}</div>
+      <div class="rank-av" style="background:rgba(255,255,255,.12);color:#fff">${v.av}</div>
       <div class="rank-info">
-        <div class="rank-name">${v.name}${v.newHire?' <span style="font-size:9px;color:var(--gold)">★ Novo</span>':''}</div>
+        <div class="rank-name">${v.name}${v.newHire?' <span style="font-size:9px;color:rgba(255,255,255,.7)">★ Novo</span>':''}</div>
         <div class="rank-meta">${isNew&&v.abr===0?'Ingresso 2026 · cód.'+v.cod:v.cli+' cli · '+v.ped+' ped · cód.'+v.cod}</div>
       </div>
-      <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%;background:${v.color}"></div></div>
+      <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%;background:rgba(255,255,255,.65)"></div></div>
       <div class="rank-value">
-        <div class="rank-val-main" style="color:${isNew&&v.abr===0?'var(--text-muted)':'var(--text)'}">${isNew&&v.abr===0?'—':fK(v.abr)}</div>
-        <div class="rank-val-change ${varPctV===null?'':varPctV>=0?'up':'dn'}">${varPctV===null?'Novo':((varPctV>=0?'▲ +':'▼ ')+Math.abs(varPctV).toFixed(1)+'%')}</div>
+        <div class="rank-val-main" style="color:${isNew&&v.abr===0?'rgba(255,255,255,.4)':'#fff'}">${isNew&&v.abr===0?'—':fK(v.abr)}</div>
+        <div class="rank-val-change" style="color:rgba(255,255,255,.7)">${varPctV===null?'Novo':((varPctV>=0?'▲ +':'▼ ')+Math.abs(varPctV).toFixed(1)+'%')}</div>
       </div>
     </div>`;
   });
@@ -2087,7 +2087,7 @@ function renderTop5(){
     html+=`<div class="top5-item">
       <div class="top5-rank">${c.r}</div>
       <div class="top5-name">${c.nome}</div>
-      <div class="top5-seller" style="color:${col}">${c.vend}</div>
+      <div class="top5-seller">${c.vend}</div>
       <div class="top5-val">${fK(c.val)}</div>
     </div>`;
   });
@@ -2184,16 +2184,16 @@ function renderCarteira(){
   filtered.forEach((c,i)=>{
     const pct=totalBruto>0?((c.valor/totalBruto)*100):0;
     tbl+=`<tr>
-      <td style="color:var(--text-muted);font-size:11px">${i+1}</td>
-      <td style="color:var(--text-dim);font-size:11px;font-weight:600">${c.cod}</td>
+      <td style="color:rgba(255,255,255,.5);font-size:11px">${i+1}</td>
+      <td style="color:rgba(255,255,255,.65);font-size:11px;font-weight:600">${c.cod}</td>
       <td style="font-size:12px;max-width:220px">${c.nome}</td>
-      <td style="text-align:right;font-weight:700;color:${vInfo.color||'#fff'}">${fBRL(c.valor)}</td>
+      <td style="text-align:right;font-weight:700;color:#fff">${fBRL(c.valor)}</td>
       <td class="carteira-bar">
         <div style="display:flex;align-items:center;gap:6px">
           <div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px">
-            <div class="carteira-bar-inner" style="width:${pct.toFixed(1)}%;background:${vInfo.color||'rgba(255,255,255,.4)'}">&nbsp;</div>
+            <div class="carteira-bar-inner" style="width:${pct.toFixed(1)}%;background:rgba(255,255,255,.6)">&nbsp;</div>
           </div>
-          <span style="font-size:10px;color:var(--text-dim);width:32px">${pct.toFixed(1)}%</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.7);width:32px">${pct.toFixed(1)}%</span>
         </div>
       </td>
     </tr>`;
@@ -2226,18 +2226,20 @@ function renderDonut(svgId, legendId){
   const R=50, C=Math.PI*2*R;
   let offset=0;
   let segs='', legendHtml='';
-  sorted.forEach(v=>{
+  const wLevels=['rgba(255,255,255,.9)','rgba(255,255,255,.7)','rgba(255,255,255,.55)','rgba(255,255,255,.4)','rgba(255,255,255,.28)','rgba(255,255,255,.18)','rgba(255,255,255,.12)','rgba(255,255,255,.08)','rgba(255,255,255,.05)'];
+  sorted.forEach((v,idx)=>{
     const share=v.abr/total;
     const dash=share*C;
-    segs+=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${v.color}" stroke-width="18"
+    const wc=wLevels[idx]||'rgba(255,255,255,.08)';
+    segs+=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${wc}" stroke-width="18"
       stroke-dasharray="${dash} ${C-dash}"
       stroke-dashoffset="${C-offset}"
       transform="rotate(-90 60 60)"
       style="transition:stroke-dashoffset .6s ease"/>`;
     legendHtml+=`<div class="donut-legend-item">
-      <div class="donut-legend-dot" style="background:${v.color}"></div>
-      <span style="color:var(--text-dim)">${v.name}</span>
-      <span style="margin-left:auto;font-weight:700;color:var(--text-dim)">${Math.round(share*100)}%</span>
+      <div class="donut-legend-dot" style="background:${wc}"></div>
+      <span style="color:#fff">${v.name}</span>
+      <span style="margin-left:auto;font-weight:700;color:rgba(255,255,255,.8)">${Math.round(share*100)}%</span>
     </div>`;
     offset+=dash;
   });
@@ -2265,16 +2267,16 @@ function renderAnaliseTable(){
     tAbr+=v.abr; tMar+=v.mar;
     html+=`<tr>
       <td><span style="font-weight:700">${v.name}${v.warn?' ⚠':''}</span></td>
-      <td style="font-weight:700">${fK(v.abr)}</td>
-      <td style="color:var(--text-dim)">${fK(v.mar)}</td>
+      <td style="font-weight:700;color:#fff">${fK(v.abr)}</td>
+      <td style="color:rgba(255,255,255,.65)">${fK(v.mar)}</td>
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
       <td>
         <div style="display:flex;flex-direction:column;gap:2px">
-          <div style="height:4px;width:${wAbr}px;background:${v.color};border-radius:4px;max-width:80px"></div>
-          <div style="height:4px;width:${wMar}px;background:${v.color}55;border-radius:4px;max-width:80px"></div>
+          <div style="height:4px;width:${wAbr}px;background:rgba(255,255,255,.75);border-radius:4px;max-width:80px"></div>
+          <div style="height:4px;width:${wMar}px;background:rgba(255,255,255,.3);border-radius:4px;max-width:80px"></div>
         </div>
       </td>
-      <td style="color:var(--text-dim)">${v.cli}</td>
+      <td style="color:rgba(255,255,255,.7)">${v.cli}</td>
     </tr>`;
   });
   const vrTotal=varPct(tAbr,tMar);
@@ -2316,9 +2318,9 @@ function renderComparativo(){
     tA+=v.valA; tB+=v.valB;
     html+=`<tr>
       <td><span style="font-weight:700">${v.name}${v.warn?' ⚠':''}</span></td>
-      <td style="color:var(--text-dim)">${fBRL(v.valA)}</td>
-      <td style="font-weight:700">${fBRL(v.valB)}</td>
-      <td style="color:${diff>=0?'var(--mint)':'var(--coral)'}">${diff>=0?'+':''}${fBRL(diff)}</td>
+      <td style="color:rgba(255,255,255,.65)">${fBRL(v.valA)}</td>
+      <td style="font-weight:700;color:#fff">${fBRL(v.valB)}</td>
+      <td style="color:#fff;font-weight:600">${diff>=0?'+':''}${fBRL(diff)}</td>
       <td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>
     </tr>`;
   });
@@ -2399,9 +2401,9 @@ function renderVendorDetail(name){
   clients.forEach((c,i)=>{
     const hasMar=c.mar!==null&&c.mar>0;
     const vr=hasMar?varPct(c.abr,c.mar):{up:true,str:'—'};
-    tbl+=`<tr><td style="color:var(--text-muted)">${i+1}</td><td>${c.cli}</td>
-      <td style="font-weight:700">${fK(c.abr)}</td>
-      <td style="color:var(--text-dim)">${hasMar?fK(c.mar):'—'}</td>
+    tbl+=`<tr><td style="color:rgba(255,255,255,.5)">${i+1}</td><td>${c.cli}</td>
+      <td style="font-weight:700;color:#fff">${fK(c.abr)}</td>
+      <td style="color:rgba(255,255,255,.65)">${hasMar?fK(c.mar):'—'}</td>
       <td>${hasMar?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:'—'}</td>
     </tr>`;
   });
@@ -2415,9 +2417,9 @@ function renderVendorDetail(name){
   const diff=v.abr-v.mar;
   document.getElementById('vendor-mini-kpis').innerHTML=`
     <div class="mini-kpi"><div class="mini-kpi-label">${mesAtual}</div><div class="mini-kpi-value">${fK(v.abr)}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">${mesAnt}</div><div class="mini-kpi-value" style="color:var(--text-dim)">${fK(v.mar)}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">Variação</div><div class="mini-kpi-value ${vr.up?'up':'dn'}">${vr.str}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">Diferença</div><div class="mini-kpi-value" style="color:${diff>=0?'var(--mint)':'var(--coral)'}">${diff>=0?'+':''}${fK(diff)}</div></div>
+    <div class="mini-kpi"><div class="mini-kpi-label">${mesAnt}</div><div class="mini-kpi-value">${fK(v.mar)}</div></div>
+    <div class="mini-kpi"><div class="mini-kpi-label">Variação</div><div class="mini-kpi-value">${vr.str}</div></div>
+    <div class="mini-kpi"><div class="mini-kpi-label">Diferença</div><div class="mini-kpi-value">${diff>=0?'+':''}${fK(diff)}</div></div>
   `;
 
   // Bar chart
@@ -2426,14 +2428,14 @@ function renderVendorDetail(name){
   const hAnt=Math.round((v.mar/maxVal)*80);
   document.getElementById('vendor-bars').innerHTML=`
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hAnt}px;width:36px;background:${v.color}44;border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:var(--text-dim)">${mesAntShort}</div>
+      <div style="height:${hAnt}px;width:36px;background:rgba(255,255,255,.25);border-radius:6px 6px 0 0;transition:.4s"></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.7)">${mesAntShort}</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hAtual}px;width:36px;background:${v.color};border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:var(--text-dim)">${mesAtualShort}</div>
+      <div style="height:${hAtual}px;width:36px;background:rgba(255,255,255,.75);border-radius:6px 6px 0 0;transition:.4s"></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.7)">${mesAtualShort}</div>
     </div>
-    <div style="flex:1;padding-left:12px;font-size:11px;color:var(--text-dim);align-self:center">
+    <div style="flex:1;padding-left:12px;font-size:11px;color:rgba(255,255,255,.7);align-self:center">
       <div style="font-weight:700;color:#fff;font-size:15px">${fBRL(v.abr)}</div>
       <div>vs ${fBRL(v.mar)} em ${mesAnt}</div>
     </div>
