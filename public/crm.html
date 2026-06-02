@@ -603,9 +603,6 @@ body.mode-mobile .forms-filter-bar{flex-direction:column;align-items:stretch;gap
 body.mode-mobile .forms-filter-bar label{background:rgba(255,255,255,.06);border-radius:8px;padding:10px 12px;justify-content:space-between}
 body.mode-mobile .forms-filter-bar input[type=date]{font-size:14px;padding:6px 8px}
 body.mode-mobile .forms-filter-bar .clear-btn{margin-left:0;text-align:center;padding:10px 14px;font-size:13px}
-/* Carteira controls stack on mobile */
-body.mode-mobile #subtab-carteira>div>div:first-child{flex-direction:column;align-items:stretch}
-body.mode-mobile #subtab-carteira .mes-toggle-btn{padding:6px 10px;font-size:11px}
 /* Section header compact on mobile */
 body.mode-mobile .section-header{margin-bottom:10px}
 body.mode-mobile .section-header button{padding:6px 12px;font-size:12px}
@@ -648,11 +645,7 @@ body.mode-mobile .section-header{gap:12px}
 /* Comparativo mês selector */
 .comp-mes-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
 .comp-mes-sel option{background:#cc1a1a;color:#fff}
-/* Carteira table */
-#carteira-table-wrap table{width:100%}
-#carteira-table-wrap tr:hover td{background:rgba(255,255,255,.04)}
-#carteira-table-wrap td.carteira-bar{width:100px}
-.carteira-bar-inner{height:5px;border-radius:3px;transition:.4s}
+
 
 /* ─── UI REFINEMENTS ─── */
 .kpi-value,.rank-val-main,.rank-total-val,.act-num,.mini-kpi-value,.top5-val{font-variant-numeric:tabular-nums}
@@ -927,8 +920,6 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab active" onclick="showSubtab('visao',this)">Visão Geral</button>
     <button class="subtab" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
-    <button class="subtab" onclick="showSubtab('carteira',this)">📂 Carteira</button>
-    <button class="subtab" onclick="showSubtab('atividades',this)">Atividades</button>
   </div>
 
   <!-- SUB: Visão Geral -->
@@ -972,66 +963,6 @@ body.mode-mobile .section-header{gap:12px}
     </div>
   </div>
 
-  <!-- SUB: Atividades Google Forms -->
-  <div id="subtab-atividades" style="display:none">
-    <div class="card" id="act-card">
-      <div class="card-header">
-        <span class="card-title">Atividades · Google Forms</span>
-        <button id="act-load-btn" onclick="loadAllFormsAndRender()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer">↻ Atualizar</button>
-      </div>
-      <div class="subtab-row" id="act-seller-tabs" style="margin-bottom:12px">
-        <button class="subtab active" data-seller="GERAL" onclick="selectActSeller(this)">Geral</button>
-        <button class="subtab" data-seller="GUILHERME" onclick="selectActSeller(this)">Guilherme</button>
-        <button class="subtab" data-seller="RELSON" onclick="selectActSeller(this)">Relson</button>
-        <button class="subtab" data-seller="EVERALDO" onclick="selectActSeller(this)">Everaldo</button>
-        <button class="subtab" data-seller="ISRAEL" onclick="selectActSeller(this)">Israel</button>
-        <button class="subtab" data-seller="NATALIA" onclick="selectActSeller(this)">Natália</button>
-        <button class="subtab" data-seller="KELLER" onclick="selectActSeller(this)">Keller</button>
-        <button class="subtab" data-seller="JORGE" onclick="selectActSeller(this)">Jorge</button>
-        <button class="subtab" data-seller="ALTHIERES" onclick="selectActSeller(this)">Althieres</button>
-        <button class="subtab" data-seller="JOAO" onclick="selectActSeller(this)">João</button>
-      </div>
-      <div class="forms-filter-bar" style="margin-bottom:16px">
-        <label>De <input type="date" id="act-dt-from" onchange="renderActivities()"></label>
-        <label>Até <input type="date" id="act-dt-to" onchange="renderActivities()"></label>
-        <button class="clear-btn" onclick="document.getElementById('act-dt-from').value='';document.getElementById('act-dt-to').value='';renderActivities()">✕ Limpar</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-        <div class="act-item"><div class="act-num" id="act-n-visitas">—</div><div class="act-label">Visitas</div></div>
-        <div class="act-item"><div class="act-num" id="act-n-prospeccoes">—</div><div class="act-label">Prospecções</div></div>
-        <div class="act-item"><div class="act-num" id="act-n-apresentacoes">—</div><div class="act-label">Apresentações</div></div>
-        <div class="act-item"><div class="act-num" id="act-n-cadastros">—</div><div class="act-label">Cadastros</div></div>
-      </div>
-      <div id="act-status" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:12px;text-align:center">Carregando dados...</div>
-    </div>
-  </div>
-
-  <!-- SUB: Carteira de Clientes -->
-  <div id="subtab-carteira" style="display:none">
-    <div class="card" style="padding:20px">
-      <!-- Controles -->
-      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px">
-        <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:4px">
-          <button id="mes-btn-abril" class="mes-toggle-btn" data-mes="abril" onclick="setMes('abril',this)">📅 Abril 2026</button>
-          <button id="mes-btn-maio" class="mes-toggle-btn" data-mes="maio" onclick="setMes('maio',this)">📅 Maio 2026</button>
-          <button id="mes-btn-junho" class="mes-toggle-btn" data-mes="junho" onclick="setMes('junho',this)">📅 Junho 2026</button>
-        </div>
-        <select id="carteira-vend-select" class="fi" style="flex:1;min-width:160px;max-width:260px" onchange="renderCarteira()">
-          <option value="">Selecione um vendedor...</option>
-        </select>
-        <input id="carteira-search" class="fi" type="text" placeholder="🔍 Buscar cliente..." style="flex:1;min-width:140px;max-width:260px" oninput="debRenderCarteira()">
-      </div>
-      <!-- Tabela -->
-      <div id="carteira-table-wrap" style="overflow-x:auto">
-        <div style="text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px">⊕ Selecione um vendedor para visualizar a carteira</div>
-      </div>
-      <!-- Rodapé -->
-      <div id="carteira-footer" style="display:none;margin-top:12px;padding:12px 16px;background:rgba(0,0,0,.2);border-radius:10px;display:none;justify-content:space-between;align-items:center">
-        <span id="carteira-footer-count" style="font-size:12px;color:rgba(255,255,255,.5)"></span>
-        <span id="carteira-footer-total" style="font-size:15px;font-weight:900"></span>
-      </div>
-    </div>
-  </div>
   <div id="subtab-porvendedor" style="display:none">
     <div class="pill-row" id="vendor-pills"></div>
     <div style="display:grid;gap:16px" id="vendor-detail-grid">
@@ -1650,7 +1581,6 @@ function getVendedoresForMes(mes){
 /* ─────────────────────────────────────────
    UTILS
 ───────────────────────────────────────── */
-let _debCT; function debRenderCarteira(){clearTimeout(_debCT);_debCT=setTimeout(renderCarteira,150);}
 function fK(v){
   if(v>=1e6) return 'R$'+( v/1e6).toFixed(2)+'M';
   if(v>=1e3) return 'R$'+Math.round(v/1e3)+'k';
@@ -1702,7 +1632,6 @@ function showTab(tab, el){
       renderAnaliseTable();
       renderComparativo();
       renderVendorDetail(activeVendor);
-      renderCarteira();
     }
   }
   if(tab==='registrar'){
@@ -1734,15 +1663,13 @@ function showSubtab(id,el){
     const pvBtns=document.querySelectorAll('#tab-analise .subtab');
     el=pvBtns[2]||el;
   }
-  ['visao','comparativo','porvendedor','carteira','atividades'].forEach(s=>{
+  ['visao','comparativo','porvendedor'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
   document.querySelectorAll('#tab-analise .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
-  if(id==='carteira') initCarteiraSelect();
-  if(id==='atividades') loadAllFormsAndRender();
 }
 let currentRegSeller='GUILHERME';
 let currentFormsType='prospeccoes';
@@ -2110,7 +2037,6 @@ function setMes(mes, btn){
     renderAnaliseTable();
     if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
     if(document.getElementById('subtab-porvendedor')?.style.display!=='none') renderVendorDetail(activeVendor);
-    renderCarteira();
   } else {
     _analiseNeedsRender=true;
   }
@@ -2121,92 +2047,6 @@ function setMes(mes, btn){
   if(dt) dt.textContent='Distribuição '+(MES_LABELS[mes]||mes);
 }
 
-/* ─────────────────────────────────────────
-   CARTEIRA DE CLIENTES
-───────────────────────────────────────── */
-let _carteiraInit=false;
-function initCarteiraSelect(){
-  const sel=document.getElementById('carteira-vend-select');
-  if(!sel||_carteiraInit) return;
-  _carteiraInit=true;
-  // Preenche dropdown com os 9 vendedores
-  VENDEDORES_MAIO.forEach(v=>{
-    const opt=document.createElement('option');
-    opt.value=v.cod;
-    opt.textContent=v.name+' ('+v.cod+')';
-    sel.appendChild(opt);
-  });
-  // Se for perfil VENDEDOR, pré-seleciona e bloqueia
-  if(window.CRM_VENDOR_ID){
-    sel.value=window.CRM_VENDOR_ID;
-    sel.disabled=true;
-    renderCarteira();
-  }
-}
-
-function renderCarteira(){
-  const sel=document.getElementById('carteira-vend-select');
-  const wrap=document.getElementById('carteira-table-wrap');
-  const footer=document.getElementById('carteira-footer');
-  const footCount=document.getElementById('carteira-footer-count');
-  const footTotal=document.getElementById('carteira-footer-total');
-  const search=(document.getElementById('carteira-search')?.value||'').toLowerCase();
-  if(!sel||!wrap) return;
-  const cod=sel.value;
-  if(!cod){
-    wrap.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px">⊕ Selecione um vendedor para visualizar a carteira</div>';
-    if(footer) footer.style.display='none';
-    return;
-  }
-  // Fonte de dados conforme mês
-  const clientes=CRM_MES==='junho'?(CARTEIRA_JUNHO[cod]||[]):CRM_MES==='maio'?(CARTEIRA_MAIO[cod]||[]):[];
-  const vInfo=(CRM_MES==='junho'?VENDEDORES_JUNHO:VENDEDORES_MAIO).find(v=>v.cod===cod)||VENDEDORES.find(v=>v.cod===cod)||{};
-  // Filtrar por busca
-  const filtered=clientes.filter(c=>
-    c.nome.toLowerCase().includes(search)||c.cod.includes(search)
-  );
-  // Total
-  const totalFiltrado=filtered.reduce((s,c)=>s+c.valor,0);
-  const totalBruto  =clientes.reduce((s,c)=>s+c.valor,0);
-  if(filtered.length===0){
-    wrap.innerHTML='<div style="text-align:center;padding:32px;color:rgba(255,255,255,.3);font-size:13px">Nenhum cliente encontrado</div>';
-    if(footer) footer.style.display='none';
-    return;
-  }
-  // Construir tabela
-  let tbl=`<table class="tbl"><thead><tr>
-    <th style="width:60px">#</th>
-    <th style="width:70px">Cód.</th>
-    <th>Cliente</th>
-    <th style="width:140px;text-align:right">Valor</th>
-    <th style="width:100px">%</th>
-  </tr></thead><tbody>`;
-  filtered.forEach((c,i)=>{
-    const pct=totalBruto>0?((c.valor/totalBruto)*100):0;
-    tbl+=`<tr>
-      <td style="color:rgba(255,255,255,.5);font-size:11px">${i+1}</td>
-      <td style="color:rgba(255,255,255,.65);font-size:11px;font-weight:600">${c.cod}</td>
-      <td style="font-size:12px;max-width:220px">${c.nome}</td>
-      <td style="text-align:right;font-weight:700;color:#fff">${fBRL(c.valor)}</td>
-      <td class="carteira-bar">
-        <div style="display:flex;align-items:center;gap:6px">
-          <div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px">
-            <div class="carteira-bar-inner" style="width:${pct.toFixed(1)}%;background:rgba(255,255,255,.6)">&nbsp;</div>
-          </div>
-          <span style="font-size:10px;color:rgba(255,255,255,.7);width:32px">${pct.toFixed(1)}%</span>
-        </div>
-      </td>
-    </tr>`;
-  });
-  tbl+='</tbody></table>';
-  wrap.innerHTML=tbl;
-  // Footer
-  if(footer){
-    footer.style.display='flex';
-    footCount.textContent=filtered.length+' cliente'+(filtered.length!==1?'s':'')+' · '+(MES_LABELS[CRM_MES]||CRM_MES)+' 2026';
-    footTotal.textContent='Total: '+fBRL(totalFiltrado)+(search?'  (filtrado)':'');
-  }
-}
 /* ─────────────────────────────────────────
    DONUT
 ───────────────────────────────────────── */
@@ -2551,16 +2391,19 @@ function applySession(user){
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
 
-  // Auto-carrega Forms ao abrir (exceto técnicos que não veem o dashboard)
-  if(user.role!=='TECNICO'){
-    const now=new Date();
-    const y=now.getFullYear(),m=now.getMonth();
-    const fmtLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const fromEl=document.getElementById('act-dt-from');
-    const toEl  =document.getElementById('act-dt-to');
-    if(fromEl&&!fromEl.value) fromEl.value=fmtLocal(new Date(y,m,1));
-    if(toEl&&!toEl.value)     toEl.value  =fmtLocal(new Date(y,m+1,0));
-    loadAllFormsAndRender();
+  // Auto-carrega Forms (dados necessários para contagem de atividades no dashboard do vendedor)
+  if(user.role==='VENDEDOR'){
+    const vk=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const types=['prospeccoes','visitas','apresentacoes','cadastros'];
+    Promise.all(types.map(async t=>{
+      if(formsCaches[t].length) return;
+      const url=FORMS_CSV[t]; if(!url) return;
+      try{
+        const res=await fetch(url);
+        const text=await res.text();
+        formsCaches[t]=parseCSV(text).filter(r=>r.length>1);
+      }catch(e){console.error(e);}
+    })).then(()=>renderVendorDashboard(user,vk));
   }
 }
 
@@ -2590,10 +2433,9 @@ function applyVendorMode(user){
     else{btn.style.display='none';btn.classList.remove('active');}
   });
 
-  // Análise: mostra apenas Por Vendedor (2) e Atividades (4)
-  currentActSeller=vendorKey;
+  // Análise: mostra apenas Por Vendedor (índice 2)
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i!==2&&i!==4) btn.style.display='none';
+    if(i!==2) btn.style.display='none';
   });
 
   // Substitui dashboard pelo painel pessoal do vendedor
@@ -2762,72 +2604,6 @@ document.addEventListener('keydown',e=>{
 /* ─────────────────────────────────────────
    INIT
 ───────────────────────────────────────── */
-/* ─── ATIVIDADES DASHBOARD ─── */
-let currentActSeller='GERAL';
-
-async function loadAllFormsAndRender(){
-  const btn=document.getElementById('act-load-btn');
-  if(btn){btn.textContent='↻ Carregando...';btn.disabled=true;}
-  const types=['prospeccoes','visitas','apresentacoes','cadastros'];
-  try{
-    await Promise.all(types.map(async t=>{
-      if(formsCaches[t].length) return;
-      const url=FORMS_CSV[t]; if(!url) return;
-      const res=await fetch(url);
-      const text=await res.text();
-      formsCaches[t]=parseCSV(text).filter(r=>r.length>1);
-    }));
-  }catch(e){console.error(e);}
-  if(btn){btn.textContent='↻ Atualizar';btn.disabled=false;}
-  renderActivities();
-}
-
-function selectActSeller(el){
-  currentActSeller=el.dataset.seller;
-  document.querySelectorAll('#act-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  renderActivities();
-}
-
-function renderActivities(){
-  const fromVal=document.getElementById('act-dt-from')?.value;
-  const toVal=document.getElementById('act-dt-to')?.value;
-  const dtFrom=fromVal?new Date(fromVal):null;
-  const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
-  const norm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
-  const types=['visitas','prospeccoes','apresentacoes','cadastros'];
-  const loaded=types.some(t=>formsCaches[t].length>0);
-  let total=0;
-  types.forEach(t=>{
-    const vc=FORMS_CONFIG[t]?.vendCol??0;
-    const dc=FORMS_CONFIG[t]?.dateCol??1;
-    const sv=currentActSeller;
-    const n=formsCaches[t].filter(r=>{
-      if(sv!=='GERAL'){
-        const tryCol=ci=>_vendMatch(norm(r[ci]||''),sv);
-        if(!tryCol(vc)&&!((vc!==0)&&tryCol(0))&&!((vc!==1)&&tryCol(1))) return false;
-      }
-      if(dtFrom||dtTo){
-        const d=toDate(r[dc]); if(!d) return false;
-        if(dtFrom&&d<dtFrom) return false;
-        if(dtTo&&d>dtTo) return false;
-      }
-      return true;
-    }).length;
-    const el=document.getElementById('act-n-'+t);
-    if(el) el.textContent=loaded?n:'—';
-    if(loaded) total+=n;
-  });
-  const status=document.getElementById('act-status');
-  if(status){
-    if(!loaded) status.textContent='Clique em Carregar para ver os dados dos formulários';
-    else{
-      const p=(dtFrom||dtTo)?' no período selecionado':'';
-      status.textContent=total+' registro(s)'+p;
-    }
-  }
-}
-
 /* ─── AUTO MODE DETECTION ─── */
 function autoMode(){
   if(document.body.classList.contains('mode-print')) return;
