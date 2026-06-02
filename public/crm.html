@@ -281,9 +281,9 @@ body.mode-print{--mode:print}
   box-shadow:0 -2px 24px rgba(0,0,0,.45);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
-.botnav-inner{display:flex;height:74px;padding:0;align-items:stretch;justify-content:space-evenly}
+.botnav-inner{display:flex;height:74px;padding:0;align-items:stretch}
 .botnav-item{
-  flex:0 0 90px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:5px;cursor:pointer;padding:10px 6px 8px;
   color:rgba(255,255,255,.45);transition:.18s ease;
   font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
@@ -2562,7 +2562,7 @@ function renderVendorDashboard(user, vendorKey){
   // Variação vs mês anterior
   const varPctV=vM.mar>0?((vM.abr-vM.mar)/vM.mar*100):null;
   const varHTML=varPctV!==null
-    ?`<span style="background:rgba(255,255,255,.2);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${varPctV>=0?'▲ +':'▼ '}${Math.abs(varPctV).toFixed(1)}%</span> vs ${mesAnt}`
+    ?`<span style="background:${varPctV>=0?'rgba(34,197,94,.18)':'rgba(239,68,68,.18)'};color:${varPctV>=0?'#4ade80':'#f87171'};padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${varPctV>=0?'▲ +':'▼ '}${Math.abs(varPctV).toFixed(1)}%</span> vs ${mesAnt}`
     :vM.ped+' pedidos';
 
   const metaMap={'093':500000,'094':250000,'115':200000,'116':200000,'117':150000,'107':100000,'119':100000,'118':80000,'120':30000};
@@ -2602,7 +2602,7 @@ function renderVendorDashboard(user, vendorKey){
   const histHtml=histMeses.map(m=>{
     const isAct=m.label.toLowerCase()===CRM_MES;
     const varP=m.prev>0?((m.abr-m.prev)/m.prev*100):null;
-    const varS=varP!==null?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);margin-top:5px">${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}% vs ${m.prevLabel}</div>`:'';
+    const varS=varP!==null?`<div style="font-size:11px;font-weight:700;color:${varP>=0?'#4ade80':'#f87171'};margin-top:5px">${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}% vs ${m.prevLabel}</div>`:'';
     return `<div style="background:${isAct?'rgba(255,255,255,.16)':'rgba(255,255,255,.06)'};border:1px solid ${isAct?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)'};border-radius:14px;padding:16px 14px">
       <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${m.label}${isAct?' · atual':''}</div>
       <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.1">${fK(m.abr)}</div>
@@ -2678,15 +2678,17 @@ function renderVendorDashboard(user, vendorKey){
         </div>
         ${vM.mar>0?`
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)">
-          <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Comparativo vs ${mesAnt}</div>
-          <div style="display:flex;align-items:flex-end;gap:16px;height:60px">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
-              <div style="width:100%;height:${Math.round((vM.mar/Math.max(vM.abr,vM.mar))*50)}px;background:rgba(255,255,255,.25);border-radius:4px 4px 0 0;min-height:4px"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Comparativo</div>
+          <div style="display:flex;align-items:flex-end;gap:16px;height:48px">
+            <div style="flex:1;height:${Math.round((vM.mar/Math.max(vM.abr,vM.mar))*48)}px;background:rgba(255,255,255,.25);border-radius:4px 4px 0 0;min-height:4px"></div>
+            <div style="flex:1;height:${Math.round((vM.abr/Math.max(vM.abr,vM.mar))*48)}px;background:rgba(255,255,255,.65);border-radius:4px 4px 0 0;min-height:4px"></div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:6px">
+            <div style="flex:1;text-align:center">
               <div style="font-size:9px;color:rgba(255,255,255,.7)">${mesAnt}</div>
               <div style="font-size:10px;font-weight:700;color:#fff">${fK(vM.mar)}</div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
-              <div style="width:100%;height:${Math.round((vM.abr/Math.max(vM.abr,vM.mar))*50)}px;background:rgba(255,255,255,.65);border-radius:4px 4px 0 0;min-height:4px"></div>
+            <div style="flex:1;text-align:center">
               <div style="font-size:9px;color:rgba(255,255,255,.7)">${mesLabel}</div>
               <div style="font-size:10px;font-weight:700;color:#fff">${fK(vM.abr)}</div>
             </div>
