@@ -35,24 +35,11 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
   position:fixed;inset:0;z-index:9999;
   display:flex;align-items:center;justify-content:center;
   min-height:100vh;
-  background:linear-gradient(135deg,#FF2C2C 0%,#cc1a1a 35%,#e82020 65%,#FF2C2C 100%);
+  background:radial-gradient(ellipse at 50% 35%, #FF4545 0%, #E01A1A 50%, #B50D0D 100%);
   overflow:hidden;
   transition:opacity .5s ease;
 }
 #login-screen.hide{opacity:0;pointer-events:none}
-/* Decorative orbs */
-#login-screen::before{
-  content:'';
-  position:absolute;width:500px;height:500px;
-  background:radial-gradient(circle,rgba(139,20,60,.35) 0%,transparent 70%);
-  top:-100px;right:-80px;border-radius:50%;pointer-events:none;
-}
-#login-screen::after{
-  content:'';
-  position:absolute;width:400px;height:400px;
-  background:radial-gradient(circle,rgba(74,14,28,.5) 0%,transparent 70%);
-  bottom:-80px;left:-60px;border-radius:50%;pointer-events:none;
-}
 .login-particles{
   position:absolute;inset:0;overflow:hidden;pointer-events:none;
 }
@@ -102,7 +89,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 }
 .login-logo-fallback svg{width:36px;height:36px;fill:none;stroke:#fff;stroke-width:1.5;opacity:.9}
 .login-brand{font-size:17px;font-weight:800;color:#fff;letter-spacing:.3px;line-height:1.2;text-align:center}
-.login-subbrand{font-size:11px;color:rgba(255,255,255,.45);font-weight:400;margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+.login-subbrand{font-size:11px;color:rgba(255,255,255,.85);font-weight:500;margin-top:2px;letter-spacing:.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.35)}
 .login-form{display:flex;flex-direction:column;gap:14px}
 .login-input-wrap{position:relative}
 .login-input-icon{
@@ -191,7 +178,7 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 .login-error.show{display:block}
 .login-footer{
   text-align:center;margin-top:24px;
-  font-size:10px;color:rgba(255,255,255,.18);
+  font-size:10px;color:rgba(255,255,255,.6);text-shadow:0 1px 3px rgba(0,0,0,.3);
   font-family:'Inter',sans-serif;
   letter-spacing:.3px;
 }
@@ -767,11 +754,6 @@ body.mode-mobile .section-header{gap:12px}
         Entrar
       </button>
 
-    </div>
-
-    <!-- Links -->
-    <div class="login-links">
-      <a class="login-link" href="#" onclick="forgotPw(event)">Esqueci minha senha</a>
     </div>
 
     <!-- Footer -->
