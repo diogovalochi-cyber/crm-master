@@ -281,10 +281,10 @@ body.mode-print{--mode:print}
   box-shadow:0 -2px 24px rgba(0,0,0,.45);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
-.botnav-inner{display:flex;height:74px;padding:0 12px;align-items:stretch;gap:6px}
+.botnav-inner{display:flex;height:74px;padding:0;align-items:stretch;justify-content:space-evenly}
 .botnav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:5px;cursor:pointer;padding:10px 4px 8px;
+  flex:0 0 90px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;cursor:pointer;padding:10px 6px 8px;
   color:rgba(255,255,255,.45);transition:.18s ease;
   font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
   border-radius:14px;position:relative;
@@ -2465,12 +2465,20 @@ function applyVendorMode(user){
 }
 
 function renderVendorDashboard(user, vendorKey){
-  const mesData=getVendedoresForMes(CRM_MES);
+  // Detecta o mês mais recente com dados reais para esse vendedor
+  const vRawAbr   = VENDEDORES.find(v=>v.cod===user.vendId);
+  const vRawMaio  = VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
+  const vRawJunho = VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
+  let effectiveMes='abril';
+  if(vRawMaio  &&(vRawMaio.total ||0)>0) effectiveMes='maio';
+  if(vRawJunho &&(vRawJunho.total||0)>0) effectiveMes='junho';
+
+  const mesData=getVendedoresForMes(effectiveMes);
   const vM=mesData.find(v=>v.cod===user.vendId);
   if(!vM) return;
 
-  const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesLabel=MES_LABELS[effectiveMes]||'Maio';
+  const mesAnt=effectiveMes==='junho'?'Maio':effectiveMes==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -2487,7 +2495,7 @@ function renderVendorDashboard(user, vendorKey){
   const pct=Math.min(Math.round((vM.abr/meta)*100),100);
   const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
 
-  const carteiraMap=CRM_MES==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
+  const carteiraMap=effectiveMes==='junho'?CARTEIRA_JUNHO:CARTEIRA_MAIO;
   const carteira=(carteiraMap[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
   const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
 
@@ -2510,6 +2518,23 @@ function renderVendorDashboard(user, vendorKey){
   const nApr=hasF?countF('apresentacoes'):null;
   const nCad=hasF?countF('cadastros'):null;
   const actVal=v=>v===null?'—':String(v);
+
+  // Histórico mensal — meses com dados reais
+  const histMeses=[];
+  if(vRawAbr) histMeses.push({label:'Abril',abr:vRawAbr.abr||0,ped:vRawAbr.ped||0,cli:vRawAbr.cli||0,prev:vRawAbr.mar||0,prevLabel:'Março'});
+  if(vRawMaio&&(vRawMaio.total||0)>0) histMeses.push({label:'Maio',abr:vRawMaio.total,ped:vRawMaio.ped||0,cli:vRawMaio.cli||0,prev:vRawAbr?.abr||0,prevLabel:'Abril'});
+  if(vRawJunho&&(vRawJunho.total||0)>0) histMeses.push({label:'Junho',abr:vRawJunho.total,ped:vRawJunho.ped||0,cli:vRawJunho.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'});
+  const histHtml=histMeses.map(m=>{
+    const isAct=m.label.toLowerCase()===effectiveMes;
+    const varP=m.prev>0?((m.abr-m.prev)/m.prev*100):null;
+    const varS=varP!==null?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);margin-top:5px">${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}% vs ${m.prevLabel}</div>`:'';
+    return `<div style="background:${isAct?'rgba(255,255,255,.16)':'rgba(255,255,255,.06)'};border:1px solid ${isAct?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)'};border-radius:14px;padding:16px 14px">
+      <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${m.label}${isAct?' · atual':''}</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.1">${fK(m.abr)}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:5px">${m.cli} cli · ${m.ped} ped</div>
+      ${varS}
+    </div>`;
+  }).join('');
 
   document.getElementById('tab-dashboard').innerHTML=`
     <div class="section-header">
@@ -2597,6 +2622,17 @@ function renderVendorDashboard(user, vendorKey){
         </div>`:''}
       </div>
     </div>
+
+    ${histMeses.length>1?`
+    <div class="card mb-16">
+      <div class="card-header">
+        <span class="card-title">Histórico de Faturamento</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.6)">${histMeses.length} meses</span>
+      </div>
+      <div style="display:grid;grid-template-columns:${histMeses.length>=3?'repeat(3,1fr)':'1fr 1fr'};gap:10px;margin-top:6px">
+        ${histHtml}
+      </div>
+    </div>`:''}
   `;
 }
 
