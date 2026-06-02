@@ -2269,7 +2269,8 @@ function renderRanking(){
       </div>
     </div>`;
   });
-  document.getElementById('ranking-list').innerHTML=html;
+  const rlEl=document.getElementById('ranking-list');
+  if(rlEl) rlEl.innerHTML=html;
   // update rank total e título
   const total=sorted.reduce((s,v)=>s+v.abr,0);
   const el2=document.getElementById('rank-total-dynamic');
@@ -2293,7 +2294,8 @@ function renderTop5(){
       <div class="top5-val">${fK(c.val)}</div>
     </div>`;
   });
-  document.getElementById('top5-list').innerHTML=html;
+  const t5El=document.getElementById('top5-list');
+  if(t5El) t5El.innerHTML=html;
 }
 
 /* ─────────────────────────────────────────
@@ -2437,10 +2439,10 @@ function renderComparativo(){
 
     // Merge clientes dos dois meses pelo nome
     const map=new Map();
-    cartB.forEach(c=>map.set(c.nome,{nome:c.nome,valB:c.valor,valA:0}));
+    cartB.forEach(c=>map.set(c.nome,{cod:c.cod,nome:c.nome,valB:c.valor,valA:0}));
     cartA.forEach(c=>{
-      if(map.has(c.nome)) map.get(c.nome).valA=c.valor;
-      else map.set(c.nome,{nome:c.nome,valB:0,valA:c.valor});
+      if(map.has(c.nome)){map.get(c.nome).valA=c.valor;if(!map.get(c.nome).cod)map.get(c.nome).cod=c.cod;}
+      else map.set(c.nome,{cod:c.cod,nome:c.nome,valB:0,valA:c.valor});
     });
     const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
     const totA=clients.reduce((s,c)=>s+c.valA,0);
@@ -2449,14 +2451,14 @@ function renderComparativo(){
     if(titleEl) titleEl.textContent=`Carteira de Clientes · ${lblA} vs ${lblB} 2026`;
 
     let html=`<thead><tr>
-      <th>#</th><th>Cliente</th>
+      <th>#</th><th>Cód.</th><th>Cliente</th>
       <th>${lblA}</th>
       <th>${lblB}</th>
       <th>${hasA&&hasB?'Variação %':'% do Total'}</th>
     </tr></thead><tbody>`;
 
     if(!clients.length){
-      html+=`<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
+      html+=`<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
     } else {
       clients.forEach((c,i)=>{
         const vr=(hasA&&hasB&&c.valA>0)?varPct(c.valB,c.valA):null;
@@ -2464,6 +2466,7 @@ function renderComparativo(){
         const dc=vr?(vr.up?'#4ade80':'#f87171'):'rgba(255,255,255,.65)';
         html+=`<tr>
           <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
+          <td style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600">${c.cod||'—'}</td>
           <td style="font-weight:600">${c.nome}</td>
           <td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>
           <td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>
@@ -2471,7 +2474,7 @@ function renderComparativo(){
         </tr>`;
       });
       html+=`</tbody><tfoot><tr class="total-row">
-        <td colspan="2">Total</td>
+        <td colspan="3">Total</td>
         <td>${totA>0?fBRL(totA):'—'}</td>
         <td>${totB>0?fBRL(totB):'—'}</td>
         <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
