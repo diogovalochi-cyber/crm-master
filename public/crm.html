@@ -1090,7 +1090,37 @@ function removeLogoBg(img){
   }catch(e){}
 }
 
-let CRM_MES = new Date().getMonth()>=5?'junho':'maio'; // auto-detectado pelo mês atual; 'abril'|'maio'|'junho'
+/* ─────────────────────────────────────────
+   FUSO HORÁRIO — sempre Brasília (America/Sao_Paulo)
+───────────────────────────────────────── */
+function nowBR(){
+  const iso=new Intl.DateTimeFormat('en-CA',{
+    timeZone:'America/Sao_Paulo',
+    year:'numeric',month:'2-digit',day:'2-digit'
+  }).format(new Date());
+  const [y,mo,d]=iso.split('-').map(Number);
+  return {year:y,month:mo-1,day:d}; // month 0-indexed como JS Date
+}
+function nowBRDateStr(){
+  // "02/06/2026"
+  const b=nowBR();
+  return String(b.day).padStart(2,'0')+'/'+String(b.month+1).padStart(2,'0')+'/'+b.year;
+}
+function nowBRISOStr(){
+  // "2026-06-02"
+  const b=nowBR();
+  return b.year+'-'+String(b.month+1).padStart(2,'0')+'-'+String(b.day).padStart(2,'0');
+}
+function nowBRDateTime(){
+  return new Intl.DateTimeFormat('pt-BR',{
+    timeZone:'America/Sao_Paulo',
+    day:'2-digit',month:'2-digit',year:'numeric',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',
+    hour12:false
+  }).format(new Date());
+}
+
+let CRM_MES = (()=>{const b=nowBR();return b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
 /* ─────────────────────────────────────────
    DATA
 ───────────────────────────────────────── */
@@ -1638,8 +1668,7 @@ function showTab(tab, el){
     const fromEl=document.getElementById('forms-dt-from');
     const toEl=document.getElementById('forms-dt-to');
     if(fromEl&&!fromEl.value&&toEl&&!toEl.value){
-      const now=new Date();
-      const y=now.getFullYear(),m=now.getMonth();
+      const br=nowBR(); const y=br.year,m=br.month;
       const fmtLocal=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       fromEl.value=fmtLocal(new Date(y,m,1));
       toEl.value=fmtLocal(new Date(y,m+1,0));
@@ -2386,7 +2415,7 @@ function applySession(user){
   if(sf) sf.innerHTML='<strong>'+user.name+' · '+user.role+'</strong><span>Abril 2026</span>';
   // Print header meta
   const phMeta=document.querySelector('#print-header .ph-meta');
-  if(phMeta) phMeta.innerHTML='<div>Emissão: '+new Date().toLocaleDateString('pt-BR')+'</div><div>'+user.name+' · '+user.role+'</div>';
+  if(phMeta) phMeta.innerHTML='<div>Emissão: '+nowBRDateStr()+'</div><div>'+user.name+' · '+user.role+'</div>';
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
@@ -2472,7 +2501,7 @@ function renderVendorDashboard(user, vendorKey){
   // Atividades do mês (dos formsCaches já carregados)
   const _nm2=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   const vNorm=_nm2(user.name);
-  const now2=new Date(); const cm=now2.getMonth(),cy=now2.getFullYear();
+  const _br2=nowBR(); const cm=_br2.month,cy=_br2.year;
   const countF=type=>{
     const dc=FORMS_CONFIG[type]?.dateCol??1;
     const vc=FORMS_CONFIG[type]?.vendCol??0;
