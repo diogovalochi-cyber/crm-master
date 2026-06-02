@@ -933,13 +933,8 @@ body.mode-mobile .section-header{gap:12px}
   <div class="section-header">
     <div>
       <div class="section-title">Análise Comercial</div>
-      <div class="section-sub" id="analise-section-sub">Carteiras de Maio 2026</div>
+      <div class="section-sub">Comparativo e carteiras por vendedor</div>
     </div>
-    <select class="mes-select" onchange="setMes(this.value)">
-      <option value="abril">Abril</option>
-      <option value="maio">Maio</option>
-      <option value="junho">Junho</option>
-    </select>
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
@@ -975,27 +970,15 @@ body.mode-mobile .section-header{gap:12px}
   </div>
 
   <div id="subtab-porvendedor" style="display:none">
-    <div class="pill-row" id="vendor-pills"></div>
-    <div style="display:grid;gap:16px" id="vendor-detail-grid">
-      <div class="analise-main-grid gap-12">
-        <div class="card" id="vendor-table-card">
-          <div class="card-header">
-            <span class="card-title" id="vendor-table-title">Top Clientes</span>
-          </div>
-          <div style="overflow-x:auto;overflow-y:auto;max-height:420px" id="vendor-table-wrap"></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div class="card">
-            <div class="card-header"><span class="card-title">KPIs</span></div>
-            <div class="mini-kpi-grid" id="vendor-mini-kpis"></div>
-          </div>
-          <div class="card" id="vendor-bars-card">
-            <div class="card-header"><span class="card-title" id="vendor-bars-title">Evolução</span></div>
-            <div id="vendor-bars" style="display:flex;align-items:flex-end;gap:20px;height:100px;padding:0 10px"></div>
-          </div>
-        </div>
-      </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODO</span>
+      <select class="comp-mes-sel" id="vd-mes-sel" onchange="setVdMes(this.value)">
+        <option value="maio">Maio 2026</option>
+        <option value="junho" selected>Junho 2026</option>
+      </select>
     </div>
+    <div class="pill-row" id="vendor-pills"></div>
+    <div id="vendor-detail-grid"></div>
   </div>
 </div>
 
@@ -2940,8 +2923,7 @@ function setMes(mes, btn){
     _analiseNeedsRender=true;
   }
   // Labels
-  const sub=document.getElementById('analise-section-sub');
-  if(sub) sub.textContent='Carteiras de '+(MES_LABELS[mes]||mes)+' 2026';
+  // analise-section-sub removido (estático agora)
   const dt=document.getElementById('dash-donut-title');
   if(dt) dt.textContent='Distribuição '+(MES_LABELS[mes]||mes);
   if(window.CRM_VENDOR_ID&&CRM_USER){
@@ -3148,6 +3130,11 @@ function renderComparativo(){
    POR VENDEDOR
 ───────────────────────────────────────── */
 let activeVendor='Guilherme';
+let VD_MES='junho';
+function setVdMes(mes){
+  VD_MES=mes;
+  renderVendorDetail(activeVendor);
+}
 function initVendorPills(){
   const row=document.getElementById('vendor-pills');
   if(row.children.length) return;
@@ -3175,80 +3162,92 @@ function initVendorPills(){
   renderVendorDetail(defaultVendor);
 }
 function renderVendorDetail(name){
-  const mes=CRM_MES;
-  const isCompleta=mes==='maio'||mes==='junho';
-  const vAbr=VENDEDORES.find(x=>x.name===name);
-  const vMaio=VENDEDORES_MAIO.find(x=>x.name===name);
-  const vJunho=VENDEDORES_JUNHO.find(x=>x.name===name);
-  let v;
-  if(mes==='junho') v={...vJunho, abr:vJunho?.total||0, mar:vMaio?.total||0, color:vAbr?.color||vJunho?.color};
-  else if(mes==='maio') v={...vMaio, abr:vMaio?.total||0, mar:vAbr?.abr||0, color:vAbr?.color||vMaio?.color};
-  else v=vAbr;
-  if(!v) return;
+  const mes=VD_MES;
+  const mesSeq=['marco','abril','maio','junho'];
+  const idx=mesSeq.indexOf(mes);
+  const hist3=mesSeq.slice(Math.max(0,idx-2),idx+1);
 
-  const mesAtual=MES_LABELS[mes]||mes;
-  const mesAnt=mes==='junho'?'Maio':mes==='maio'?'Abril':'Março';
-  const mesAntShort=mes==='junho'?'Mai':mes==='maio'?'Abr':'Mar';
-  const mesAtualShort=mes==='junho'?'Jun':mes==='maio'?'Mai':'Abr';
+  const vRawAbr  =VENDEDORES.find(x=>x.name===name);
+  const vRawMaio =VENDEDORES_MAIO.find(x=>x.name===name);
+  const vRawJunho=VENDEDORES_JUNHO.find(x=>x.name===name);
+  const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod;
 
-  // Clientes
-  let clients;
-  if(mes==='junho'){
-    const cod=vJunho?.cod;
-    clients=(CARTEIRA_JUNHO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor)
-      .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
-  } else if(mes==='maio'){
-    const cod=vMaio?.cod;
-    clients=(CARTEIRA_MAIO[cod]||[]).slice().sort((a,b)=>b.valor-a.valor)
-      .map(c=>({cli:c.nome, abr:c.valor, mar:null}));
+  const _D={
+    marco:{label:'Março', total:vRawAbr?.mar||0,     ped:0,               cli:CARTEIRA_MARCO[cod]?.length||0, prev:0,               prevLabel:''},
+    abril:{label:'Abril', total:vRawAbr?.abr||0,     ped:vRawAbr?.ped||0, cli:vRawAbr?.cli||0,               prev:vRawAbr?.mar||0,  prevLabel:'Março'},
+    maio: {label:'Maio',  total:vRawMaio?.total||0,  ped:vRawMaio?.ped||0,cli:vRawMaio?.cli||0,              prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
+    junho:{label:'Junho', total:vRawJunho?.total||0, ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,            prev:vRawMaio?.total||0,prevLabel:'Maio'},
+  };
+
+  // 3-month history cards (same style as vendor dashboard)
+  const histHtml=hist3.map(key=>{
+    const m=_D[key];
+    const isAct=key===mes;
+    const isEmpty=m.total===0;
+    const varP=m.prev>0&&!isEmpty?((m.total-m.prev)/m.prev*100):null;
+    const varS=varP!==null?`<div style="font-size:11px;font-weight:700;color:${varP>=0?'#4ade80':'#f87171'};margin-top:5px">${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}% vs ${m.prevLabel}</div>`:'';
+    return `<div style="background:${isAct?'rgba(255,255,255,.16)':'rgba(255,255,255,.06)'};border:1px solid ${isAct?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)'};border-radius:14px;padding:16px 14px;min-width:0">
+      <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${m.label}${isAct?' · atual':''}</div>
+      <div style="font-size:22px;font-weight:800;color:${isEmpty?'rgba(255,255,255,.3)':'#fff'};line-height:1.1">${isEmpty?'—':fK(m.total)}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:5px">${isEmpty?'sem dados':(m.cli+' cli'+(m.ped?` · ${m.ped} ped`:''))}</div>
+      ${varS}
+    </div>`;
+  }).join('');
+
+  // Carteira table for selected month
+  const carteiraMap={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO};
+  const carteira=(carteiraMap[mes]?.[cod]||[]).slice().sort((a,b)=>b.valor-a.valor);
+  const mesLabel=MES_LABELS[mes]||mes;
+
+  let tblHtml;
+  if(carteira.length){
+    let rows=carteira.map((c,i)=>`<tr>
+      <td style="color:rgba(255,255,255,.5)">${i+1}</td>
+      <td>${c.nome}</td>
+      <td style="font-weight:700;color:#fff">${fBRL(c.valor)}</td>
+    </tr>`).join('');
+    const tot=carteira.reduce((s,c)=>s+c.valor,0);
+    tblHtml=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>${mesLabel}</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr class="total-row"><td colspan="2">Total</td><td>${fBRL(tot)}</td></tr></tfoot>
+    </table>`;
   } else {
-    clients=VENDOR_TOP5[name]||[];
+    // fallback: VENDOR_TOP5 para Abr/Mar
+    const top5=VENDOR_TOP5[name]||[];
+    if(top5.length){
+      const useAbr=mes==='abril';
+      let rows=top5.map((c,i)=>{
+        const val=useAbr?c.abr:c.mar;
+        const hasPrev=useAbr&&c.mar>0;
+        const vr=hasPrev?varPct(c.abr,c.mar):null;
+        return `<tr>
+          <td style="color:rgba(255,255,255,.5)">${i+1}</td>
+          <td>${c.cli}</td>
+          <td style="font-weight:700;color:#fff">${fK(val)}</td>
+          ${hasPrev?`<td style="color:rgba(255,255,255,.65)">${fK(c.mar)}</td><td><span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span></td>`:'<td>—</td><td>—</td>'}
+        </tr>`;
+      }).join('');
+      tblHtml=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>${mesLabel}</th><th>Anterior</th><th>Var.</th></tr></thead><tbody>${rows}</tbody></table>`;
+    } else {
+      tblHtml=`<div style="color:rgba(255,255,255,.4);font-size:13px;padding:20px 0;text-align:center">Sem dados de carteira para ${mesLabel}</div>`;
+    }
   }
 
-  // Table
-  let tbl=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>${mesAtual}</th><th>${mesAnt}</th><th>Var.</th></tr></thead><tbody>`;
-  clients.forEach((c,i)=>{
-    const hasMar=c.mar!==null&&c.mar>0;
-    const vr=hasMar?varPct(c.abr,c.mar):{up:true,str:'—'};
-    tbl+=`<tr><td style="color:rgba(255,255,255,.5)">${i+1}</td><td>${c.cli}</td>
-      <td style="font-weight:700;color:#fff">${fK(c.abr)}</td>
-      <td style="color:rgba(255,255,255,.65)">${hasMar?fK(c.mar):'—'}</td>
-      <td>${hasMar?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:'—'}</td>
-    </tr>`;
-  });
-  tbl+=`</tbody></table>`;
-  const nCli=clients.length;
-  document.getElementById('vendor-table-title').textContent=(isCompleta?'Carteira Completa':'Top Clientes')+' · '+name+(isCompleta&&nCli?' ('+nCli+' clientes)':'');
-  const barsTitle=document.getElementById('vendor-bars-title');
-  if(barsTitle) barsTitle.textContent='Evolução '+mesAnt+' vs '+mesAtual;
-  document.getElementById('vendor-table-wrap').innerHTML=tbl;
-
-  // Mini KPIs
-  const vr=varPct(v.abr,v.mar);
-  const diff=v.abr-v.mar;
-  document.getElementById('vendor-mini-kpis').innerHTML=`
-    <div class="mini-kpi"><div class="mini-kpi-label">${mesAtual}</div><div class="mini-kpi-value">${fK(v.abr)}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">${mesAnt}</div><div class="mini-kpi-value">${fK(v.mar)}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">Variação</div><div class="mini-kpi-value">${vr.str}</div></div>
-    <div class="mini-kpi"><div class="mini-kpi-label">Diferença</div><div class="mini-kpi-value">${diff>=0?'+':''}${fK(diff)}</div></div>
-  `;
-
-  // Bar chart
-  const maxVal=Math.max(v.abr,v.mar)||1;
-  const hAtual=Math.round((v.abr/maxVal)*80);
-  const hAnt=Math.round((v.mar/maxVal)*80);
-  document.getElementById('vendor-bars').innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hAnt}px;width:36px;background:rgba(255,255,255,.25);border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:rgba(255,255,255,.7)">${mesAntShort}</div>
+  const grid=document.getElementById('vendor-detail-grid');
+  grid.innerHTML=`
+    <div class="card mb-12">
+      <div class="card-header">
+        <span class="card-title">Histórico de Faturamento · ${name}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,.6)">${hist3.length} ${hist3.length===1?'mês':'meses'}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(${hist3.length},1fr);gap:10px;margin-top:6px">${histHtml}</div>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div style="height:${hAtual}px;width:36px;background:rgba(255,255,255,.75);border-radius:6px 6px 0 0;transition:.4s"></div>
-      <div style="font-size:10px;color:rgba(255,255,255,.7)">${mesAtualShort}</div>
-    </div>
-    <div style="flex:1;padding-left:12px;font-size:11px;color:rgba(255,255,255,.7);align-self:center">
-      <div style="font-weight:700;color:#fff;font-size:15px">${fBRL(v.abr)}</div>
-      <div>vs ${fBRL(v.mar)} em ${mesAnt}</div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Carteira · ${mesLabel}</span>
+        ${carteira.length?`<span style="font-size:11px;color:rgba(255,255,255,.6)">${carteira.length} clientes</span>`:''}
+      </div>
+      <div style="overflow-x:auto;overflow-y:auto;max-height:440px">${tblHtml}</div>
     </div>
   `;
 }
