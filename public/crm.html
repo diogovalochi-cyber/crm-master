@@ -2193,18 +2193,17 @@ function renderComparativo(){
     const totA=clients.reduce((s,c)=>s+c.valA,0);
     const totB=clients.reduce((s,c)=>s+c.valB,0);
 
-    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${hasA&&hasB?lblA+' vs '+lblB:hasB?lblB:lblA} 2026`;
+    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${lblA} vs ${lblB} 2026`;
 
-    const ncols=2+(hasA?1:0)+(hasB?1:0)+(hasA&&hasB?1:0);
     let html=`<thead><tr>
       <th>#</th><th>Cliente</th>
-      ${hasA?`<th>${lblA}</th>`:''}
-      ${hasB?`<th>${lblB}</th>`:''}
-      ${hasA&&hasB?'<th>Variação %</th>':'<th>% do Total</th>'}
+      <th>${lblA}</th>
+      <th>${lblB}</th>
+      <th>${hasA&&hasB?'Variação %':'% do Total'}</th>
     </tr></thead><tbody>`;
 
     if(!clients.length){
-      html+=`<tr><td colspan="${ncols}" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
+      html+=`<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
     } else {
       clients.forEach((c,i)=>{
         const vr=(hasA&&hasB&&c.valA>0)?varPct(c.valB,c.valA):null;
@@ -2213,15 +2212,15 @@ function renderComparativo(){
         html+=`<tr>
           <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
           <td style="font-weight:600">${c.nome}</td>
-          ${hasA?`<td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>`:''}
-          ${hasB?`<td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>`:''}
+          <td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>
+          <td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>
           <td style="color:${dc}">${vr?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:pct+'%'}</td>
         </tr>`;
       });
       html+=`</tbody><tfoot><tr class="total-row">
         <td colspan="2">Total</td>
-        ${hasA?`<td>${totA>0?fBRL(totA):'—'}</td>`:''}
-        ${hasB?`<td>${totB>0?fBRL(totB):'—'}</td>`:''}
+        <td>${totA>0?fBRL(totA):'—'}</td>
+        <td>${totB>0?fBRL(totB):'—'}</td>
         <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
       </tr></tfoot>`;
     }
@@ -2530,6 +2529,9 @@ function applyVendorMode(user){
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
     if(i!==0) btn.style.display='none';
   });
+  // Análise: oculta seletor de mês global (vendedor usa apenas os seletores do comparativo)
+  const anlMesSel=document.querySelector('#tab-analise .section-header .mes-select');
+  if(anlMesSel) anlMesSel.style.display='none';
 
   // Detecta mês efetivo (último com dados reais) e seta CRM_MES
   const vRawM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
