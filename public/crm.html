@@ -3645,7 +3645,7 @@ function renderVendorDetail(name){
   const clientMap=new Map();
   [[cA,'a'],[cB,'b'],[cC,'c']].forEach(([list,k])=>{
     list.forEach(c=>{
-      if(!clientMap.has(c.cod)) clientMap.set(c.cod,{nome:c.nome,a:0,b:0,c:0});
+      if(!clientMap.has(c.cod)) clientMap.set(c.cod,{cod:c.cod,nome:c.nome,a:0,b:0,c:0});
       const e=clientMap.get(c.cod);
       e[k]=c.valor;
       e.nome=c.nome;
@@ -3696,18 +3696,20 @@ function renderVendorDetail(name){
     if(singleMonth){
       rows=allClients.map((c,i)=>`<tr>
         <td style="color:rgba(255,255,255,.5)">${i+1}</td>
-        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
+        <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
         <td style="font-weight:700;color:#fff">${_fVal(c.a||c.b||c.c)}</td>
       </tr>`).join('');
       const totS=allClients.reduce((s,c)=>s+(c.a||c.b||c.c),0);
-      thead=`<tr><th>#</th><th>Cliente</th><th>${lblA}</th></tr>`;
-      tfoot=`<tr class="total-row"><td colspan="2">Total</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
+      thead=`<tr><th>#</th><th>Cód.</th><th>Cliente</th><th>${lblA}</th></tr>`;
+      tfoot=`<tr class="total-row"><td colspan="3">Total</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
     } else {
       rows=allClients.map((c,i)=>{
         const tot=c.a+c.b+c.c;
         return `<tr>
           <td style="color:rgba(255,255,255,.5)">${i+1}</td>
-          <td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
+          <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
+          <td style="max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
           <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
@@ -3723,6 +3725,7 @@ function renderVendorDetail(name){
       const totC=allClients.reduce((s,c)=>s+c.c,0);
       thead=`<tr>
         <th>#</th>
+        <th>Cód.</th>
         <th style="${_thS}" onclick="_vdSortBy('nome')">Cliente${_ico('nome')}</th>
         <th style="${_thS}" onclick="_vdSortBy('a')">${lblA}${_ico('a')}</th>
         <th style="${_thS}" onclick="_vdSortBy('b')">${lblB}${_ico('b')}</th>
@@ -3734,7 +3737,7 @@ function renderVendorDetail(name){
         <th style="${_thS}" onclick="_vdSortBy('total')">Total${_ico('total')}</th>
       </tr>`;
       tfoot=`<tr class="total-row">
-        <td colspan="2">Total</td>
+        <td colspan="3">Total</td>
         <td>${fBRL(totA)}</td>
         <td>${fBRL(totB)}</td>
         <td style="font-weight:800">${fBRL(totC)}</td>
@@ -3762,7 +3765,7 @@ function renderVendorDetail(name){
     </div>
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Carteira · Comparativo Mensal</span>
+        <span class="card-title">${singleMonth?`Carteira de Clientes · ${lblA.toUpperCase()}`:`Carteira de Clientes · ${lblA.toUpperCase()} VS ${lblB.toUpperCase()} VS ${lblC.toUpperCase()}`}</span>
         ${allClients.length?`<span style="font-size:11px;color:rgba(255,255,255,.6)">${allClients.length} clientes</span>`:''}
       </div>
       <div style="overflow-x:auto;overflow-y:auto;max-height:520px">${tblHtml}</div>
