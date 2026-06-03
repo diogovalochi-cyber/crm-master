@@ -1049,7 +1049,10 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Rota de visitas -->
   <div id="rota-section" style="display:none;margin-top:16px">
-    <div id="rota-vendor-name" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div id="rota-vendor-name" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px"></div>
+      <div id="rota-ts" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500"></div>
+    </div>
     <div class="rota-grid" id="rota-grid"></div>
   </div>
 
@@ -2262,6 +2265,7 @@ function refreshTab(tab){
     if(activeVendor) renderVendorDetail(activeVendor);
   } else if(tab==='registrar'){
     if(currentFormsType==='rota'){
+      formsCaches.visitas=[];
       formsCaches._visitasTs=0;
       renderRota();
     } else {
@@ -2675,6 +2679,8 @@ function _vendMatch(rv,sv){
   const f1=fw(rv),f2=fw(sv);
   return f1.length>=3&&f1===f2;
 }
+// Normaliza COD para comparação: "172.0" → "172", "172" → "172"
+function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!isNaN(n)&&n===Math.floor(n)&&t!=='')?String(Math.floor(n)):t;}
 
 const FORMS_CONFIG={
   prospeccoes:{
@@ -2731,12 +2737,17 @@ function selectFormsType(el){
   currentFormsType=el.dataset.type;
   document.querySelectorAll('#reg-type-tabs .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  if(window._rotaTimer){clearInterval(window._rotaTimer);window._rotaTimer=null;}
   const _rotaSec=document.getElementById('rota-section');
   const _formsSec=document.getElementById('forms-content-wrap');
   if(currentFormsType==='rota'){
     if(_rotaSec) _rotaSec.style.display='block';
     if(_formsSec) _formsSec.style.display='none';
     renderRota();
+    window._rotaTimer=setInterval(()=>{
+      if(currentFormsType==='rota'){formsCaches._visitasTs=0;renderRota();}
+      else{clearInterval(window._rotaTimer);window._rotaTimer=null;}
+    },45000);
     return;
   }
   if(_rotaSec) _rotaSec.style.display='none';
@@ -2777,42 +2788,48 @@ function renderRota(){
     return;
   }
 
-  // Re-busca visitas se cache vazio ou com mais de 90s (visita recém-submetida fica verde)
+  // Busca visitas com cache-bust para forçar dado fresco do Google (CDN caching bypass)
   const _rotaNow=Date.now();
-  const _rotaStale=!formsCaches.visitas.length||(_rotaNow-(formsCaches._visitasTs||0))>90000;
+  const _rotaStale=!formsCaches.visitas.length||(_rotaNow-(formsCaches._visitasTs||0))>30000;
   if(_rotaStale&&FORMS_CSV.visitas&&!formsCaches._visitasFetching){
     formsCaches._visitasFetching=true;
     formsCaches._visitasTs=_rotaNow;
-    fetch(FORMS_CSV.visitas)
+    fetch(FORMS_CSV.visitas+'&_t='+_rotaNow)
       .then(r=>r.text())
-      .then(text=>{formsCaches.visitas=parseCSV(text).filter(r=>r[0]&&r[0].trim());formsCaches._visitasFetching=false;renderRota();})
-      .catch(()=>{formsCaches._visitasFetching=false;});
+      .then(text=>{
+        const rows=parseCSV(text).filter(r=>r[0]&&r[0].trim());
+        if(rows.length>0) formsCaches.visitas=rows;
+        formsCaches._visitasFetching=false;
+        const tsEl=document.getElementById('rota-ts');
+        if(tsEl){const h=new Date();tsEl.textContent='Atualizado '+String(h.getHours()).padStart(2,'0')+':'+String(h.getMinutes()).padStart(2,'0');}
+        renderRota();
+      })
+      .catch(()=>{formsCaches._visitasFetching=false;formsCaches._visitasTs=0;});
     if(!formsCaches.visitas.length) return;
   }
 
   // Constrói Set dos cods visitados hoje por este vendedor
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-  const todayMid=new Date();todayMid.setHours(0,0,0,0);
+  const _today=new Date();
   const visitedToday=new Set(
     formsCaches.visitas
       .filter(r=>{
         if(!_vendMatch(_nm(r[0]),currentRegSeller)) return false;
         const d=toDate(r[1]);if(!d) return false;
-        const dc=new Date(d);dc.setHours(0,0,0,0);
-        return dc.getTime()===todayMid.getTime();
+        return d.getFullYear()===_today.getFullYear()&&d.getMonth()===_today.getMonth()&&d.getDate()===_today.getDate();
       })
-      .map(r=>String(r[4]||'').trim())
+      .map(r=>normCod(r[4]))
   );
 
   grid.innerHTML=DIAS.map(d=>{
     const clientes=rota[d.key]||[];
     const isToday=d.key===todayKey;
-    const visitedCount=isToday?clientes.filter(c=>visitedToday.has(c.cod)).length:0;
+    const visitedCount=isToday?clientes.filter(c=>visitedToday.has(normCod(c.cod))).length:0;
 
     const rows=clientes.map(c=>{
       const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
       if(isToday){
-        const visited=visitedToday.has(c.cod);
+        const visited=visitedToday.has(normCod(c.cod));
         return `<div class="rota-client ${visited?'rota-visited':'rota-pending'}">
           <span class="rota-status-dot">${visited?'✓':'○'}</span>
           <span class="rota-cod">${c.cod}</span>
