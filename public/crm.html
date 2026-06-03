@@ -2665,6 +2665,9 @@ function toDate(v){
   const s=String(v).replace(',','.');
   const n=parseFloat(s);
   if(!isNaN(n)&&n>40000&&n<60000) return new Date(Math.round((n-25569)*86400000));
+  // Formato brasileiro DD/MM/YYYY HH:MM:SS (Google Forms pt-BR)
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m) return new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0));
   const d=new Date(v); return isNaN(d.getTime())?null:d;
 }
 function obsCell(text,btnLabel,modalLabel){
@@ -2721,7 +2724,7 @@ const FORMS_CONFIG={
     row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[11])}${obsCell(r[9],'Obs.','Observação')}`
   },
   visitas:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=CÓD r[4]=RAZÃO SOCIAL
     // r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     vendCol:0, dateCol:1,
     cols:[
@@ -2729,7 +2732,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -2843,7 +2846,7 @@ function renderRota(){
         const d=toDate(r[1]);if(!d) return false;
         return d.getFullYear()===_today.getFullYear()&&d.getMonth()===_today.getMonth()&&d.getDate()===_today.getDate();
       })
-      .map(r=>normCod(r[4]))
+      .map(r=>normCod(r[3]))
   );
 
   grid.innerHTML=DIAS.map(d=>{
