@@ -3555,6 +3555,12 @@ function renderComparativo(){
 ───────────────────────────────────────── */
 let activeVendor='Guilherme';
 let VD_MES='junho';
+let _vdSort={col:'total',dir:'desc'};
+function _vdSortBy(col){
+  if(_vdSort.col===col) _vdSort.dir=_vdSort.dir==='asc'?'desc':'asc';
+  else{_vdSort.col=col;_vdSort.dir=col==='nome'?'asc':'desc';}
+  renderVendorDetail(activeVendor);
+}
 function setVdMes(mes){
   if(mes) VD_MES=mes;
   renderVendorDetail(activeVendor);
@@ -3636,7 +3642,24 @@ function renderVendorDetail(name){
       e.nome=c.nome;
     });
   });
-  const allClients=[...clientMap.values()].sort((x,y)=>(y.c||y.b||y.a)-(x.c||x.b||x.a));
+
+  const _svVal=c=>{
+    const col=_vdSort.col;
+    if(col==='nome') return c.nome;
+    if(col==='a') return c.a;
+    if(col==='b') return c.b;
+    if(col==='c') return c.c;
+    if(col==='varBA') return c.a>0?(c.b-c.a)/c.a*100:(c.b>0?1e9:-1e9);
+    if(col==='varCA') return c.a>0?(c.c-c.a)/c.a*100:(c.c>0?1e9:-1e9);
+    if(col==='diffBA') return c.b-c.a;
+    if(col==='diffCA') return c.c-c.a;
+    return c.a+c.b+c.c;
+  };
+  const allClients=[...clientMap.values()].sort((x,y)=>{
+    const vx=_svVal(x),vy=_svVal(y);
+    if(typeof vx==='string') return _vdSort.dir==='asc'?vx.localeCompare(vy):vy.localeCompare(vx);
+    return _vdSort.dir==='asc'?vx-vy:vy-vx;
+  });
 
   const _fVal=v=>v>0?fBRL(v):`<span style="color:rgba(255,255,255,.3)">—</span>`;
   const _varCell=(curr,base)=>{
@@ -3646,37 +3669,71 @@ function renderVendorDetail(name){
     const p=(curr-base)/base*100;
     return `<span class="${p>=0?'badge-up':'badge-dn'}">${p>=0?'▲ +':'▼ '}${Math.abs(p).toFixed(1)}%</span>`;
   };
+  const _diffCell=(curr,base)=>{
+    if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.5);font-size:11px">Novo</span>`;
+    if(!base) return `<span style="color:rgba(255,255,255,.25)">—</span>`;
+    if(!curr) return `<span class="badge-dn">▼ -${fBRL(base)}</span>`;
+    const d=curr-base;
+    return `<span class="${d>=0?'badge-up':'badge-dn'}">${d>=0?'▲ +':'▼ '}${fBRL(Math.abs(d))}</span>`;
+  };
+  const _thS='cursor:pointer;user-select:none;white-space:nowrap';
+  const _ico=col=>_vdSort.col===col?(_vdSort.dir==='asc'?' ↑':' ↓'):'';
+
+  const singleMonth=mesA===mesB&&mesA===mesC;
 
   let tblHtml;
   if(allClients.length){
-    const rows=allClients.map((c,i)=>`<tr>
-      <td style="color:rgba(255,255,255,.5)">${i+1}</td>
-      <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
-      <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
-      <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
-      <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
-      <td>${_varCell(c.b,c.a)}</td>
-      <td>${_varCell(c.c,c.a)}</td>
-    </tr>`).join('');
-    const totA=allClients.reduce((s,c)=>s+c.a,0);
-    const totB=allClients.reduce((s,c)=>s+c.b,0);
-    const totC=allClients.reduce((s,c)=>s+c.c,0);
-    tblHtml=`<table class="tbl">
-      <thead><tr>
-        <th>#</th><th>Cliente</th>
-        <th>${lblA}</th><th>${lblB}</th><th>${lblC}</th>
-        <th>Var% ${lblB}/${lblA}</th>
-        <th>Var% ${lblC}/${lblA}</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr class="total-row">
+    let rows,thead,tfoot;
+    if(singleMonth){
+      rows=allClients.map((c,i)=>`<tr>
+        <td style="color:rgba(255,255,255,.5)">${i+1}</td>
+        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
+        <td style="font-weight:700;color:#fff">${_fVal(c.a||c.b||c.c)}</td>
+      </tr>`).join('');
+      const totS=allClients.reduce((s,c)=>s+(c.a||c.b||c.c),0);
+      thead=`<tr><th>#</th><th>Cliente</th><th>${lblA}</th></tr>`;
+      tfoot=`<tr class="total-row"><td colspan="2">Total</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
+    } else {
+      rows=allClients.map((c,i)=>{
+        const tot=c.a+c.b+c.c;
+        return `<tr>
+          <td style="color:rgba(255,255,255,.5)">${i+1}</td>
+          <td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</td>
+          <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
+          <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
+          <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
+          <td>${_varCell(c.b,c.a)}</td>
+          <td>${_varCell(c.c,c.a)}</td>
+          <td>${_diffCell(c.b,c.a)}</td>
+          <td>${_diffCell(c.c,c.a)}</td>
+          <td style="font-weight:800;color:#fff">${fBRL(tot)}</td>
+        </tr>`;
+      }).join('');
+      const totA=allClients.reduce((s,c)=>s+c.a,0);
+      const totB=allClients.reduce((s,c)=>s+c.b,0);
+      const totC=allClients.reduce((s,c)=>s+c.c,0);
+      thead=`<tr>
+        <th>#</th>
+        <th style="${_thS}" onclick="_vdSortBy('nome')">Cliente${_ico('nome')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('a')">${lblA}${_ico('a')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('b')">${lblB}${_ico('b')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('c')">${lblC}${_ico('c')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('varBA')">Var% ${lblB}/${lblA}${_ico('varBA')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('varCA')">Var% ${lblC}/${lblA}${_ico('varCA')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('diffBA')">Δ R$ ${lblB}/${lblA}${_ico('diffBA')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('diffCA')">Δ R$ ${lblC}/${lblA}${_ico('diffCA')}</th>
+        <th style="${_thS}" onclick="_vdSortBy('total')">Total${_ico('total')}</th>
+      </tr>`;
+      tfoot=`<tr class="total-row">
         <td colspan="2">Total</td>
         <td>${fBRL(totA)}</td>
         <td>${fBRL(totB)}</td>
         <td style="font-weight:800">${fBRL(totC)}</td>
-        <td>—</td><td>—</td>
-      </tr></tfoot>
-    </table>`;
+        <td>—</td><td>—</td><td>—</td><td>—</td>
+        <td style="font-weight:800">${fBRL(totA+totB+totC)}</td>
+      </tr>`;
+    }
+    tblHtml=`<table class="tbl"><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table>`;
   } else {
     tblHtml=`<div style="color:rgba(255,255,255,.4);font-size:13px;padding:20px 0;text-align:center">Sem dados de carteira para o período selecionado</div>`;
   }
