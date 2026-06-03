@@ -3554,6 +3554,10 @@ function applyVendorMode(user){
   window.CRM_VENDOR_NAME=user.name;
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 
+  // Oculta botão Imprimir (não disponível para vendedores)
+  const btnPrint=document.getElementById('btn-print');
+  if(btnPrint) btnPrint.style.display='none';
+
   // Forms: oculta row de seleção de vendedor (vendedor só vê os próprios dados)
   currentRegSeller=vendorKey;
   const regSellerTabs=document.getElementById('reg-seller-tabs');
