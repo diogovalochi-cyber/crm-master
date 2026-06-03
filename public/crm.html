@@ -2396,6 +2396,7 @@ function showTab(tab, el){
     }
     if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
     else loadFormsData();
+    loadAllFormsCaches();
   }
 }
 function showTabMobile(tab, el){
@@ -2421,8 +2422,9 @@ function refreshTab(tab){
       formsCaches._visitasFetching=false;
       renderRota();
     } else {
-      formsCaches[currentFormsType]=[];
+      ['prospeccoes','visitas','apresentacoes','cadastros'].forEach(t=>formsCaches[t]=[]);
       loadFormsData();
+      loadAllFormsCaches();
     }
   }
 }
@@ -3209,6 +3211,24 @@ function renderFormsSummary(){
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">${cardsHtml}</div>
   </div>`;
+}
+
+async function loadAllFormsCaches(){
+  const types=['prospeccoes','visitas','apresentacoes','cadastros'];
+  await Promise.allSettled(
+    types.filter(t=>t!==currentFormsType&&FORMS_CSV[t]&&!formsCaches[t].length)
+    .map(async t=>{
+      try{
+        const urls=[FORMS_CSV[t]];
+        if(t==='visitas'&&FORMS_CSV.visitas2) urls.push(FORMS_CSV.visitas2);
+        const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
+        const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
+        if(!texts.length) return;
+        formsCaches[t]=texts.flatMap(txt=>parseCSV(txt).filter(r=>r[0]&&r[0].trim()));
+        renderFormsSummary();
+      }catch(e){}
+    })
+  );
 }
 
 async function loadFormsData(){
