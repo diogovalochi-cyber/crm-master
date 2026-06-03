@@ -650,10 +650,8 @@ body.mode-mobile .section-header{gap:12px}
 .rota-visited .rota-status-dot{color:#10B981}
 .rota-pending .rota-status-dot{color:#F87171}
 .rota-today-badge{font-size:10px;background:rgba(255,255,255,.15);padding:1px 7px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
-.rota-maps-link{color:inherit;text-decoration:none}
-.rota-maps-link:hover .rota-nome{text-decoration:underline;text-decoration-style:dotted}
-.rota-maps-pin{font-size:10px;opacity:.5;margin-left:3px;flex-shrink:0;transition:.15s}
-.rota-maps-link:hover .rota-maps-pin{opacity:1}
+.rota-maps-pin{font-size:11px;opacity:.45;flex-shrink:0;text-decoration:none;color:inherit;padding:0 3px;transition:.15s}
+.rota-maps-pin:hover{opacity:1}
 
 /* ─── VENDOR COLORS ─── */
 .bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
@@ -2685,12 +2683,12 @@ const FORMS_CONFIG={
     row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,3,10)}</td><td class="td-wrap">${r[5]||''}</td><td>${r[6]||''}</td>`
   },
   cadastros:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=CÓDIGO r[3]=MÊS(texto) r[4..5]=NOME CLIENTE
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=CÓDIGO r[4..n]=NOME CLIENTE
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'110px'},{h:'Código',w:'90px'},{h:'Nome Cliente',w:''}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[2]||''}</td><td class="td-wrap">${_findRS(r,3,10)}</td>`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,4,10)}</td>`
   }
 };
 
@@ -2727,7 +2725,6 @@ function selectFormsType(el){
   else loadFormsData();
 }
 
-const PROSPECCOES_CSV=FORMS_CSV.prospeccoes;
 
 function renderRota(){
   const DIAS=[
@@ -2780,20 +2777,19 @@ function renderRota(){
     const visitedCount=isToday?clientes.filter(c=>visitedToday.has(c.cod)).length:0;
 
     const rows=clientes.map(c=>{
-      const nomeInner=`<span class="rota-nome">${c.nome}</span>${c.maps?'<span class="rota-maps-pin">📍</span>':''}`;
-      const nomeEl=c.maps?`<a class="rota-maps-link" href="${c.maps}" target="_blank" rel="noopener">${nomeInner}</a>`:nomeInner;
+      const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
       if(isToday){
         const visited=visitedToday.has(c.cod);
         return `<div class="rota-client ${visited?'rota-visited':'rota-pending'}">
           <span class="rota-status-dot">${visited?'✓':'○'}</span>
           <span class="rota-cod">${c.cod}</span>
-          ${nomeEl}
+          <span class="rota-nome">${c.nome}</span>${pin}
           ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
         </div>`;
       }
       return `<div class="rota-client">
         <span class="rota-cod">${c.cod}</span>
-        ${nomeEl}
+        <span class="rota-nome">${c.nome}</span>${pin}
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
       </div>`;
     }).join('');
