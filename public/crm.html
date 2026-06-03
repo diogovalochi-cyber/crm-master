@@ -2998,8 +2998,9 @@ function renderRota(){
     formsCaches._visitasTs=_rotaNow;
     const _vUrls=[FORMS_CSV.visitas+'&_t='+_rotaNow];
     if(FORMS_CSV.visitas2) _vUrls.push(FORMS_CSV.visitas2+'&_t='+_rotaNow);
-    Promise.all(_vUrls.map(u=>fetch(u).then(r=>r.text())))
-      .then(texts=>{
+    Promise.allSettled(_vUrls.map(u=>fetch(u).then(r=>r.text())))
+      .then(results=>{
+        const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
         const rows=texts.flatMap(t=>parseCSV(t).filter(r=>r[0]&&r[0].trim()));
         if(rows.length>0) formsCaches.visitas=rows;
         formsCaches._visitasFetching=false;
@@ -3210,7 +3211,9 @@ async function loadFormsData(){
   try{
     const _fUrls=[FORMS_CSV[type]];
     if(type==='visitas'&&FORMS_CSV.visitas2) _fUrls.push(FORMS_CSV.visitas2);
-    const texts=await Promise.all(_fUrls.map(u=>fetch(u).then(r=>r.text())));
+    const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
+    const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
+    if(!texts.length) throw new Error('all_failed');
     formsCaches[type]=texts.flatMap(t=>parseCSV(t).filter(r=>r[0]&&r[0].trim()));
     renderFormsTable();
   }catch(e){
@@ -3663,7 +3666,7 @@ const CREDS=[
   {user:'guilherme',pass:'martins123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
   {user:'relson',   pass:'1029', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
   {user:'israel',   pass:'Chamyto.123', role:'VENDEDOR',   name:'Israel',    av:'IS', vendId:'115', color:'#8B5CF6'},
-  {user:'everaldo', pass:'123', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#F59E0B'},
+  {user:'everaldo', pass:'1958', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#F59E0B'},
   {user:'natalia',  pass:'#Naty1992', role:'VENDEDOR',   name:'Natália',   av:'NA', vendId:'116', color:'#F472B6'},
   {user:'keller',   pass:'3324', role:'VENDEDOR',   name:'Keller',    av:'KE', vendId:'117', color:'#22D3EE'},
   {user:'althieres',pass:'260903', role:'VENDEDOR',   name:'Althieres', av:'AL', vendId:'119', color:'#FBBF24'},
@@ -3769,8 +3772,9 @@ function applySession(user){
         const timer=setTimeout(()=>ctrl.abort(),8000);
         const _pUrls=[url];
         if(t==='visitas'&&FORMS_CSV.visitas2) _pUrls.push(FORMS_CSV.visitas2);
-        const texts=await Promise.all(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
+        const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
+        const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
         formsCaches[t]=texts.flatMap(text=>parseCSV(text).filter(r=>r.length>1));
       }catch(e){console.error(e);}
     })).then(()=>renderVendorDashboard(user,vk));
