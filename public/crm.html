@@ -810,8 +810,9 @@ body.mode-mobile .section-header{gap:12px}
 <div id="topbar">
   <div class="topbar-logo"><span></span><span></span><span></span><span></span></div>
   <div class="topbar-brand"><h1>Valochi Sousa</h1><p>CRM Comercial</p></div>
-  <div style="margin-left:auto">
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
     <button class="btn-toggle" onclick="doPrint()" id="btn-print">🖨 Imprimir</button>
+    <button class="btn-toggle" onclick="doLogout()" style="opacity:.7" title="Sair">⏻ Sair</button>
   </div>
 </div>
 
@@ -3716,6 +3717,54 @@ function forgotPw(e){
 
 let CRM_USER=null;
 
+/* ── SEGURANÇA: tentativas de login ── */
+const _loginAttempts={};
+const LOGIN_MAX=5, LOGIN_BLOCK_MS=5*60*1000;
+function _loginBlocked(u){const e=_loginAttempts[u];return e&&e.until&&Date.now()<e.until?e.until:false;}
+function _loginFail(u){const e=_loginAttempts[u]||{count:0};e.count++;if(e.count>=LOGIN_MAX){e.until=Date.now()+LOGIN_BLOCK_MS;e.count=0;}_loginAttempts[u]=e;}
+function _loginOk(u){delete _loginAttempts[u];}
+
+/* ── SEGURANÇA: timeout de sessão (4h sem interação) ── */
+const SESSION_MS=4*60*60*1000;
+let _lastActivity=Date.now();
+['click','touchstart','keydown','scroll'].forEach(ev=>document.addEventListener(ev,()=>{_lastActivity=Date.now();},true));
+window._sessionTimer=setInterval(()=>{
+  if(!CRM_USER) return;
+  if(Date.now()-_lastActivity>SESSION_MS) doLogout(true);
+},60000);
+
+/* ── MARCA D'ÁGUA ── */
+function _setWatermark(text){
+  const old=document.getElementById('crm-wm');if(old)old.remove();
+  const c=document.createElement('canvas');c.width=320;c.height=160;
+  const ctx=c.getContext('2d');
+  ctx.save();ctx.translate(160,80);ctx.rotate(-28*Math.PI/180);
+  ctx.font='bold 15px Inter,sans-serif';ctx.fillStyle='rgba(255,255,255,0.055)';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text.toUpperCase(),0,0);
+  ctx.restore();
+  const d=document.createElement('div');
+  d.id='crm-wm';
+  d.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9997;background-repeat:repeat;background-image:url('+c.toDataURL()+')';
+  document.body.appendChild(d);
+}
+
+/* ── LOGOUT ── */
+function doLogout(expired){
+  CRM_USER=null;
+  const wm=document.getElementById('crm-wm');if(wm)wm.remove();
+  document.body.classList.remove('no-copy');
+  const ls=document.getElementById('login-screen');
+  ls.style.display='';
+  setTimeout(()=>ls.classList.remove('hide'),10);
+  document.body.className='mode-desktop';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  const err=document.getElementById('login-error');
+  if(expired){err.textContent='Sessão expirada por inatividade. Faça login novamente.';err.classList.add('show');}
+  else{err.classList.remove('show');}
+  _lastActivity=Date.now();
+}
+
 function doLogin(){
   const user=document.getElementById('login-user').value.trim().toLowerCase();
   const pass=document.getElementById('login-pass').value;
@@ -3723,10 +3772,17 @@ function doLogin(){
   const err=document.getElementById('login-error');
   err.classList.remove('show');
   if(!user||!pass){err.textContent='Preencha todos os campos.';err.classList.add('show');return;}
+  const blocked=_loginBlocked(user);
+  if(blocked){
+    const mins=Math.ceil((blocked-Date.now())/60000);
+    err.textContent='Conta bloqueada. Tente novamente em '+mins+' minuto'+(mins>1?'s':'')+'.'
+    err.classList.add('show');return;
+  }
   btn.classList.add('loading');btn.textContent='Verificando...';
   setTimeout(()=>{
     const match=CREDS.find(c=>c.user===user&&c.pass===pass);
     if(match){
+      _loginOk(user);
       CRM_USER=match;
       btn.textContent='✓ Bem-vindo, '+match.name+'!';
       setTimeout(()=>{
@@ -3736,9 +3792,11 @@ function doLogin(){
         setTimeout(()=>{ls.style.display='none';},500);
       },600);
     } else {
+      _loginFail(user);
       btn.classList.remove('loading');
       btn.textContent='Entrar';
-      err.textContent='Usuário ou senha incorretos. Tente novamente.';
+      const rem=LOGIN_MAX-(_loginAttempts[user]?.count||0);
+      err.textContent=rem>0?'Usuário ou senha incorretos. '+rem+' tentativa'+(rem>1?'s restantes.':' restante.'):'Conta bloqueada por 5 minutos.';
       err.classList.add('show');
       document.getElementById('login-pass').value='';
       document.getElementById('login-pass').focus();
@@ -3764,6 +3822,8 @@ function applySession(user){
   // Sidebar footer
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · '+user.role+'</strong><span>Abril 2026</span>';
+  // Marca d'água com nome do usuário
+  _setWatermark(user.name+' · '+user.role);
   // Print header meta
   const phMeta=document.querySelector('#print-header .ph-meta');
   if(phMeta) phMeta.innerHTML='<div>Emissão: '+nowBRDateStr()+'</div><div>'+user.name+' · '+user.role+'</div>';
