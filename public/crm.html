@@ -2663,15 +2663,15 @@ const FORMS_CONFIG={
     row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[11])}${obsCell(r[9],'Obs.','Observação')}`
   },
   visitas:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=CÓD r[4..]=RAZÃO SOCIAL
-    // r[6]=OBS VISITA r[7]=OBS PÃO r[8]=FOTO
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
+    // r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'95px'},{h:'Cód.',w:'62px'},
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${_findRS(r,4,12)}</td>${fotoCell(r[8])}${obsCell(r[6],'ver','Obs. Visita')}${obsCell(r[7],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -2774,7 +2774,7 @@ function renderRota(){
         const dc=new Date(d);dc.setHours(0,0,0,0);
         return dc.getTime()===todayMid.getTime();
       })
-      .map(r=>String(r[3]||'').trim())
+      .map(r=>String(r[4]||'').trim())
   );
 
   grid.innerHTML=DIAS.map(d=>{
