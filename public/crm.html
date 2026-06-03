@@ -2749,12 +2749,17 @@ function renderRota(){
     return;
   }
 
-  // Se cache de visitas ainda não carregou, busca em background e re-renderiza
-  if(formsCaches.visitas.length===0 && FORMS_CSV.visitas){
+  // Re-busca visitas se cache vazio ou com mais de 90s (visita recém-submetida fica verde)
+  const _rotaNow=Date.now();
+  const _rotaStale=!formsCaches.visitas.length||(_rotaNow-(formsCaches._visitasTs||0))>90000;
+  if(_rotaStale&&FORMS_CSV.visitas&&!formsCaches._visitasFetching){
+    formsCaches._visitasFetching=true;
+    formsCaches._visitasTs=_rotaNow;
     fetch(FORMS_CSV.visitas)
       .then(r=>r.text())
-      .then(text=>{formsCaches.visitas=parseCSV(text).filter(r=>r[0]&&r[0].trim());renderRota();})
-      .catch(()=>{});
+      .then(text=>{formsCaches.visitas=parseCSV(text).filter(r=>r[0]&&r[0].trim());formsCaches._visitasFetching=false;renderRota();})
+      .catch(()=>{formsCaches._visitasFetching=false;});
+    if(!formsCaches.visitas.length) return;
   }
 
   // Constrói Set dos cods visitados hoje por este vendedor
