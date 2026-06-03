@@ -562,6 +562,10 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 }
 .section-title{font-size:20px;font-weight:900}
 .section-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:1px}
+.refresh-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s;touch-action:manipulation;flex-shrink:0}
+.refresh-btn:hover{background:rgba(255,255,255,.18)}
+.refresh-btn.spinning svg{animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ─── RESPONSIVE ADJUSTMENTS ─── */
 body.mode-mobile .grid-3,body.mode-mobile .dash-second-grid,body.mode-mobile .analise-main-grid{
@@ -876,6 +880,7 @@ body.mode-mobile .section-header{gap:12px}
       <div class="section-title" id="dash-greeting">Bom dia ☀️</div>
       <div class="section-sub" id="dash-subgreeting">Segunda-feira, 4 de Maio de 2026</div>
     </div>
+    <button class="refresh-btn" id="refresh-btn-dashboard" onclick="refreshTab('dashboard')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
   <!-- Banner pessoal para vendedores (injetado via JS após login) -->
@@ -937,6 +942,7 @@ body.mode-mobile .section-header{gap:12px}
       <div class="section-title">Análise Comercial</div>
       <div class="section-sub">Comparativo e carteiras por vendedor</div>
     </div>
+    <button class="refresh-btn" id="refresh-btn-analise" onclick="refreshTab('analise')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
@@ -993,6 +999,7 @@ body.mode-mobile .section-header{gap:12px}
       <div class="section-title">Google Forms</div>
       <div class="section-sub">Dados preenchidos pelos vendedores</div>
     </div>
+    <button class="refresh-btn" id="refresh-btn-registrar" onclick="refreshTab('registrar')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
   <!-- Nível 1: Vendedor -->
@@ -2242,6 +2249,26 @@ function showTabMobile(tab, el){
   showTab(tab, null);
   document.querySelectorAll('.botnav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
+}
+function refreshTab(tab){
+  const btn=document.getElementById('refresh-btn-'+tab);
+  if(btn){btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);}
+  if(tab==='dashboard'){
+    renderKPIs();renderRanking();renderTop5();
+    renderDonut('donut-svg','donut-legend');
+    if(document.getElementById('donut-svg2')) renderDonut('donut-svg2','donut-legend2');
+  } else if(tab==='analise'){
+    renderComparativo();
+    if(activeVendor) renderVendorDetail(activeVendor);
+  } else if(tab==='registrar'){
+    if(currentFormsType==='rota'){
+      formsCaches._visitasTs=0;
+      renderRota();
+    } else {
+      formsCaches[currentFormsType]=[];
+      loadFormsData();
+    }
+  }
 }
 
 /* ─────────────────────────────────────────
