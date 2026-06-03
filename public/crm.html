@@ -14,7 +14,7 @@
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
-@media print{body *{display:none!important}body::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}}
+@media print{body:not(.mode-print) *{display:none!important}body:not(.mode-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}}
 body.no-copy{-webkit-user-select:none;user-select:none;}
 
 /* ─── RESET & BASE ─── */
@@ -2358,7 +2358,7 @@ function setMode(mode){
     const b=document.getElementById('btn-'+m);
     if(b) b.classList.toggle('active',m===mode);
   });
-  if(mode==='print') setTimeout(()=>window.print(),300);
+  if(mode==='print'){window.onafterprint=()=>setMode('desktop');setTimeout(()=>window.print(),300);}
 }
 
 /* ─────────────────────────────────────────
