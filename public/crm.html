@@ -14,7 +14,7 @@
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
-@media print{body:not(.mode-print) *{display:none!important}body:not(.mode-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}}
+@media print{body:not(.ready-to-print) *{display:none!important}body:not(.ready-to-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}body.ready-to-print #topbar,body.ready-to-print #sidebar,body.ready-to-print #botnav{display:none!important}body.ready-to-print *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
 body.no-copy{-webkit-user-select:none;user-select:none;}
 
 /* ─── RESET & BASE ─── */
@@ -811,7 +811,7 @@ body.mode-mobile .section-header{gap:12px}
   <div class="topbar-logo"><span></span><span></span><span></span><span></span></div>
   <div class="topbar-brand"><h1>Valochi Sousa</h1><p>CRM Comercial</p></div>
   <div style="margin-left:auto">
-    <button class="btn-toggle" onclick="setMode('print')" id="btn-print">🖨 Imprimir</button>
+    <button class="btn-toggle" onclick="doPrint()" id="btn-print">🖨 Imprimir</button>
   </div>
 </div>
 
@@ -2359,6 +2359,11 @@ function setMode(mode){
     if(b) b.classList.toggle('active',m===mode);
   });
   if(mode==='print'){window.onafterprint=()=>setMode('desktop');setTimeout(()=>window.print(),300);}
+}
+function doPrint(){
+  document.body.classList.add('ready-to-print');
+  window.onafterprint=function(){document.body.classList.remove('ready-to-print');};
+  window.print();
 }
 
 /* ─────────────────────────────────────────
