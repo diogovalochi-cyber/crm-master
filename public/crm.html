@@ -2768,7 +2768,7 @@ function renderRota(){
   const visitedToday=new Set(
     formsCaches.visitas
       .filter(r=>{
-        if(_nm(r[0])!==currentRegSeller) return false;
+        if(!_vendMatch(_nm(r[0]),currentRegSeller)) return false;
         const d=toDate(r[1]);if(!d) return false;
         const dc=new Date(d);dc.setHours(0,0,0,0);
         return dc.getTime()===todayMid.getTime();
