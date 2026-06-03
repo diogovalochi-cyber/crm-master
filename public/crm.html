@@ -2862,7 +2862,7 @@ function closeObsModal(){document.getElementById('obs-modal').style.display='non
 /* Detecta RAZÃO SOCIAL na linha do CSV: varre colunas iStart..iEnd
    retorna a primeira que não seja data, URL, número ou nome de mês */
 function _findRS(r,iStart,iEnd){
-  const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ|SEGUNDA|TER[ÇC]A|QUARTA|QUINTA|SEXTA|S[AÁ]BADO|DOMINGO)/i;
+  const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{2,4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ|SEGUNDA|TER[ÇC]A|QUARTA|QUINTA|SEXTA|S[AÁ]BADO|DOMINGO)/i;
   for(let i=iStart;i<=iEnd;i++){
     const v=(r[i]||'').trim();
     if(v&&v.length>=3&&!reSkip.test(v)&&!v.startsWith('http')&&!v.includes('@')&&isNaN(Number(v.replace(/[.,]/g,'')))) return v;
@@ -2905,7 +2905,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,8)||r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,6)||r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -3024,7 +3024,7 @@ function renderRota(){
     // Prioridade: código numérico
     if(isNum) visitedToday.add(c4);
     // Sempre registra nome como fallback (busca em r[5..8]; se r[4] não for código, usa r[4])
-    const nomeRaw=isNum?(_findRS(r,5,8)||''):(r[4]||'');
+    const nomeRaw=isNum?(_findRS(r,5,6)||''):(r[4]||'');
     const nomeNorm=_nm(nomeRaw);
     if(nomeNorm&&!nomeNorm.includes('@')&&nomeNorm.length>=3) visitedToday.add(nomeNorm);
   });
@@ -3658,7 +3658,7 @@ const CREDS=[
   {user:'lazaro',   pass:'123', role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true},
   // Vendedores (9 ativos)
   {user:'guilherme',pass:'martins123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
-  {user:'relson',   pass:'123', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
+  {user:'relson',   pass:'1029', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
   {user:'israel',   pass:'Chamyto.123', role:'VENDEDOR',   name:'Israel',    av:'IS', vendId:'115', color:'#8B5CF6'},
   {user:'everaldo', pass:'123', role:'VENDEDOR',   name:'Everaldo',  av:'EV', vendId:'107', color:'#F59E0B'},
   {user:'natalia',  pass:'123', role:'VENDEDOR',   name:'Natália',   av:'NA', vendId:'116', color:'#F472B6'},
