@@ -2692,7 +2692,7 @@ function _findRS(r,iStart,iEnd){
   const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)/i;
   for(let i=iStart;i<=iEnd;i++){
     const v=(r[i]||'').trim();
-    if(v&&v.length>=3&&!reSkip.test(v)&&!v.startsWith('http')&&isNaN(Number(v.replace(/[.,]/g,'')))) return v;
+    if(v&&v.length>=3&&!reSkip.test(v)&&!v.startsWith('http')&&!v.includes('@')&&isNaN(Number(v.replace(/[.,]/g,'')))) return v;
   }
   return '';
 }
@@ -2721,10 +2721,10 @@ const FORMS_CONFIG={
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[11])}${obsCell(r[9],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[11])}${obsCell(r[9],'Obs.','Observação')}`
   },
   visitas:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=CÓD r[4]=RAZÃO SOCIAL
+    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
     // r[7]=OBS VISITA r[8]=OBS PÃO r[9]=FOTO
     vendCol:0, dateCol:1,
     cols:[
@@ -2732,7 +2732,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[3]||''}</td><td class="td-wrap">${r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -2836,28 +2836,31 @@ function renderRota(){
     if(!formsCaches.visitas.length) return;
   }
 
-  // Constrói Set dos cods visitados hoje por este vendedor
+  // Constrói Set dos cods/nomes visitados hoje por este vendedor
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   const _today=new Date();
-  const visitedToday=new Set(
-    formsCaches.visitas
-      .filter(r=>{
-        if(!_vendMatch(_nm(r[0]),currentRegSeller)) return false;
-        const d=toDate(r[1]);if(!d) return false;
-        return d.getFullYear()===_today.getFullYear()&&d.getMonth()===_today.getMonth()&&d.getDate()===_today.getDate();
-      })
-      .map(r=>normCod(r[3]))
-  );
+  const _todayVisits=formsCaches.visitas.filter(r=>{
+    if(!_vendMatch(_nm(r[0]),currentRegSeller)) return false;
+    const d=toDate(r[1]);if(!d) return false;
+    return d.getFullYear()===_today.getFullYear()&&d.getMonth()===_today.getMonth()&&d.getDate()===_today.getDate();
+  });
+  const visitedToday=new Set();
+  _todayVisits.forEach(r=>{
+    const c4=normCod(r[4]);
+    if(/^\d+$/.test(c4)) visitedToday.add(c4); // COD numérico (maioria dos vendedores)
+    else if(c4&&!c4.includes('@')&&c4.length>=3) visitedToday.add(_nm(r[4])); // nome (fallback)
+  });
 
   grid.innerHTML=DIAS.map(d=>{
     const clientes=rota[d.key]||[];
     const isToday=d.key===todayKey;
-    const visitedCount=isToday?clientes.filter(c=>visitedToday.has(normCod(c.cod))).length:0;
+    const _chkVisit=c=>visitedToday.has(normCod(c.cod))||visitedToday.has(_nm(c.nome));
+    const visitedCount=isToday?clientes.filter(_chkVisit).length:0;
 
     const rows=clientes.map(c=>{
       const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
       if(isToday){
-        const visited=visitedToday.has(normCod(c.cod));
+        const visited=_chkVisit(c);
         return `<div class="rota-client ${visited?'rota-visited':'rota-pending'}">
           <span class="rota-status-dot">${visited?'✓':'○'}</span>
           <span class="rota-cod">${c.cod}</span>
