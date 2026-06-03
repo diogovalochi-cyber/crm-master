@@ -2862,7 +2862,7 @@ function closeObsModal(){document.getElementById('obs-modal').style.display='non
 /* Detecta RAZÃO SOCIAL na linha do CSV: varre colunas iStart..iEnd
    retorna a primeira que não seja data, URL, número ou nome de mês */
 function _findRS(r,iStart,iEnd){
-  const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ)/i;
+  const reSkip=/^\d{4}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}|^(JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ|SEGUNDA|TER[ÇC]A|QUARTA|QUINTA|SEXTA|S[AÁ]BADO|DOMINGO)/i;
   for(let i=iStart;i<=iEnd;i++){
     const v=(r[i]||'').trim();
     if(v&&v.length>=3&&!reSkip.test(v)&&!v.startsWith('http')&&!v.includes('@')&&isNaN(Number(v.replace(/[.,]/g,'')))) return v;
@@ -2905,7 +2905,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${r[5]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,8)||r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
