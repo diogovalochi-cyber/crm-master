@@ -14,7 +14,7 @@
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
-@media print{body:not(.ready-to-print) *{display:none!important}body:not(.ready-to-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}body.ready-to-print #topbar,body.ready-to-print #sidebar,body.ready-to-print #botnav{display:none!important}body.ready-to-print *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+@media print{body:not(.ready-to-print) *{display:none!important}body:not(.ready-to-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}body.ready-to-print #topbar,body.ready-to-print #sidebar,body.ready-to-print #botnav,body.ready-to-print #crm-wm{display:none!important}body.ready-to-print,body.ready-to-print #main{background:#fff!important;padding-left:0!important}body.ready-to-print *{color:#111!important;background:transparent!important;border-color:#ddd!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body.ready-to-print .card{background:#f5f5f5!important}body.ready-to-print .badge-up{color:#16a34a!important}body.ready-to-print .badge-dn{color:#dc2626!important}body.ready-to-print .bar-fill{background:#0F52BA!important}}
 body.no-copy{-webkit-user-select:none;user-select:none;}
 
 /* ─── RESET & BASE ─── */
@@ -2361,11 +2361,9 @@ function setMode(mode){
   });
   if(mode==='print'){window.onafterprint=()=>setMode('desktop');setTimeout(()=>window.print(),300);}
 }
-function doPrint(){
-  document.body.classList.add('ready-to-print');
-  window.onafterprint=function(){document.body.classList.remove('ready-to-print');};
-  window.print();
-}
+window.addEventListener('beforeprint',()=>document.body.classList.add('ready-to-print'));
+window.addEventListener('afterprint', ()=>document.body.classList.remove('ready-to-print'));
+function doPrint(){ window.print(); }
 
 /* ─────────────────────────────────────────
    TAB NAVIGATION
@@ -4080,7 +4078,7 @@ document.addEventListener('keydown',e=>{
 ───────────────────────────────────────── */
 /* ─── AUTO MODE DETECTION ─── */
 function autoMode(){
-  if(document.body.classList.contains('mode-print')) return;
+  if(document.body.classList.contains('mode-print')||document.body.classList.contains('ready-to-print')) return;
   const m=window.innerWidth<768?'mobile':'desktop';
   if(!document.body.classList.contains('mode-'+m)) setMode(m);
 }
