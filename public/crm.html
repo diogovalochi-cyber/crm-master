@@ -3020,8 +3020,13 @@ function renderRota(){
   const visitedToday=new Set();
   _todayVisits.forEach(r=>{
     const c4=normCod(r[4]);
-    if(/^\d+$/.test(c4)) visitedToday.add(c4); // COD numérico (maioria dos vendedores)
-    else if(c4&&!c4.includes('@')&&c4.length>=3) visitedToday.add(_nm(r[4])); // nome (fallback)
+    const isNum=/^\d+$/.test(c4);
+    // Prioridade: código numérico
+    if(isNum) visitedToday.add(c4);
+    // Sempre registra nome como fallback (busca em r[5..8]; se r[4] não for código, usa r[4])
+    const nomeRaw=isNum?(_findRS(r,5,8)||''):(r[4]||'');
+    const nomeNorm=_nm(nomeRaw);
+    if(nomeNorm&&!nomeNorm.includes('@')&&nomeNorm.length>=3) visitedToday.add(nomeNorm);
   });
 
   grid.innerHTML=DIAS.map(d=>{
