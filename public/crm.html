@@ -650,6 +650,10 @@ body.mode-mobile .section-header{gap:12px}
 .rota-visited .rota-status-dot{color:#10B981}
 .rota-pending .rota-status-dot{color:#F87171}
 .rota-today-badge{font-size:10px;background:rgba(255,255,255,.15);padding:1px 7px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
+.rota-maps-link{color:inherit;text-decoration:none}
+.rota-maps-link:hover .rota-nome{text-decoration:underline;text-decoration-style:dotted}
+.rota-maps-pin{font-size:10px;opacity:.5;margin-left:3px;flex-shrink:0;transition:.15s}
+.rota-maps-link:hover .rota-maps-pin{opacity:1}
 
 /* ─── VENDOR COLORS ─── */
 .bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
@@ -2541,6 +2545,55 @@ const ROTAS={
       {cod:'4416',nome:'Supermercado Bete'},
     ],
   },
+  '115':{
+    segunda:[
+      {cod:'1657',nome:'Mercado Santa Fé',       maps:'https://maps.app.goo.gl/acxdcpQbU1kJWXSn9'},
+      {cod:'2808',nome:'Mercearia 3 Irmãos',     maps:'https://maps.app.goo.gl/DnhQJWuPNpoXLDZD6'},
+      {cod:'4389',nome:'Mercearia Licota',        maps:'https://maps.app.goo.gl/CEJS4tbCdixmKxxAA'},
+      {cod:'4893',nome:'Mercado Souza Lima',      maps:'https://maps.app.goo.gl/GjBhh5QvehgPXrgX7'},
+    ],
+    terca:[
+      {cod:'2495',nome:'Ipava Raio Supermercado', maps:'https://maps.app.goo.gl/nKzLXU8ochy7cnFM9'},
+      {cod:'2496',nome:'Mercadinho Amanhecer',    maps:'https://maps.app.goo.gl/tCGok2Y4mHxMRMZ6A'},
+      {cod:'2818',nome:'Embu Guaçu',              maps:'https://maps.app.goo.gl/kHsngvMXDQ6iY8nw8'},
+      {cod:'1268',nome:'Padaria Vitória',         maps:'https://maps.app.goo.gl/UUsBZaMx6JXXcw12A'},
+    ],
+    quarta:[
+      {cod:'4562',nome:'Mais Barato Mini Mercado',    maps:'https://maps.app.goo.gl/SfcQjbDgCVGX3WaH9'},
+      {cod:'4685',nome:'Empório Dani e Cia',          maps:'https://maps.app.goo.gl/cjdKiY4PE9DzMgxk9'},
+      {cod:'4722',nome:'Baratinho Almeida',           maps:'https://maps.app.goo.gl/ydXbsZRth23EuaPb9'},
+      {cod:'4723',nome:'Black Boi Jd Record',         maps:'https://maps.app.goo.gl/iUZAvfLZqZGpvSgFA'},
+      {cod:'4832',nome:'Mercadinho Rios Carneiro',    maps:'https://maps.app.goo.gl/dAcg8xguqNSs1A4i7'},
+      {cod:'4871',nome:'Taboão da Serra',             maps:'https://maps.app.goo.gl/iMpyQMLabqGnU8dV6'},
+    ],
+    quinta:[
+      {cod:'4513',nome:'Boi Fort',                    maps:'https://maps.app.goo.gl/DDgv4p5UgPPrevB5A'},
+      {cod:'4662',nome:'Padaria Pão Nobre Loja 2',    maps:'https://maps.app.goo.gl/ZTTiSt9MJFrNpL869'},
+      {cod:'4724',nome:'Black Boi Super SA',          maps:'https://maps.app.goo.gl/xkXYzCJt9gwQ7B7C9'},
+      {cod:'4725',nome:'O Boiadeiro',                 maps:'https://maps.app.goo.gl/rsjGcJchmbxawF8L6'},
+      {cod:'4868',nome:'Santo Amaro',                 maps:'https://maps.app.goo.gl/LjvZR94taN95Dsxh7'},
+      {cod:'4874',nome:'Nova América Gourmet',        maps:'https://maps.app.goo.gl/U4G8ueYPCQKSdfjf7'},
+      {cod:'4875',nome:'Padaria Golden Grão',         maps:'https://maps.app.goo.gl/MeQKgEgh7xTa3bXP8'},
+      {cod:'4884',nome:'Mercado Sônia',               maps:'https://maps.app.goo.gl/h1ogdhbPAUdtSfNAA'},
+      {cod:'4904',nome:'Padaria Interlagos',          maps:'https://maps.app.goo.gl/9EsnLRj8UvqC97VS7'},
+      {cod:'4906',nome:'Hortifruti Interlagos',       maps:'https://maps.app.goo.gl/vmnyrXxK6Kv5TP7i7'},
+      {cod:'4960',nome:'Santo Amaro',                 maps:'https://maps.app.goo.gl/JdYpjnnC9bWTgibIA'},
+      {cod:'4134',nome:'Dubom Café'},
+    ],
+    sexta:[
+      {cod:'1174',nome:'Mari Supermercados',          maps:'https://maps.app.goo.gl/JyfeLLTsS5Ci2mPp9'},
+      {cod:'2380',nome:'Mercadinho Preço Bom',        maps:'https://maps.app.goo.gl/uXoVmVrr3WvGX8KA7'},
+      {cod:'2383',nome:'Sabores da Vila',             maps:'https://maps.app.goo.gl/h7ie82MqQtiJFLjP8'},
+      {cod:'2499',nome:'Supermercado Beatriz',        maps:'https://maps.app.goo.gl/BZYQnY6Vvk5DDkMM6'},
+      {cod:'2735',nome:'Mercado Bom Clima',           maps:'https://maps.app.goo.gl/iGyk2iCoTteM69SV6'},
+      {cod:'3437',nome:'Mercado Energia Positiva',    maps:'https://maps.app.goo.gl/mEvEd4TxzgSyW8986'},
+      {cod:'4195',nome:'Fox Carnes Independência',    maps:'https://maps.app.goo.gl/QTvvoeeM6pU8YWiC8'},
+      {cod:'4201',nome:'Fox Carnes Jd Rosa',          maps:'https://maps.app.goo.gl/i2qqmQkxLnFq8pm7'},
+      {cod:'4423',nome:'Panificadora GNC',            maps:'https://maps.app.goo.gl/VzzLHQ3LuLwBIAKn7'},
+      {cod:'4450',nome:'Padaria Arruda',              maps:'https://maps.app.goo.gl/dZjCCUMNhbF5aLBn8'},
+      {cod:'4467',nome:'Padaria Pão Nobre'},
+    ],
+  },
 };
 
 function fmtDate(v){
@@ -2727,18 +2780,20 @@ function renderRota(){
     const visitedCount=isToday?clientes.filter(c=>visitedToday.has(c.cod)).length:0;
 
     const rows=clientes.map(c=>{
+      const nomeInner=`<span class="rota-nome">${c.nome}</span>${c.maps?'<span class="rota-maps-pin">📍</span>':''}`;
+      const nomeEl=c.maps?`<a class="rota-maps-link" href="${c.maps}" target="_blank" rel="noopener">${nomeInner}</a>`:nomeInner;
       if(isToday){
         const visited=visitedToday.has(c.cod);
         return `<div class="rota-client ${visited?'rota-visited':'rota-pending'}">
           <span class="rota-status-dot">${visited?'✓':'○'}</span>
           <span class="rota-cod">${c.cod}</span>
-          <span class="rota-nome">${c.nome}</span>
+          ${nomeEl}
           ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
         </div>`;
       }
       return `<div class="rota-client">
         <span class="rota-cod">${c.cod}</span>
-        <span class="rota-nome">${c.nome}</span>
+        ${nomeEl}
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
       </div>`;
     }).join('');
