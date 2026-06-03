@@ -2906,7 +2906,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td>${r[4]||''}</td><td class="td-wrap">${_findRS(r,5,6)||r[4]||''}</td>${fotoCell(r[9])}${obsCell(r[7],'ver','Obs. Visita')}${obsCell(r[8],'ver','Obs. Pão')}`
+    row:r=>{const isN3=/^\d+$/.test((r[3]||'').trim());const iC=isN3?3:4,iR=isN3?4:5,iO1=isN3?6:7,iO2=isN3?7:8,iF=isN3?8:9;const cod=r[iC]||'';return`<td>${fmtDate(r[1])}</td><td>${cod}</td><td class="td-wrap">${_findRS(r,iR,iR+1)||cod}</td>${fotoCell(r[iF])}${obsCell(r[iO1],'ver','Obs. Visita')}${obsCell(r[iO2],'ver','Obs. Pão')}`}
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -3022,12 +3022,12 @@ function renderRota(){
   });
   const visitedToday=new Set();
   _todayVisits.forEach(r=>{
-    const c4=normCod(r[4]);
-    const isNum=/^\d+$/.test(c4);
-    // Prioridade: código numérico
-    if(isNum) visitedToday.add(c4);
-    // Sempre registra nome como fallback (busca em r[5..8]; se r[4] não for código, usa r[4])
-    const nomeRaw=isNum?(_findRS(r,5,6)||''):(r[4]||'');
+    const isN3=/^\d+$/.test((r[3]||'').trim());
+    const iC=isN3?3:4,iR=isN3?4:5;
+    const cod=normCod(r[iC]);
+    const isNum=/^\d+$/.test(cod);
+    if(isNum) visitedToday.add(cod);
+    const nomeRaw=isNum?(_findRS(r,iR,iR+1)||''):(r[iC]||'');
     const nomeNorm=_nm(nomeRaw);
     if(nomeNorm&&!nomeNorm.includes('@')&&nomeNorm.length>=3) visitedToday.add(nomeNorm);
   });
