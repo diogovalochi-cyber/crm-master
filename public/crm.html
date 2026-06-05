@@ -13,6 +13,7 @@
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
+body.admin-mode{-webkit-user-select:text;-moz-user-select:text;user-select:text}
 input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
 @media print{body:not(.ready-to-print) *{display:none!important}body:not(.ready-to-print)::after{content:'Impressão não permitida — Valochi Sousa CRM';display:block!important;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#333}body.ready-to-print #topbar,body.ready-to-print #sidebar,body.ready-to-print #botnav,body.ready-to-print #crm-wm{display:none!important}body.ready-to-print,body.ready-to-print #main{background:#fff!important;padding-left:0!important}body.ready-to-print *{color:#111!important;background:transparent!important;border-color:#ddd!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body.ready-to-print .card{background:#f5f5f5!important}body.ready-to-print .badge-up{color:#16a34a!important}body.ready-to-print .badge-dn{color:#dc2626!important}body.ready-to-print .bar-fill{background:#0F52BA!important}}
 body.no-copy{-webkit-user-select:none;user-select:none;}
@@ -1006,6 +1007,33 @@ body.mode-mobile .section-header{gap:12px}
       </div>
       <div style="overflow-x:auto">
         <table class="tbl" id="comp-table"></table>
+      </div>
+    </div>
+    <!-- Carteira consolidada admin (hidden for vendors) -->
+    <div id="admin-carteira-card" style="display:none;margin-top:16px">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="adm-cart-title">Carteira Consolidada · Abril vs Maio 2026</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODO</span>
+            <select class="comp-mes-sel" id="adm-cart-mes-a" onchange="renderAdminCarteira()">
+              <option value="marco">Março</option>
+              <option value="abril" selected>Abril</option>
+              <option value="maio">Maio</option>
+              <option value="junho">Junho</option>
+            </select>
+            <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
+            <select class="comp-mes-sel" id="adm-cart-mes-b" onchange="renderAdminCarteira()">
+              <option value="marco">Março</option>
+              <option value="abril">Abril</option>
+              <option value="maio" selected>Maio</option>
+              <option value="junho">Junho</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl" id="adm-cart-table"></table>
+        </div>
       </div>
     </div>
   </div>
@@ -3557,6 +3585,72 @@ function renderComparativo(){
     <td>${vrTBC?`<span class="${vrTBC.up?'badge-up':'badge-dn'}">${vrTBC.str}</span>`:'—'}</td>
   </tr></tfoot>`;
   tblEl.innerHTML=html;
+  renderAdminCarteira();
+}
+
+/* ─────────────────────────────────────────
+   CARTEIRA CONSOLIDADA (admin only)
+───────────────────────────────────────── */
+function renderAdminCarteira(){
+  const card=document.getElementById('admin-carteira-card');
+  if(!card) return;
+  if(window.CRM_VENDOR_ID){card.style.display='none';return;}
+  card.style.display='';
+  const mesA=document.getElementById('adm-cart-mes-a')?.value||'abril';
+  const mesB=document.getElementById('adm-cart-mes-b')?.value||'maio';
+  const lblA=MES_LABELS[mesA]||mesA;
+  const lblB=MES_LABELS[mesB]||mesB;
+  const titleEl=document.getElementById('adm-cart-title');
+  if(titleEl) titleEl.textContent=`Carteira Consolidada · ${lblA} vs ${lblB} 2026`;
+  const carteiraMap={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO};
+  const srcA=carteiraMap[mesA]||{};
+  const srcB=carteiraMap[mesB]||{};
+  const map=new Map();
+  Object.values(srcB).forEach(arr=>arr.forEach(c=>{
+    if(!map.has(c.cod)) map.set(c.cod,{cod:c.cod,nome:c.nome,valA:0,valB:0});
+    const e=map.get(c.cod);e.valB+=c.valor;e.nome=c.nome;
+  }));
+  Object.values(srcA).forEach(arr=>arr.forEach(c=>{
+    if(!map.has(c.cod)) map.set(c.cod,{cod:c.cod,nome:c.nome,valA:0,valB:0});
+    const e=map.get(c.cod);e.valA+=c.valor;if(!e.nome)e.nome=c.nome;
+  }));
+  const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
+  const totA=clients.reduce((s,c)=>s+c.valA,0);
+  const totB=clients.reduce((s,c)=>s+c.valB,0);
+  const hasA=totA>0,hasB=totB>0;
+  const tbl=document.getElementById('adm-cart-table');
+  if(!tbl) return;
+  let html=`<thead><tr>
+    <th>#</th><th>Cód.</th><th>Cliente</th>
+    <th>${lblA}</th><th>${lblB}</th>
+    <th>${hasA&&hasB?'Variação %':'% do Total'}</th>
+  </tr></thead><tbody>`;
+  if(!clients.length){
+    html+=`<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados para o período selecionado</td></tr></tbody>`;
+  } else {
+    clients.forEach((c,i)=>{
+      const isNew=c.valA===0&&c.valB>0;
+      let varHtml;
+      if(isNew) varHtml=`<span class="badge-up">Novo</span>`;
+      else if(hasA&&hasB&&c.valA>0){const vr=varPct(c.valB,c.valA);varHtml=`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`;}
+      else{const pct=(totB>0)?((c.valB/totB)*100).toFixed(1):(totA>0)?((c.valA/totA)*100).toFixed(1):'0';varHtml=pct+'%';}
+      html+=`<tr>
+        <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
+        <td style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600">${c.cod||'—'}</td>
+        <td style="font-weight:600">${c.nome}</td>
+        <td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>
+        <td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>
+        <td>${varHtml}</td>
+      </tr>`;
+    });
+    html+=`</tbody><tfoot><tr class="total-row">
+      <td colspan="3">Total</td>
+      <td>${totA>0?fBRL(totA):'—'}</td>
+      <td>${totB>0?fBRL(totB):'—'}</td>
+      <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
+    </tr></tfoot>`;
+  }
+  tbl.innerHTML=html;
 }
 
 /* ─────────────────────────────────────────
@@ -3862,7 +3956,7 @@ function _setWatermark(text){
 function doLogout(expired){
   CRM_USER=null;
   const wm=document.getElementById('crm-wm');if(wm)wm.remove();
-  document.body.classList.remove('no-copy');
+  document.body.classList.remove('no-copy','admin-mode');
   const ls=document.getElementById('login-screen');
   ls.style.display='';
   setTimeout(()=>ls.classList.remove('hide'),10);
@@ -3937,8 +4031,9 @@ function applySession(user){
   // Print header meta
   const phMeta=document.querySelector('#print-header .ph-meta');
   if(phMeta) phMeta.innerHTML='<div>Emissão: '+nowBRDateStr()+'</div><div>'+user.name+' · '+user.role+'</div>';
-  // Copy protection: non-admins cannot select/copy text
+  // Copy protection: non-admins cannot select/copy text; admins can
   if(!user.fullAccess) document.body.classList.add('no-copy');
+  else document.body.classList.add('admin-mode');
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
@@ -4210,12 +4305,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.btn-primary').forEach(b=>{b.dataset.orig=b.textContent});
 });
 /* ─── COPY / SCREENSHOT PROTECTION ─── */
-document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('copy',e=>e.preventDefault());
-document.addEventListener('cut',e=>e.preventDefault());
+document.addEventListener('contextmenu',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
+document.addEventListener('copy',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
+document.addEventListener('cut',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
   const ctrl=e.ctrlKey||e.metaKey;
+  if(CRM_USER?.fullAccess){
+    if(ctrl&&['p','s','u'].includes(k)){e.preventDefault();return;}
+    if(k==='f12'&&!window.DEV_MODE){e.preventDefault();return;}
+    return;
+  }
   if(ctrl&&['c','a','p','s','u'].includes(k)){e.preventDefault();return;}
   if(k==='printscreen'){e.preventDefault();navigator.clipboard&&navigator.clipboard.writeText('');return;}
   if(k==='f12'&&!window.DEV_MODE){e.preventDefault();return;}
