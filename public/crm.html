@@ -3261,7 +3261,7 @@ function renderRota(){
 
     const _withAddr=clientes.filter(c=>c.addr).slice(0,10);
     const _rotaBtn=_withAddr.length>=2
-      ?`<a href="https://www.google.com/maps/dir/${_withAddr.map(c=>encodeURIComponent(c.addr)).join('/')}" target="_blank" rel="noopener" class="rota-day-route-btn" title="Abrir rota do dia no Maps">🗺️</a>`
+      ?`<a href="https://www.google.com/maps/dir/${_withAddr.map(c=>c.addr).join('/')}" target="_blank" rel="noopener" class="rota-day-route-btn" title="Abrir rota do dia no Maps">🗺️</a>`
       :'';
 
     const hdrRight=isToday&&clientes.length
