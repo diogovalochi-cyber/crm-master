@@ -975,6 +975,7 @@ body.mode-mobile .section-header{gap:12px}
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
+    <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)" style="display:none">Pesquisa</button>
   </div>
 
   <!-- SUB: Comparativo -->
@@ -1037,6 +1038,20 @@ body.mode-mobile .section-header{gap:12px}
           <table class="tbl" id="adm-cart-table"></table>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="subtab-pesquisa" style="display:none">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Pesquisa de Cliente</span></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px">
+        <input type="text" id="srch-cod" placeholder="Código do cliente..." autocomplete="off"
+          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:6px;font-size:14px;outline:none;width:200px"
+          oninput="searchClient(this.value.trim())"
+          onkeydown="if(event.key==='Enter')searchClient(this.value.trim())">
+        <span style="font-size:12px;color:rgba(255,255,255,.3)">ou nome parcial</span>
+      </div>
+      <div id="srch-result"><div style="color:rgba(255,255,255,.25);font-size:13px">Digite um código ou nome para pesquisar.</div></div>
     </div>
   </div>
 
@@ -2500,14 +2515,117 @@ function refreshTab(tab){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  ['comparativo','porvendedor'].forEach(s=>{
+  ['comparativo','porvendedor','pesquisa'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
   document.querySelectorAll('#tab-analise .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
+  if(id==='pesquisa'){const inp=document.getElementById('srch-cod');if(inp) inp.focus();}
 }
+/* ─────────────────────────────────────────
+   PESQUISA DE CLIENTE (admin only)
+───────────────────────────────────────── */
+function searchClient(q){
+  const el=document.getElementById('srch-result');
+  if(!el) return;
+  if(!q){el.innerHTML='<div style="color:rgba(255,255,255,.25);font-size:13px">Digite um código ou nome para pesquisar.</div>';return;}
+
+  const MESES=[
+    {key:'marco', label:'Março',  cart:typeof CARTEIRA_MARCO!=='undefined'?CARTEIRA_MARCO:{}},
+    {key:'abril', label:'Abril',  cart:typeof CARTEIRA_ABRIL!=='undefined'?CARTEIRA_ABRIL:{}},
+    {key:'maio',  label:'Maio',   cart:typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{}},
+    {key:'junho', label:'Junho',  cart:typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{}},
+  ];
+
+  const qNum=normCod(q);
+  const qNome=q.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const isCodSearch=/^\d+$/.test(q.trim());
+
+  // Coleta resultados (pode ser mais de 1 quando pesquisa por nome parcial)
+  const found={}; // cod -> {nome, vendCod, billing:{}, mapsLink, rotaDias:[]}
+
+  // Busca nas carteiras
+  for(const mes of MESES){
+    for(const [vcod,clientes] of Object.entries(mes.cart)){
+      for(const c of clientes){
+        const cNorm=normCod(c.cod);
+        const cNome=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
+        if(!match) continue;
+        if(!found[cNorm]) found[cNorm]={nome:c.nome,vendCod:vcod,billing:{},mapsLink:null,rotaDias:[]};
+        found[cNorm].billing[mes.key]=c.valor;
+        if(!found[cNorm].vendCod) found[cNorm].vendCod=vcod;
+      }
+    }
+  }
+
+  // Busca nas rotas
+  const DIAS_LABELS={segunda:'Segunda',terca:'Terça',quarta:'Quarta',quinta:'Quinta',sexta:'Sexta',sabado:'Sábado'};
+  for(const [vcod,dias] of Object.entries(ROTAS)){
+    for(const [dia,clientes] of Object.entries(dias)){
+      for(const c of clientes){
+        const cNorm=normCod(c.cod);
+        const cNome=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
+        if(!match) continue;
+        if(!found[cNorm]) found[cNorm]={nome:c.nome,vendCod:vcod,billing:{},mapsLink:null,rotaDias:[]};
+        if(!found[cNorm].nome) found[cNorm].nome=c.nome;
+        if(c.maps) found[cNorm].mapsLink=c.maps;
+        found[cNorm].rotaDias.push({dia,freq:c.freq||null,vendCod:vcod});
+      }
+    }
+  }
+
+  const results=Object.entries(found);
+  if(!results.length){
+    el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">Nenhum cliente encontrado para "<b>${q}</b>".</div>`;
+    return;
+  }
+
+  const allVend=typeof VENDEDORES_JUNHO!=='undefined'?VENDEDORES_JUNHO:[];
+  const getVendName=cod=>(allVend.find(v=>v.cod===cod)?.name)||cod;
+
+  el.innerHTML=results.map(([cod,info])=>{
+    const vendName=getVendName(info.vendCod);
+
+    const billingRows=MESES.map(mes=>{
+      const v=info.billing[mes.key];
+      return `<tr>
+        <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:60px">${mes.label}</td>
+        <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${v!=null?fBRL(v):'<span style="color:rgba(255,255,255,.2)">—</span>'}</td>
+      </tr>`;
+    }).join('');
+
+    const rotaChips=info.rotaDias.map(r=>
+      `<span style="font-size:11px;background:rgba(255,255,255,.09);padding:3px 9px;border-radius:4px;white-space:nowrap">
+        ${DIAS_LABELS[r.dia]||r.dia}${r.freq?` <span style="opacity:.5">${r.freq}</span>`:''}
+      </span>`
+    ).join('');
+
+    return `<div style="border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:2px">${info.nome}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4)">Cód. ${cod} · ${vendName}</div>
+        </div>
+        ${info.mapsLink?`<a href="${info.mapsLink}" target="_blank" rel="noopener" style="font-size:20px;text-decoration:none;flex-shrink:0" title="Ver no Maps">📍</a>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:4px">FATURAMENTO</div>
+          <table style="width:100%;border-collapse:collapse">${billingRows}</table>
+        </div>
+        ${rotaChips?`<div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:6px">DIAS DE VISITA</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">${rotaChips}</div>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 let currentRegSeller='GUILHERME';
 let currentFormsType='prospeccoes';
 const formsCaches={prospeccoes:[],visitas:[],apresentacoes:[],cadastros:[]};
@@ -4072,7 +4190,7 @@ function applySession(user){
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
-  else if(user.fullAccess)       renderWeeklyKPIs();
+  else if(user.fullAccess){renderWeeklyKPIs();const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';}
 
   // Auto-carrega Forms (dados necessários para contagem de atividades no dashboard do vendedor)
   if(user.role==='VENDEDOR'){
