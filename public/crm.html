@@ -3965,10 +3965,6 @@ function renderVendorDetail(name){
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
           <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
-          <td>${_varCell(c.b,c.a)}</td>
-          <td>${_varCell(c.c,c.a)}</td>
-          <td>${_diffCell(c.b,c.a)}</td>
-          <td>${_diffCell(c.c,c.a)}</td>
           <td style="font-weight:800;color:#fff">${fBRL(tot)}</td>
         </tr>`;
       }).join('');
@@ -3982,10 +3978,6 @@ function renderVendorDetail(name){
         <th style="${_thS}" onclick="_vdSortBy('a')">${lblA}${_ico('a')}</th>
         <th style="${_thS}" onclick="_vdSortBy('b')">${lblB}${_ico('b')}</th>
         <th style="${_thS}" onclick="_vdSortBy('c')">${lblC}${_ico('c')}</th>
-        <th style="${_thS}" onclick="_vdSortBy('varBA')">Var% ${lblB}/${lblA}${_ico('varBA')}</th>
-        <th style="${_thS}" onclick="_vdSortBy('varCA')">Var% ${lblC}/${lblA}${_ico('varCA')}</th>
-        <th style="${_thS}" onclick="_vdSortBy('diffBA')">Δ R$ ${lblB}/${lblA}${_ico('diffBA')}</th>
-        <th style="${_thS}" onclick="_vdSortBy('diffCA')">Δ R$ ${lblC}/${lblA}${_ico('diffCA')}</th>
         <th style="${_thS}" onclick="_vdSortBy('total')">Total${_ico('total')}</th>
       </tr>`;
       tfoot=`<tr class="total-row">
@@ -3993,7 +3985,6 @@ function renderVendorDetail(name){
         <td>${fBRL(totA)}</td>
         <td>${fBRL(totB)}</td>
         <td style="font-weight:800">${fBRL(totC)}</td>
-        <td>—</td><td>—</td><td>—</td><td>—</td>
         <td style="font-weight:800">${fBRL(totA+totB+totC)}</td>
       </tr>`;
     }
