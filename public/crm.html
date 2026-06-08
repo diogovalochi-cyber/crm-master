@@ -659,6 +659,8 @@ body.mode-mobile .section-header{gap:12px}
 .rota-today-badge{font-size:10px;background:rgba(255,255,255,.15);padding:1px 7px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
 .rota-maps-pin{font-size:11px;opacity:.45;flex-shrink:0;text-decoration:none;color:inherit;padding:0 3px;transition:.15s}
 .rota-maps-pin:hover{opacity:1}
+.rota-day-route-btn{font-size:13px;opacity:.5;text-decoration:none;margin-left:6px;transition:.15s;vertical-align:middle}
+.rota-day-route-btn:hover{opacity:1}
 
 /* ─── VENDOR COLORS ─── */
 .bg-guilherme{background:#10B981} .bg-relson{background:#60A5FA} .bg-everaldo{background:#F59E0B}
@@ -3134,9 +3136,14 @@ function renderRota(){
       </div>`;
     }).join('');
 
+    const _withMaps=clientes.filter(c=>c.maps).slice(0,10);
+    const _rotaBtn=_withMaps.length>=2
+      ?`<a href="https://www.google.com/maps/dir/${_withMaps.map(c=>encodeURIComponent(c.nome)).join('/')}" target="_blank" rel="noopener" class="rota-day-route-btn" title="Abrir rota do dia no Maps">🗺️</a>`
+      :'';
+
     const hdrRight=isToday&&clientes.length
-      ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientes.length} visitado${visitedCount!==1?'s':''}</span>`
-      :`<span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>`;
+      ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientes.length} visitado${visitedCount!==1?'s':''}</span>${_rotaBtn}`
+      :`<span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>${_rotaBtn}`;
 
     return `<div class="rota-day" style="${isToday?'border-color:rgba(255,255,255,.22)':''}">
       <div class="rota-day-hdr" style="${isToday?'background:rgba(255,255,255,.11)':''}">
