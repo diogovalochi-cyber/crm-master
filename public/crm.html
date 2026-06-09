@@ -2543,22 +2543,25 @@ function getDiaLabel(d){
   return `${day}/${m}/${y}`;
 }
 function getVendedoresForMes(mes){
+  const _tf=v=>!CRM_USER?.team||CRM_USER.team.includes(v.cod);
   if(mes==='diario'){
     const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];
-    if(!d) return VENDEDORES_JUNHO.map(v=>({...v,abr:0,mar:0}));
-    return VENDEDORES_JUNHO.map(v=>{
+    if(!d) return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v,abr:0,mar:0}));
+    return VENDEDORES_JUNHO.filter(_tf).map(v=>{
       const r=d.resumo.find(x=>x.cod===v.cod);
       return {...v,abr:r?r.total:0,mar:0,cli:r?r.cli:0,ped:r?r.ped:0};
     }).sort((a,b)=>b.abr-a.abr);
   }
-  if(mes==='junho') return VENDEDORES_JUNHO.map(v=>({...v, abr:v.total, mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
-  if(mes==='maio')  return VENDEDORES_MAIO.map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
-  if(mes==='marco') return VENDEDORES.map(v=>({...v, abr:v.mar, mar:0}));
-  return VENDEDORES; // abril
+  if(mes==='junho') return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v, abr:v.total, mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
+  if(mes==='maio')  return VENDEDORES_MAIO.filter(_tf).map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
+  if(mes==='marco') return VENDEDORES.filter(_tf).map(v=>({...v, abr:v.mar, mar:0}));
+  return VENDEDORES.filter(_tf); // abril
 }
 function getCarteiraForMes(mes){
-  if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-  return {marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
+  const _raw=mes==='diario'?(FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{}
+    :{marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
+  if(!CRM_USER?.team) return _raw;
+  const _f={};CRM_USER.team.forEach(cod=>{if(_raw[cod])_f[cod]=_raw[cod];});return _f;
 }
 function navDia(dir){
   const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();
@@ -4205,7 +4208,7 @@ const CREDS=[
   {user:'diogo',    pass:'diogo',  role:'ANALISTA',   name:'Diogo',     av:'DI', fullAccess:true},
   {user:'carlos',   pass:'carlos', role:'GERENTE',    name:'Carlos',    av:'CA', fullAccess:true},
   {user:'lazaro',   pass:'lazaro',  role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true},
-  {user:'valdenice', pass:'2712',  role:'SUPERVISOR', name:'Valdenice', av:'VD', fullAccess:true},
+  {user:'valdenice', pass:'2712',  role:'SUPERVISOR', name:'Valdenice', av:'VD', fullAccess:true, team:['115','094','107','119']},
   // Vendedores (9 ativos)
   {user:'guilherme',pass:'martins123', role:'VENDEDOR',   name:'Guilherme', av:'GU', vendId:'093', color:'#10B981'},
   {user:'relson',   pass:'1029', role:'VENDEDOR',   name:'Relson',    av:'RE', vendId:'094', color:'#60A5FA'},
