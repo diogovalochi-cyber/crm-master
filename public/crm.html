@@ -3713,7 +3713,7 @@ function renderDonut(svgId, legendId){
   const svg=document.getElementById(svgId);
   const legend=document.getElementById(legendId);
   if(!svg||!legend) return;
-  const source=getVendedoresForMes(CRM_MES).map(v=>({name:v.name,abr:v.abr,mar:v.mar}));
+  const source=getVendedoresForMes(CRM_MES).map(v=>({name:v.name,abr:v.abr,mar:v.mar,color:v.color}));
   const sorted=[...source].filter(v=>v.abr>0).sort((a,b)=>b.abr-a.abr);
   const total=sorted.reduce((s,v)=>s+v.abr,0);
   if(total===0||sorted.length===0){
@@ -3724,23 +3724,20 @@ function renderDonut(svgId, legendId){
   const R=50, C=Math.PI*2*R;
   let offset=0;
   let segs='', legendHtml='';
-  const alphas=[.9,.72,.56,.42,.30,.20,.13,.08,.05];
-  sorted.forEach((v,idx)=>{
+  sorted.forEach((v)=>{
     const share=v.abr/total;
     const dash=share*C;
-    const a=alphas[idx]||.05;
-    const trend=v.mar>0?(v.abr>v.mar?'up':v.abr<v.mar?'dn':'nt'):'nt';
-    const wc=trend==='up'?`rgba(74,222,128,${a})`:trend==='dn'?`rgba(248,113,113,${a})`:`rgba(255,255,255,${a})`;
-    const lc=trend==='up'?'#4ade80':trend==='dn'?'#f87171':'rgba(255,255,255,.7)';
+    const clr=v.color||'rgba(255,255,255,.6)';
     const varP=v.mar>0?((v.abr-v.mar)/v.mar*100):null;
     const pctStr=varP!==null?`${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}%`:`${Math.round(share*100)}%`;
-    segs+=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${wc}" stroke-width="18"
+    const lc=varP===null?'rgba(255,255,255,.7)':varP>=0?'#4ade80':'#f87171';
+    segs+=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${clr}" stroke-width="18"
       stroke-dasharray="${dash} ${C-dash}"
       stroke-dashoffset="${C-offset}"
       transform="rotate(-90 60 60)"
       style="transition:stroke-dashoffset .6s ease"/>`;
     legendHtml+=`<div class="donut-legend-item">
-      <div class="donut-legend-dot" style="background:${wc}"></div>
+      <div class="donut-legend-dot" style="background:${clr}"></div>
       <span style="color:#fff">${v.name}</span>
       <span style="margin-left:auto;font-weight:700;color:${lc}">${pctStr}</span>
     </div>`;
