@@ -1107,15 +1107,20 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- Nível 1: Vendedor -->
   <div class="subtab-row" id="reg-seller-tabs">
-    <button class="subtab active" data-seller="GUILHERME" onclick="selectRegSeller(this)">Guilherme</button>
-    <button class="subtab" data-seller="RELSON" onclick="selectRegSeller(this)">Relson</button>
-    <button class="subtab" data-seller="EVERALDO" onclick="selectRegSeller(this)">Everaldo</button>
-    <button class="subtab" data-seller="ISRAEL" onclick="selectRegSeller(this)">Israel</button>
-    <button class="subtab" data-seller="NATALIA" onclick="selectRegSeller(this)">Natália</button>
-    <button class="subtab" data-seller="KELLER" onclick="selectRegSeller(this)">Keller</button>
-    <button class="subtab" data-seller="JORGE" onclick="selectRegSeller(this)">Jorge</button>
-    <button class="subtab" data-seller="ALTHIERES" onclick="selectRegSeller(this)">Althieres</button>
-    <button class="subtab" data-seller="JOAO" onclick="selectRegSeller(this)">João</button>
+    <button class="subtab active" data-seller="GUILHERME"     onclick="selectRegSeller(this)">Guilherme</button>
+    <button class="subtab" data-seller="RELSON"         onclick="selectRegSeller(this)">Relson</button>
+    <button class="subtab" data-seller="EVERALDO"       onclick="selectRegSeller(this)">Everaldo</button>
+    <button class="subtab" data-seller="ISRAEL"         onclick="selectRegSeller(this)">Israel</button>
+    <button class="subtab" data-seller="NATALIA"        onclick="selectRegSeller(this)">Natália</button>
+    <button class="subtab" data-seller="KELLER"         onclick="selectRegSeller(this)">Keller</button>
+    <button class="subtab" data-seller="JORGE"          onclick="selectRegSeller(this)">Jorge</button>
+    <button class="subtab" data-seller="ALTHIERES"      onclick="selectRegSeller(this)">Althieres</button>
+    <button class="subtab" data-seller="JOAO"           onclick="selectRegSeller(this)">João</button>
+    <button class="subtab" data-seller="MOAB"           onclick="selectRegSeller(this)">Moab</button>
+    <button class="subtab" data-seller="RAMON"          onclick="selectRegSeller(this)">Ramon</button>
+    <button class="subtab" data-seller="KELLY"          onclick="selectRegSeller(this)">Kelly</button>
+    <button class="subtab" data-seller="LUIS HENRIQUE"  onclick="selectRegSeller(this)">Luis Henrique</button>
+    <button class="subtab" data-seller="CEZAR"          onclick="selectRegSeller(this)">Cezar</button>
   </div>
 
   <!-- Nível 2: Tipo de dado -->
@@ -4013,11 +4018,13 @@ function setVdMes(mes){
 function initVendorPills(){
   const row=document.getElementById('vendor-pills');
   if(row.children.length) return;
-  // Vendedor só vê a própria carteira
+  const _allV=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const vendorsToShow=window.CRM_VENDOR_NAME
-    ? VENDEDORES.filter(v=>v.name===window.CRM_VENDOR_NAME)
-    : VENDEDORES;
-  const defaultVendor=window.CRM_VENDOR_NAME||activeVendor;
+    ? _allV.filter(v=>v.name===window.CRM_VENDOR_NAME)
+    : CRM_USER?.team
+      ? _allV.filter(v=>CRM_USER.team.includes(v.cod))
+      : _allV;
+  const defaultVendor=window.CRM_VENDOR_NAME||(vendorsToShow[0]?.name)||activeVendor;
   vendorsToShow.forEach(v=>{
     const pill=document.createElement('div');
     pill.className='pill'+(v.name===defaultVendor?' active':'');
@@ -4377,7 +4384,25 @@ function applySession(user){
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
-  else if(user.fullAccess){renderWeeklyKPIs();const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';}
+  else if(user.fullAccess){
+    renderWeeklyKPIs();
+    const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
+    if(user.team){
+      // Supervisor com equipe restrita: filtra reg-seller-tabs e marca primeiro visível como ativo
+      const _allV=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
+      const _nm2=n=>n.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+      const teamNames=new Set(user.team.map(cod=>{const v=_allV.find(x=>x.cod===cod);return v?_nm2(v.name):null;}).filter(Boolean));
+      document.querySelectorAll('#reg-seller-tabs .subtab').forEach(btn=>{
+        if(!teamNames.has(btn.dataset.seller)) btn.style.display='none';
+      });
+      const firstBtn=[...document.querySelectorAll('#reg-seller-tabs .subtab')].find(b=>b.style.display!=='none');
+      if(firstBtn){
+        document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
+        firstBtn.classList.add('active');
+        currentRegSeller=firstBtn.dataset.seller;
+      }
+    }
+  }
 
   // Auto-carrega Forms (dados necessários para contagem de atividades no dashboard do vendedor)
   if(user.role==='VENDEDOR'){
