@@ -3658,19 +3658,26 @@ function renderRanking(){
    TOP 5
 ───────────────────────────────────────── */
 function renderTop5(){
-  const list=CRM_MES==='junho'?TOP_CLIENTES_JUNHO:CRM_MES==='abril'?TOP_CLIENTES:TOP_CLIENTES_MAIO;
+  const carteira=getCarteiraForMes(CRM_MES);
+  const vendMap={};
+  VENDEDORES_JUNHO.forEach(v=>{vendMap[v.cod]=v.name;});
+  const all=[];
+  Object.entries(carteira).forEach(([cod,clients])=>{
+    const vname=vendMap[cod]||cod;
+    clients.forEach(c=>all.push({nome:c.nome,vend:vname,val:c.valor}));
+  });
+  all.sort((a,b)=>b.val-a.val);
   let html='';
-  list.slice(0,5).forEach(c=>{
-    const col=vendorColor(c.vend);
+  all.slice(0,5).forEach((c,i)=>{
     html+=`<div class="top5-item">
-      <div class="top5-rank">${c.r}</div>
+      <div class="top5-rank">${i+1}</div>
       <div class="top5-name">${c.nome}</div>
       <div class="top5-seller">${c.vend}</div>
       <div class="top5-val">${fK(c.val)}</div>
     </div>`;
   });
   const t5El=document.getElementById('top5-list');
-  if(t5El) t5El.innerHTML=html;
+  if(t5El) t5El.innerHTML=html||'<div style="color:rgba(255,255,255,.4);font-size:12px;padding:8px 0">Sem dados</div>';
 }
 
 /* ─────────────────────────────────────────
