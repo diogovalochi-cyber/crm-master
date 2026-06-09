@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { AgendaItem } from '../context/DashboardContext';
-import { useAuth, MOCK_USERS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useDashboard } from '../context/DashboardContext';
+import { supabase } from '../lib/supabase';
 
 // ============================================================
 // Modal de Registro de Atendimento / Visita
@@ -25,9 +26,21 @@ interface AddAppointmentModalProps {
   onClose: () => void;
 }
 
+type VendorOption = { id: string; name: string; role: string };
+
 export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentModalProps) {
   const { currentUser } = useAuth();
   const { addAgendaItem } = useDashboard();
+  const [vendors, setVendors] = useState<VendorOption[]>([]);
+
+  useEffect(() => {
+    if (currentUser?.role === 'GERENTE' || currentUser?.role === 'SUPERVISOR') {
+      supabase
+        .from('users_profile')
+        .select('id, name, role')
+        .then(({ data }) => setVendors((data ?? []) as VendorOption[]));
+    }
+  }, [currentUser?.role]);
 
   const today = new Date().toISOString().split('T')[0];
   const nowTime = new Date().toTimeString().slice(0, 5);
@@ -55,30 +68,28 @@ export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentM
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setSaving(true);
+    await addAgendaItem({
+      cliente: form.cliente.trim(),
+      tipo: form.tipo,
+      hora: form.hora,
+      data: form.data,
+      status: form.status,
+      valor: Number(form.valor.replace(',', '.')),
+      vendedorId: form.vendedorId,
+    });
+    setSaving(false);
+    setSuccess(true);
     setTimeout(() => {
-      addAgendaItem({
-        cliente: form.cliente.trim(),
-        tipo: form.tipo,
-        hora: form.hora,
-        data: form.data,
-        status: form.status,
-        valor: Number(form.valor.replace(',', '.')),
-        vendedorId: form.vendedorId,
-      });
-      setSaving(false);
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        setForm({ cliente: '', tipo: TIPOS_PRODUTO[0], hora: nowTime, data: today, valor: '', status: 'confirmado', vendedorId: currentUser?.id || '' });
-        setErrors({});
-        onClose();
-      }, 1200);
-    }, 500);
+      setSuccess(false);
+      setForm({ cliente: '', tipo: TIPOS_PRODUTO[0], hora: nowTime, data: today, valor: '', status: 'confirmado', vendedorId: currentUser?.id || '' });
+      setErrors({});
+      onClose();
+    }, 1200);
   };
 
   const field = (label: string, key: keyof typeof form, type = 'text', children?: React.ReactNode) => (
@@ -190,7 +201,7 @@ export default function AddAppointmentModal({ isOpen, onClose }: AddAppointmentM
                 onChange={(e) => setForm({ ...form, vendedorId: e.target.value })}
                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-ice-200 hover:border-wine-300 bg-white text-ice-900 focus:outline-none focus:ring-2 focus:ring-wine-400 transition-all cursor-pointer"
               >
-                {MOCK_USERS.map((u) => (
+                {vendors.map((u) => (
                   <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
                 ))}
               </select>

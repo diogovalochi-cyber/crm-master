@@ -6,12 +6,18 @@ import Dashboard from './components/Dashboard'
 import LoginPage from './components/LoginPage'
 import './index.css'
 
-// ============================================================
-// AppRouter — decide se mostra Login ou Dashboard
-// ============================================================
 function AppRouter() {
-  const { isAuthenticated, currentUser, hasPermission } = useAuth();
+  const { isAuthenticated, isLoading, currentUser, hasPermission } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #100609 0%, #20050b 40%, #15090f 75%, #080608 100%)' }}>
+        <span className="w-8 h-8 border-2 border-wine-700/40 border-t-wine-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !currentUser) {
     return <LoginPage />;
@@ -28,9 +34,6 @@ function AppRouter() {
   );
 }
 
-// ============================================================
-// App raiz
-// ============================================================
 export default function App() {
   return (
     <AuthProvider>

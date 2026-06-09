@@ -1,10 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { User, RolePermissions } from '../types/auth';
-import { MOCK_USERS, ROLE_PERMISSIONS, SYSTEM_PASSWORD } from '../types/auth';
-
-// ============================================================
-// AuthContext — com Login / Logout real
-// ============================================================
+import { ROLE_PERMISSIONS } from '../types/auth';
+import { supabase } from '../lib/supabase';
 
 export interface LoginResult {
   success: boolean;
@@ -14,49 +11,61 @@ export interface LoginResult {
 interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   permissions: RolePermissions | null;
-  login: (username: string, password: string) => LoginResult;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<LoginResult>;
+  logout: () => Promise<void>;
   hasPermission: (key: keyof RolePermissions) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+async function fetchProfile(userId: string): Promise<User | null> {
+  const { data } = await supabase
+    .from('users_profile')
+    .select('*')
+    .eq('id', userId)
+    .single();
+  return data as User | null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const profile = await fetchProfile(session.user.id);
+        setCurrentUser(profile);
+      }
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const profile = await fetchProfile(session.user.id);
+        setCurrentUser(profile);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const permissions: RolePermissions | null = currentUser
     ? ROLE_PERMISSIONS[currentUser.role]
     : null;
 
-  const login = useCallback((username: string, password: string): LoginResult => {
-    // Verifica senha
-    if (password !== SYSTEM_PASSWORD) {
-      return { success: false, error: 'Senha incorreta. Tente novamente.' };
-    }
-
-    // Busca usuário por nome (case-insensitive, ignora acentos básicos)
-    const normalizado = username.trim().toLowerCase();
-    const user = MOCK_USERS.find(
-      (u) => u.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ===
-             normalizado.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    );
-
-    if (!user) {
-      return { success: false, error: 'Usuário não encontrado. Verifique o nome digitado.' };
-    }
-
-    // Bloqueia técnicos
-    if (user.role === 'TECNICO') {
-      return { success: false, error: 'Acesso não autorizado para este perfil.' };
-    }
-
-    setCurrentUser(user);
+  const login = useCallback(async (email: string, password: string): Promise<LoginResult> => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: 'Credenciais inválidas. Verifique e-mail e senha.' };
     return { success: true };
   }, []);
 
-  const logout = useCallback(() => {
-    setCurrentUser(null);
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
   }, []);
 
   const hasPermission = useCallback((key: keyof RolePermissions): boolean => {
@@ -68,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{
       currentUser,
       isAuthenticated: currentUser !== null,
+      isLoading,
       permissions,
       login,
       logout,
@@ -83,6 +93,3 @@ export function useAuth(): AuthContextType {
   if (!ctx) throw new Error('useAuth deve ser usado dentro de <AuthProvider>');
   return ctx;
 }
-
-// Mantido para retrocompatibilidade do AddAppointmentModal
-export { MOCK_USERS };
