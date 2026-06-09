@@ -925,11 +925,19 @@ body.mode-mobile .section-header{gap:12px}
   <div class="card mb-16">
     <div class="card-header">
       <span class="card-title" id="ranking-title">Ranking de Faturamento — Maio 2026</span>
-      <select class="mes-select" onchange="setMes(this.value)">
-        <option value="abril">Abril</option>
-        <option value="maio">Maio</option>
-        <option value="junho">Junho</option>
-      </select>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <select class="mes-select" onchange="setMes(this.value)">
+          <option value="abril">Abril</option>
+          <option value="maio">Maio</option>
+          <option value="junho">Junho</option>
+          <option value="diario">Por Dia</option>
+        </select>
+        <div class="dia-nav-wrap" style="display:none;align-items:center;gap:6px">
+          <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
+          <span id="dia-label" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.85);min-width:70px;text-align:center"></span>
+          <button id="dia-nav-next" onclick="navDia(1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">›</button>
+        </div>
+      </div>
     </div>
     <div id="ranking-list"></div>
     <div class="rank-total">
@@ -1061,6 +1069,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril" selected>Abril</option>
         <option value="maio">Maio</option>
         <option value="junho">Junho</option>
+        <option value="diario">Por Dia</option>
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-b" onchange="setVdMes()">
@@ -1068,6 +1077,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril">Abril</option>
         <option value="maio" selected>Maio</option>
         <option value="junho">Junho</option>
+        <option value="diario">Por Dia</option>
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-c" onchange="setVdMes()">
@@ -1075,6 +1085,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril">Abril</option>
         <option value="maio">Maio</option>
         <option value="junho" selected>Junho</option>
+        <option value="diario">Por Dia</option>
       </select>
     </div>
     <div class="pill-row" id="vendor-pills"></div>
@@ -2140,272 +2151,420 @@ const TOP_CLIENTES_JUNHO = [
 
 // Junho 2026 — atualizado 05/06/2026
 const VENDEDORES_JUNHO = [
-  {name:'Guilherme', av:'GU', color:'#10B981', total:130031.43, cli:39, ped:70, cod:'093'},
-  {name:'Relson',    av:'RE', color:'#60A5FA', total: 74977.79, cli:41, ped:56, cod:'094'},
-  {name:'Israel',    av:'IS', color:'#8B5CF6', total: 66013.04, cli:35, ped:44, cod:'115'},
-  {name:'Natália',   av:'NA', color:'#F472B6', total: 64517.48, cli:27, ped:50, cod:'116'},
-  {name:'Althieres', av:'AL', color:'#FBBF24', total: 36193.28, cli:24, ped:33, cod:'119', newHire:true},
-  {name:'Keller',    av:'KE', color:'#22D3EE', total: 37923.33, cli:23, ped:37, cod:'117'},
-  {name:'Everaldo',  av:'EV', color:'#F59E0B', total: 28153.87, cli:18, ped:25, cod:'107'},
-  {name:'Jorge',     av:'JO', color:'#94A3B8', total: 23901.16, cli:10, ped:21, cod:'118', newHire:true},
-  {name:'João',     av:'JO2',color:'#2DD4BF', total: 15766.91, cli: 9, ped:17, cod:'120', newHire:true},
+  {name:'Guilherme', av:'GU', color:'#10B981', total:162737.67, cli:39, ped:86, cod:'093'},
+  {name:'Relson', av:'RE', color:'#60A5FA', total:112406.97, cli:42, ped:85, cod:'094'},
+  {name:'Israel', av:'IS', color:'#8B5CF6', total:66013.04, cli:35, ped:44, cod:'115'},
+  {name:'Natália', av:'NA', color:'#F472B6', total:76208.71, cli:27, ped:60, cod:'116'},
+  {name:'Althieres', av:'AL', color:'#FBBF24', total:46556.52, cli:24, ped:43, cod:'119', newHire:true},
+  {name:'Keller', av:'KE', color:'#22D3EE', total:39332.15, cli:25, ped:40, cod:'117'},
+  {name:'Everaldo', av:'EV', color:'#F59E0B', total:41904.81, cli:20, ped:38, cod:'107'},
+  {name:'Jorge', av:'JO', color:'#94A3B8', total:24882.49, cli:10, ped:22, cod:'118', newHire:true},
+  {name:'João', av:'JO2', color:'#2DD4BF', total:15766.91, cli:9, ped:17, cod:'120', newHire:true},
 ];
 const CARTEIRA_JUNHO = {
-'093':[
-  {cod:'4313', nome:'INTECS JARDIM JARAGUA',                  valor:11895.66},
-  {cod:'119',  nome:'SAMUEL DE OLIVEIRA CHAGAS',              valor: 8412.99},
-  {cod:'4316', nome:'INTECS CIDADE TIRADENTES',               valor: 7865.63},
-  {cod:'4983', nome:'PANIFICADORA DELICIAS DO TRIGO',         valor: 6932.64},
-  {cod:'4311', nome:'INTECS CITY JARAGUA',                    valor: 6691.76},
-  {cod:'4315', nome:'INTECS GUAIANASES',                      valor: 6327.05},
-  {cod:'4534', nome:'INTECS M BOI MIRIM',                     valor: 6229.72},
-  {cod:'3998', nome:'AÇOUGUE TENESSE',                        valor: 5634.88},
-  {cod:'852',  nome:'MERCADO ULTRA ECONOMIA',                 valor: 4870.16},
-  {cod:'4000', nome:'TENESSE CARNES GUABIROBA',               valor: 4538.46},
-  {cod:'4489', nome:'PLANALTO',                               valor: 3513.59},
-  {cod:'4314', nome:'INTECS SAO MIGUEL PAULISTA',             valor: 3436.78},
-  {cod:'3382', nome:'MERCADO MAIA',                           valor: 3390.10},
-  {cod:'4190', nome:'SUPERMERCADOS SEMPRE JUNTO',             valor: 3385.72},
-  {cod:'4136', nome:'MERCADINHO NITEROI',                     valor: 3230.00},
-  {cod:'4726', nome:'MERCADO PRECIOSO',                       valor: 3077.99},
-  {cod:'4063', nome:'MERCADO PERNAMBUCO',                     valor: 3005.99},
-  {cod:'4250', nome:'JM MERCADO',                             valor: 2730.00},
-  {cod:'4701', nome:'MERCADO ALCANTARA',                      valor: 2645.32},
-  {cod:'258',  nome:'LUIZ JACAREÍ',                           valor: 2596.81},
-  {cod:'3999', nome:'TENESSE CARNES RAGUEB',                  valor: 2591.86},
-  {cod:'4380', nome:'MERCADO PROGRESSO',                      valor: 2424.19},
-  {cod:'3933', nome:'WL SUPERMERCADO JACUTINGA',              valor: 2371.66},
-  {cod:'4864', nome:'PADARIA E CONFEITARIA SAO LUIS',         valor: 2371.49},
-  {cod:'550',  nome:'PATRICIA AP. DA SILVA',                  valor: 2290.18},
-  {cod:'4012', nome:'MERCADO SAO FRANCISCO DE PAULA',         valor: 2196.93},
-  {cod:'4710', nome:'MERCADO JL',                             valor: 1936.25},
-  {cod:'4336', nome:'MERCADO MICHELITO',                      valor: 1882.98},
-  {cod:'4164', nome:'MERCADINHO LUIGI',                       valor: 1862.68},
-  {cod:'781',  nome:'OSVALDO XAVIER DE MACEDO JUNIOR',        valor: 1423.95},
-  {cod:'4964', nome:'MERCADO PROGRESSO LOJA 03',              valor: 1247.56},
-  {cod:'4735', nome:'MERCADO ECONOMIX',                       valor: 1234.37},
-  {cod:'4633', nome:'MERCADO ANA MARIA',                      valor: 1091.25},
-  {cod:'4849', nome:'MERCADO BEM ESTAR',                      valor: 1090.85},
-  {cod:'4986', nome:'PADARIA DONA ANA',                       valor:  989.02},
-  {cod:'4310', nome:'INTECS BRASILANDIA',                     valor:  819.00},
-  {cod:'4387', nome:'MERCADO ICHIBAN',                        valor:  763.04},
-  {cod:'4963', nome:'MERCADO PROGRESSO LOJA 02',              valor:  618.00},
-  {cod:'4216', nome:'MINIMERCADO TOPAZIO',                    valor:  414.92},
-],
-'094':[
-  {cod:'2662', nome:'PEG LEVE',                               valor:11183.69},
-  {cod:'3576', nome:'PADARIA RAIO DE SOL PRA',                valor: 4828.13},
-  {cod:'4544', nome:'JK MERCADINHO E PADARIA',                valor: 4169.15},
-  {cod:'2475', nome:'SALGADO LIMA MINIMERCADO',               valor: 3841.91},
-  {cod:'4471', nome:'MAGAZINE CENTRAL',                       valor: 3545.23},
-  {cod:'4331', nome:'PANE DI DIO',                            valor: 3538.71},
-  {cod:'3663', nome:'MERCEARIA VITORIA',                      valor: 3125.60},
-  {cod:'3623', nome:'MINI MERCADO PADARIA ALIANÇA',           valor: 2980.20},
-  {cod:'4270', nome:'BOM PREÇO',                              valor: 2708.31},
-  {cod:'4249', nome:'IGOR MENEZES SOUZA',                     valor: 2613.54},
-  {cod:'3106', nome:'MERCADO ARAUJO',                         valor: 2499.03},
-  {cod:'914',  nome:'PADARIA E CONFEITARIA PADRÃO',           valor: 2274.83},
-  {cod:'4152', nome:'SUPERMERCADO MENK LOJA 1',               valor: 1794.95},
-  {cod:'3160', nome:'MERCADO VIDA',                           valor: 1724.50},
-  {cod:'1105', nome:'BAR E EMPORIO AVAMILENO LTDA ME',        valor: 1689.98},
-  {cod:'3911', nome:'MINIMERCADO EMPORIO BUONO LTDA',         valor: 1398.40},
-  {cod:'3698', nome:'MERCADINHO XAVIER',                      valor: 1306.58},
-  {cod:'1240', nome:'LUCILENE OSASCO',                        valor: 1296.48},
-  {cod:'1904', nome:'SM TRÊS MONTANHAS',                      valor: 1266.40},
-  {cod:'4597', nome:'LUIZ CARLOS FONSECA',                    valor: 1182.74},
-  {cod:'4768', nome:'TURMA DA MONICA',                        valor: 1053.68},
-  {cod:'3924', nome:'SUPERMERCADO DO REI',                    valor: 1034.99},
-  {cod:'4224', nome:'SUPERMERCADO VIDA 2',                    valor: 1034.40},
-  {cod:'3411', nome:'MINI MERCADO ENZO',                      valor: 1006.26},
-  {cod:'4984', nome:'HORTIFRUTI SANTO ANTONIO',               valor: 1005.53},
-  {cod:'3324', nome:'CASA DE FRIOS MUTINGA',                  valor:  996.73},
-  {cod:'3934', nome:'MERCADO MASTER',                         valor:  915.13},
-  {cod:'3636', nome:'RESTAURANTE NERIS E QUITANDA',           valor:  902.71},
-  {cod:'3969', nome:'SUPERMERCADO MOTA 1',                    valor:  850.84},
-  {cod:'4881', nome:'VEM VEM',                                valor:  845.80},
-  {cod:'3311', nome:'PÃES E DOCES MIGUELITO',                 valor:  818.35},
-  {cod:'4254', nome:'ADS MINI MERCADO',                       valor:  703.60},
-  {cod:'4131', nome:'MERCADO GAMA',                           valor:  646.54},
-  {cod:'4102', nome:'PADARIA SOPHIE',                         valor:  644.53},
-  {cod:'4583', nome:'MERCADINHO NOVO LAR',                    valor:  584.00},
-  {cod:'4407', nome:'LEONARDO DE OLIVEIRA LIRA',              valor:  554.95},
-  {cod:'3777', nome:'DI PAES BOLOS E LANCHES',                valor:  532.00},
-  {cod:'4805', nome:'MALIBU EMPORIO E CONVENIENCIA',          valor:  522.03},
-  {cod:'4301', nome:'SUPERMERCADO MENK LOJA 2',               valor:  520.55},
-  {cod:'4087', nome:'BAR E RESTAURANTE JGS',                  valor:  499.48},
-  {cod:'4044', nome:'SUPERMERCADO MOTA GUARULHOS',            valor:  337.33},
+'107':[
+  {cod:'4654', nome:'MERCADO TRINDADE', valor:5212.59},
+  {cod:'4827', nome:'SABOR DELICIA GUARULHOS LTDA', valor:4935.53},
+  {cod:'4862', nome:'COMERCIO DO RATINHO', valor:4583.38},
+  {cod:'4665', nome:'SUPERMERCADO IKA', valor:3488.57},
+  {cod:'4660', nome:'MERCADO PAGUE MENOS', valor:3018.63},
+  {cod:'4639', nome:'HORTIFRUTI MERCEARIA E ACOUGUE BOM SUCESSO', valor:2336.26},
+  {cod:'4721', nome:'MERCADINHO JUPI', valor:2129.52},
+  {cod:'4838', nome:'SOMOS SUPERMERCADO', valor:2004.77},
+  {cod:'4775', nome:'EDUARDO JESUS DE SOUSA', valor:2004.00},
+  {cod:'4730', nome:'SUPERMERCADO FAMILIA', valor:1928.88},
+  {cod:'4956', nome:'MERCADO PAGUE MENOS LOJA 2', valor:1898.07},
+  {cod:'4940', nome:'MERCADINHO NUNES', valor:1644.33},
+  {cod:'4959', nome:'KACULA SUPERMERCADO LTDA', valor:1521.00},
+  {cod:'4822', nome:'BAR E MERCEARIA J E', valor:1222.10},
+  {cod:'4581', nome:'MERCADO HEITOR', valor:1085.50},
+  {cod:'4672', nome:'MERCADO MELHOR PRECO', valor:682.72},
+  {cod:'4617', nome:'MERCADO E PADARIA R E M LTDA', valor:570.38},
+  {cod:'4974', nome:'MERCADO SANTA RITA', valor:565.68},
+  {cod:'4756', nome:'BOM E BARATO SANTANA', valor:560.77},
+  {cod:'4842', nome:'PADARIA E RESTAURANTE KELLY', valor:512.13},
 ],
 '115':[
-  {cod:'2495', nome:'IPAVA RAIO SUPERMERCADO LTDA',           valor: 8124.77},
-  {cod:'4296', nome:'BLACK BOI',                              valor: 7572.13},
-  {cod:'2380', nome:'MERCADINHO PRECO BOM',                   valor: 6185.27},
-  {cod:'4832', nome:'MERCADINHO RIOS CARNEIRO LTDA',          valor: 3121.71},
-  {cod:'4723', nome:'BLACK BOI JD RECORD',                    valor: 2761.95},
-  {cod:'4195', nome:'FOX CARNES INDEPENDENCIA',               valor: 2439.88},
-  {cod:'4875', nome:'PADARIA GOLDEN GRAO',                    valor: 2412.80},
-  {cod:'4186', nome:'HORTIFRUTI MAIS SABOR',                  valor: 2326.73},
-  {cod:'4893', nome:'MERCADO SOUZA LIMA',                     valor: 2310.73},
-  {cod:'4508', nome:'PADARIA TRES IRMÃOS VISTA ALEGRE',       valor: 1901.25},
-  {cod:'3437', nome:'MERCADO ENERGIA POSITIVA',               valor: 1849.43},
-  {cod:'2499', nome:'SUPERMERCADO BEATRIZ LTDA',              valor: 1690.57},
-  {cod:'4722', nome:'BARATINHO ALMEIDA',                      valor: 1671.03},
-  {cod:'4389', nome:'MERCEARIA LICOTA',                       valor: 1608.18},
-  {cod:'4093', nome:'PADARIA BAR DO ZE',                      valor: 1466.73},
-  {cod:'3350', nome:'MERCEARIA DO MINEIRO',                   valor: 1409.17},
-  {cod:'4685', nome:'EMPORIO DANI E CIA',                     valor: 1332.35},
-  {cod:'2808', nome:'MERCEARIA 3 IRMÃOS',                     valor: 1304.48},
-  {cod:'4134', nome:'DUBOM CAFE',                             valor: 1199.25},
-  {cod:'2193', nome:'HORTIFRUTI OLIVEIRA',                    valor: 1134.89},
-  {cod:'4201', nome:'FOX CARNES JD ROSA',                     valor: 1058.74},
-  {cod:'4550', nome:'PADARIA SÃO MARCOS',                     valor: 1029.86},
-  {cod:'1174', nome:'MARI SUPERMERCADOS',                     valor:  973.36},
-  {cod:'2230', nome:'MERCADINHO VILA CLELIA',                 valor: 1877.71},
-  {cod:'2128', nome:'PADARIA NOVA GEOGRAFOS',                 valor:  887.42},
-  {cod:'1657', nome:'MERCADO SANTA FE',                       valor:  803.00},
-  {cod:'4513', nome:'BOI FORT',                               valor:  799.39},
-  {cod:'4568', nome:'EMPORIO DOS ALIMENTOS',                  valor:  725.48},
-  {cod:'4884', nome:'MERCADO SONIA',                          valor:  610.39},
-  {cod:'2496', nome:'MERCADINHO AMANHECER',                   valor:  588.66},
-  {cod:'1268', nome:'PADARIA VITORIA',                        valor:  554.65},
-  {cod:'2249', nome:'BASE DE ADMINISTRACAO E APOIO DO IBIRAPUERA', valor: 552.21},
-  {cod:'2383', nome:'SABORES DA VILA',                        valor:  650.86},
-  {cod:'4904', nome:'PADARIA INTERLAGOS LTDA',               valor:  572.39},
-  {cod:'4562', nome:'MAIS BARATO MINI MERCADO',               valor:  505.62},
+  {cod:'2495', nome:'IPAVA RAIO SUPERMERCADO LTDA', valor:8124.77},
+  {cod:'4296', nome:'BLACK BOI', valor:7572.13},
+  {cod:'2380', nome:'MERCADINHO PRECO BOM', valor:6185.27},
+  {cod:'4832', nome:'MERCADINHO RIOS CARNEIRO LTDA', valor:3121.71},
+  {cod:'4723', nome:'BLACK BOI JD RECORD', valor:2761.95},
+  {cod:'4195', nome:'FOX CARNES INDEPENDENCIA', valor:2439.88},
+  {cod:'4875', nome:'PADARIA GOLDEN GRAO', valor:2412.80},
+  {cod:'4186', nome:'HORTIFRUTI MAIS SABOR', valor:2326.73},
+  {cod:'4893', nome:'MERCADO SOUZA LIMA', valor:2310.73},
+  {cod:'4508', nome:'PADARIA TRES IRMÃOS VISTA ALEGRE', valor:1901.25},
+  {cod:'3437', nome:'MERCADO ENERGIA POSITIVA', valor:1849.43},
+  {cod:'2499', nome:'SUPERMERCADO BEATRIZ LTDA', valor:1690.57},
+  {cod:'4722', nome:'BARATINHO ALMEIDA', valor:1671.03},
+  {cod:'4389', nome:'MERCEARIA LICOTA', valor:1608.18},
+  {cod:'4093', nome:'PADARIA BAR DO ZE', valor:1466.73},
+  {cod:'3350', nome:'MERCEARIA DO MINEIRO', valor:1409.17},
+  {cod:'4685', nome:'EMPORIO DANI E CIA', valor:1332.35},
+  {cod:'2808', nome:'MERCEARIA 3 IRMÃOS', valor:1304.48},
+  {cod:'4134', nome:'DUBOM CAFE', valor:1199.25},
+  {cod:'2193', nome:'HORTIFRUTI OLIVEIRA', valor:1134.89},
+  {cod:'4201', nome:'FOX CARNES JD ROSA', valor:1058.74},
+  {cod:'4550', nome:'PADARIA SÃO MARCOS', valor:1029.86},
+  {cod:'1174', nome:'MARI SUPERMERCADOS', valor:973.36},
+  {cod:'2230', nome:'MERCADINHO VILA CLELIA', valor:1877.71},
+  {cod:'2128', nome:'PADARIA NOVA GEOGRAFOS', valor:887.42},
+  {cod:'1657', nome:'MERCADO SANTA FE', valor:803.00},
+  {cod:'4513', nome:'BOI FORT', valor:799.39},
+  {cod:'4568', nome:'EMPORIO DOS ALIMENTOS', valor:725.48},
+  {cod:'4884', nome:'MERCADO SONIA', valor:610.39},
+  {cod:'2496', nome:'MERCADINHO AMANHECER', valor:588.66},
+  {cod:'1268', nome:'PADARIA VITORIA', valor:554.65},
+  {cod:'2249', nome:'BASE DE ADMINISTRACAO E APOIO DO IBIRAPUERA', valor:552.21},
+  {cod:'2383', nome:'SABORES DA VILA', valor:650.86},
+  {cod:'4904', nome:'PADARIA INTERLAGOS LTDA', valor:572.39},
+  {cod:'4562', nome:'MAIS BARATO MINI MERCADO', valor:505.62},
 ],
 '116':[
-  {cod:'3108', nome:'SUPERMERCADO PETEKO',                          valor:12016.51},
-  {cod:'1681', nome:'DISTRIBUIDORA HORTIFRUTIGRANJEIROS GATAO',     valor: 8621.21},
-  {cod:'3402', nome:'SONHADOR',                                     valor: 5490.08},
-  {cod:'3369', nome:'MERCADO GONÇALVES',                            valor: 4524.82},
-  {cod:'14',   nome:'ADRIANA / JOAO',                               valor: 3522.58},
-  {cod:'1996', nome:'MERCADO PALACIOS',                             valor: 2668.21},
-  {cod:'2692', nome:'GONCALO GENERINO DA SILVA',                    valor:  381.00},
-  {cod:'2726', nome:'MERCADO GABRIEL',                              valor: 2583.69},
-  {cod:'1982', nome:'BAR E MERCEARIA ROSA',                         valor: 2507.40},
-  {cod:'144',  nome:'LEANDRO RIBEIRO PORTO',                        valor: 2433.18},
-  {cod:'43',   nome:'MANOEL A SOBRINHO-ME',                         valor: 2024.26},
-  {cod:'4541', nome:'HORTIFRUTI GATÃO LOJA 02',                     valor: 1998.75},
-  {cod:'2416', nome:'ÉRICA PORFÍRIO SANTA ROSA FERREIRA',           valor: 1865.27},
-  {cod:'2750', nome:'PAOZINHO DO CEU',                              valor: 1551.42},
-  {cod:'92',   nome:'FRANCISCO CANINDÉ DE LUCAS LOJA 02',           valor: 1537.81},
-  {cod:'3024', nome:'BOUTIQUE DE CARNE',                            valor: 1497.59},
-  {cod:'520',  nome:'MARA FERREIRA MARQUES',                        valor: 1436.61},
-  {cod:'4907', nome:'MERCADINHO DA VILLA',                          valor: 1411.33},
-  {cod:'527',  nome:'ALEX SANDRO MAIA DOS SANTOS',                  valor: 1371.51},
-  {cod:'1726', nome:'ROGÉRIO DE ANDRADE BENEDITO',                  valor: 1048.98},
-  {cod:'4967', nome:'SUPERMERCADO PASTORINHO',                      valor: 1010.53},
-  {cod:'12',   nome:'ADAILTON RODRIGUES DOS SANTOS',                valor:  683.28},
-  {cod:'2153', nome:'JOAO PEDRO MARTINS',                           valor:  540.15},
-  {cod:'2037', nome:'ELAINE MONTEIRO FERREIRA',                     valor:  474.20},
-  {cod:'4456', nome:'MERCADO GT',                                   valor:  456.30},
-  {cod:'151',  nome:'JOSE CARLOS BATISTA DA SILVA',                 valor:  453.83},
-  {cod:'4824', nome:'DOCE PRIMUS LOJA 2',                           valor:  406.98},
+  {cod:'3108', nome:'SUPERMERCADO PETEKO', valor:12016.51},
+  {cod:'1681', nome:'DISTRIBUIDORA HORTIFRUTIGRANJEIROS GATAO', valor:8621.21},
+  {cod:'3402', nome:'SONHADOR', valor:7596.79},
+  {cod:'3369', nome:'MERCADO GONÇALVES', valor:4524.82},
+  {cod:'2726', nome:'MERCADO GABRIEL', valor:3884.71},
+  {cod:'1996', nome:'MERCADO PALACIOS', valor:3676.22},
+  {cod:'14', nome:'ADRIANA / JOAO', valor:3522.58},
+  {cod:'1982', nome:'BAR E MERCEARIA ROSA', valor:3212.03},
+  {cod:'4967', nome:'SUPERMERCADO PASTORINHO', valor:3105.88},
+  {cod:'2750', nome:'PAOZINHO DO CEU', valor:2942.84},
+  {cod:'92', nome:'FRANCISCO CANINDÉ DE LUCAS LOJA 02', valor:2604.51},
+  {cod:'144', nome:'LEANDRO RIBEIRO PORTO', valor:2433.18},
+  {cod:'4907', nome:'MERCADINHO DA VILLA', valor:2387.54},
+  {cod:'43', nome:'MANOEL A SOBRINHO-ME', valor:2024.26},
+  {cod:'4541', nome:'HORTIFRUTI GATÃO LOJA 02', valor:1998.75},
+  {cod:'2416', nome:'ÉRICA PORFÍRIO SANTA ROSA FERREIRA', valor:1865.27},
+  {cod:'3024', nome:'BOUTIQUE DE CARNE', valor:1497.59},
+  {cod:'520', nome:'MARA FERREIRA MARQUES', valor:1436.61},
+  {cod:'527', nome:'ALEX SANDRO MAIA DOS SANTOS', valor:1371.51},
+  {cod:'4456', nome:'MERCADO GT', valor:1097.98},
+  {cod:'1726', nome:'ROGÉRIO DE ANDRADE BENEDITO', valor:1048.98},
+  {cod:'4824', nome:'DOCE PRIMUS LOJA 2', valor:806.48},
+  {cod:'12', nome:'ADAILTON RODRIGUES DOS SANTOS', valor:683.28},
+  {cod:'2153', nome:'JOAO PEDRO MARTINS', valor:540.15},
+  {cod:'2037', nome:'ELAINE MONTEIRO FERREIRA', valor:474.20},
+  {cod:'151', nome:'JOSE CARLOS BATISTA DA SILVA', valor:453.83},
+  {cod:'2692', nome:'GONCALO GENERINO DA SILVA', valor:381.00},
 ],
 '117':[
-  {cod:'4969', nome:'MERCEARIA E ADEGA LOPES',             valor: 4697.34},
-  {cod:'211',  nome:'NOVA GERAÇÃO LOJA 1',                 valor: 4409.77},
-  {cod:'4941', nome:'PADARIA SUPREMA PRIME',               valor: 2977.53},
-  {cod:'42',   nome:'M.A.L DE Q EVANGELISTA MERC',         valor: 2461.31},
-  {cod:'4430', nome:'MERCADINHO OLIVEIRA',                 valor: 2160.93},
-  {cod:'2339', nome:'VALDENIA HENRIQUE DA COSTA',          valor: 1774.97},
-  {cod:'4998', nome:'PADARIA CINTRA',                      valor: 3644.32},
-  {cod:'1814', nome:'SUPERMERCADO TIM TIM',                valor: 1605.27},
-  {cod:'908',  nome:'LUZIA CARDOSO DA SILVA',              valor: 1595.68},
-  {cod:'4189', nome:'MERCADO ROSEIRA',                     valor: 1500.81},
-  {cod:'4274', nome:'PADARIA DA VILA',                     valor: 1335.08},
-  {cod:'4413', nome:'MÃE E FILHA',                         valor: 1242.86},
-  {cod:'4084', nome:'MERCEARIA VIEIRA',                    valor: 1158.33},
-  {cod:'4582', nome:'PADARIA COWBOY',                      valor: 1136.82},
-  {cod:'4944', nome:'MULTIPANE PADARIA',                   valor: 1026.14},
-  {cod:'4264', nome:'MERCADO AJS',                         valor:  988.17},
-  {cod:'31',   nome:'RAEL PEREIRA MENDES',                 valor:  821.88},
-  {cod:'2114', nome:'MARIA DO CARMO OLIVEIRA SILVA',       valor:  751.55},
-  {cod:'4628', nome:'PADARIA CIDA',                        valor:  607.79},
-  {cod:'4436', nome:'FRUIT CITY',                          valor:  558.03},
-  {cod:'68',   nome:'JOSE EVALDO S PAIVA MINIMER',         valor:  531.61},
-  {cod:'4792', nome:'MERCADINHO DA FAMILIA',               valor:  493.32},
-  {cod:'4351', nome:'MERCADO E PADARIA NEVES',             valor:  443.82},
-],
-'107':[
-  {cod:'4654', nome:'MERCADO TRINDADE',                           valor: 3919.74},
-  {cod:'4862', nome:'COMERCIO DO RATINHO',                        valor: 3018.58},
-  {cod:'4665', nome:'SUPERMERCADO IKA',                           valor: 2245.55},
-  {cod:'4827', nome:'SABOR DELICIA GUARULHOS LTDA',               valor: 2167.45},
-  {cod:'4838', nome:'SOMOS SUPERMERCADO',                         valor: 2004.77},
-  {cod:'4730', nome:'SUPERMERCADO FAMILIA',                       valor: 1928.88},
-  {cod:'4660', nome:'MERCADO PAGUE MENOS',                        valor: 1734.91},
-  {cod:'4940', nome:'MERCADINHO NUNES',                           valor: 1644.33},
-  {cod:'4639', nome:'HORTIFRUTI MERCEARIA E ACOUGUE BOM SUCESSO', valor: 1554.63},
-  {cod:'4956', nome:'MERCADO PAGUE MENOS LOJA 2',                 valor: 1372.80},
-  {cod:'4721', nome:'MERCADINHO JUPI',                            valor: 1372.65},
-  {cod:'4775', nome:'EDUARDO JESUS DE SOUSA',                     valor: 1164.80},
-  {cod:'4581', nome:'MERCADO HEITOR',                             valor: 1085.50},
-  {cod:'4822', nome:'BAR E MERCEARIA J E',                        valor:  634.05},
-  {cod:'4959', nome:'KACULA SUPERMERCADO LTDA',                   valor:  608.40},
-  {cod:'4617', nome:'MERCADO E PADARIA R E M LTDA',               valor:  570.38},
-  {cod:'4974', nome:'MERCADO SANTA RITA',                         valor:  565.68},
-  {cod:'4756', nome:'BOM E BARATO SANTANA',                       valor:  560.77},
-],
-'119':[
-  {cod:'4927', nome:'SETE MINI MERCADO',                         valor: 3405.36},
-  {cod:'2826', nome:'COMPRE BEM',                                valor: 3129.34},
-  {cod:'3320', nome:'GR SUPERMERCADOS',                          valor: 2803.50},
-  {cod:'2103', nome:'FERREIRA PAES E DOCES',                     valor: 2229.04},
-  {cod:'4997', nome:'PANIFICADORA VILLAGE',                      valor: 2216.66},
-  {cod:'4630', nome:'AÇOUGUE PATA NEGRA',                        valor: 1719.40},
-  {cod:'3295', nome:'JOSÉ NUNES DOS SANTOS',                     valor: 1655.67},
-  {cod:'3481', nome:'MERCADO EMPORIO EUCALIPTOS',                valor: 1653.14},
-  {cod:'2813', nome:'GERLAINE SOUZA MOREIRA CARLOS',             valor: 1591.32},
-  {cod:'4995', nome:'RB HURTIFRUTI',                             valor: 1488.72},
-  {cod:'1016', nome:'4 FILHOS VARGEM GRANDE',                    valor: 1353.99},
-  {cod:'4680', nome:'MERCADO HORA CERTA',                        valor: 1340.60},
-  {cod:'2062', nome:'PADARIA BELLATRIZ',                         valor: 1318.06},
-  {cod:'4650', nome:'MERCADO EUCALIPTO LOJA 02',                 valor: 1287.19},
-  {cod:'4820', nome:'PADARIA TEREZINHA',                         valor: 1195.26},
-  {cod:'2289', nome:'ACOUGUE E MERCEARIA NANDA',                 valor: 1194.20},
-  {cod:'3159', nome:'SOL NASCENTE',                              valor: 1159.22},
-  {cod:'3077', nome:'MERCADO T.D. JARDIM JARAGUA',               valor:  945.90},
-  {cod:'3952', nome:'DCM MERCADO',                               valor:  940.76},
-  {cod:'3343', nome:'MERCADO NOGUEIRA',                          valor:  843.62},
-  {cod:'3498', nome:'MARCOS DOS SANTOS',                         valor:  674.57},
-  {cod:'2216', nome:'ROSELIANA DOS SANTOS PAES',                 valor:  597.03},
-  {cod:'4985', nome:'W A MERCADO E PADARIA E LANCHONETE',        valor:  970.73},
-  {cod:'2867', nome:'CHARMOSA',                                  valor:  480.00},
-],
-'120':[
-  {cod:'17',   nome:'ANA NIVIA PEIXOTO FERREIRA',                valor: 3342.25},
-  {cod:'172',  nome:'JOSE ADEILSON',                             valor: 2998.14},
-  {cod:'266',  nome:'MERCADO TRINDADE',                          valor: 2536.73},
-  {cod:'171',  nome:'MINI MERCADO GUSTAVINHO',                   valor: 1597.15},
-  {cod:'142',  nome:'WANESSA MISSIAS DE SOUZA',                  valor: 1513.91},
-  {cod:'98',   nome:'MINI MERCADO REIS LTDA ME',                 valor: 1282.66},
-  {cod:'4242', nome:'PADARIA DUAS IRMAS',                        valor: 1133.67},
-  {cod:'4191', nome:'FENIX SUPERMERCADO',                        valor:  816.40},
-  {cod:'4188', nome:'MERCADO DA CARNE SHOP BUTCHER',             valor:  546.00},
+  {cod:'4969', nome:'MERCEARIA E ADEGA LOPES', valor:4697.34},
+  {cod:'211', nome:'NOVA GERAÇÃO LOJA 1', valor:4409.77},
+  {cod:'4998', nome:'PADARIA CINTRA', valor:3644.32},
+  {cod:'4941', nome:'PADARIA SUPREMA PRIME', valor:2977.53},
+  {cod:'42', nome:'M.A.L DE Q EVANGELISTA MERC', valor:2461.31},
+  {cod:'4430', nome:'MERCADINHO OLIVEIRA', valor:2160.93},
+  {cod:'2339', nome:'VALDENIA HENRIQUE DA COSTA', valor:1774.97},
+  {cod:'1814', nome:'SUPERMERCADO TIM TIM', valor:1605.27},
+  {cod:'908', nome:'LUZIA CARDOSO DA SILVA', valor:1595.68},
+  {cod:'4189', nome:'MERCADO ROSEIRA', valor:1500.81},
+  {cod:'4274', nome:'PADARIA DA VILA', valor:1335.08},
+  {cod:'4413', nome:'MÃE E FILHA', valor:1242.86},
+  {cod:'4084', nome:'MERCEARIA VIEIRA', valor:1158.33},
+  {cod:'4582', nome:'PADARIA COWBOY', valor:1136.82},
+  {cod:'4944', nome:'MULTIPANE PADARIA', valor:1026.14},
+  {cod:'4264', nome:'MERCADO AJS', valor:988.17},
+  {cod:'4792', nome:'MERCADINHO DA FAMILIA', valor:951.61},
+  {cod:'31', nome:'RAEL PEREIRA MENDES', valor:821.88},
+  {cod:'2114', nome:'MARIA DO CARMO OLIVEIRA SILVA', valor:751.55},
+  {cod:'4628', nome:'PADARIA CIDA', valor:607.79},
+  {cod:'4436', nome:'FRUIT CITY', valor:558.03},
+  {cod:'68', nome:'JOSE EVALDO S PAIVA MINIMER', valor:531.61},
+  {cod:'4147', nome:'RANCHO NOGUEIRAS', valor:522.91},
+  {cod:'4351', nome:'MERCADO E PADARIA NEVES', valor:443.82},
+  {cod:'1831', nome:'SOLANGE DE ANDRADE FREITAS', valor:427.62},
 ],
 '118':[
-  {cod:'4848', nome:'FAMILIA VAREJO',                            valor: 9910.65},
-  {cod:'59',   nome:'MERCADO E MERC.ALIANÇA LTDA',               valor: 3232.71},
-  {cod:'2414', nome:'MERCADO E MERCEARIA ALIANÇA - LOJA 02',     valor: 2669.97},
-  {cod:'3564', nome:'MERCADO ALIANÇA LOJA 3',                    valor: 2436.05},
-  {cod:'1140', nome:'JANIO/J.M MINI PADARIA E MERCEARIA',        valor: 2017.37},
-  {cod:'4388', nome:'MERCADO WALKER',                            valor: 1140.76},
-  {cod:'4999', nome:'TEUS PÃES E BOLOS',                         valor:  836.26},
-  {cod:'1167', nome:'CARLOS ALVES / MERCADO E PADARIA BOM DIA',  valor:  693.47},
-  {cod:'4520', nome:'PADARIA GIRASSOL',                          valor:  489.16},
-  {cod:'4416', nome:'SUPERMERCADO BETE',                         valor:  474.76},
+  {cod:'4848', nome:'FAMILIA VAREJO', valor:10891.98},
+  {cod:'59', nome:'MERCADO E MERC.ALIANÇA LTDA', valor:3232.71},
+  {cod:'2414', nome:'MERCADO E MERCEARIA ALIANÇA - LOJA 02', valor:2669.97},
+  {cod:'3564', nome:'MERCADO ALIANÇA LOJA 3', valor:2436.05},
+  {cod:'1140', nome:'JANIO/J.M MINI PADARIA E MERCEARIA', valor:2017.37},
+  {cod:'4388', nome:'MERCADO WALKER', valor:1140.76},
+  {cod:'4999', nome:'TEUS PÃES E BOLOS', valor:836.26},
+  {cod:'1167', nome:'CARLOS ALVES / MERCADO E PADARIA BOM DIA', valor:693.47},
+  {cod:'4520', nome:'PADARIA GIRASSOL', valor:489.16},
+  {cod:'4416', nome:'SUPERMERCADO BETE', valor:474.76},
 ],
+'119':[
+  {cod:'4927', nome:'SETE MINI MERCADO', valor:5130.58},
+  {cod:'2103', nome:'FERREIRA PAES E DOCES', valor:3634.14},
+  {cod:'2813', nome:'GERLAINE SOUZA MOREIRA CARLOS', valor:3292.24},
+  {cod:'2826', nome:'COMPRE BEM', valor:3129.34},
+  {cod:'3320', nome:'GR SUPERMERCADOS', valor:2803.50},
+  {cod:'4680', nome:'MERCADO HORA CERTA', valor:2411.00},
+  {cod:'3159', nome:'SOL NASCENTE', valor:2318.44},
+  {cod:'4997', nome:'PANIFICADORA VILLAGE', valor:2216.66},
+  {cod:'2062', nome:'PADARIA BELLATRIZ', valor:1910.56},
+  {cod:'3077', nome:'MERCADO T.D. JARDIM JARAGUA', valor:1891.80},
+  {cod:'4820', nome:'PADARIA TEREZINHA', valor:1886.10},
+  {cod:'2289', nome:'ACOUGUE E MERCEARIA NANDA', valor:1787.34},
+  {cod:'4630', nome:'AÇOUGUE PATA NEGRA', valor:1719.40},
+  {cod:'3295', nome:'JOSÉ NUNES DOS SANTOS', valor:1655.67},
+  {cod:'3481', nome:'MERCADO EMPORIO EUCALIPTOS', valor:1653.14},
+  {cod:'4995', nome:'RB HURTIFRUTI', valor:1488.72},
+  {cod:'1016', nome:'4 FILHOS VARGEM GRANDE', valor:1353.99},
+  {cod:'4650', nome:'MERCADO EUCALIPTO LOJA 02', valor:1287.19},
+  {cod:'4985', nome:'W A MERCADO E PADARIA E LANCHONETE', valor:970.73},
+  {cod:'2867', nome:'CHARMOSA', valor:960.00},
+  {cod:'3952', nome:'DCM MERCADO', valor:940.76},
+  {cod:'3343', nome:'MERCADO NOGUEIRA', valor:843.62},
+  {cod:'3498', nome:'MARCOS DOS SANTOS', valor:674.57},
+  {cod:'2216', nome:'ROSELIANA DOS SANTOS PAES', valor:597.03},
+],
+'120':[
+  {cod:'17', nome:'ANA NIVIA PEIXOTO FERREIRA', valor:3342.25},
+  {cod:'172', nome:'JOSE ADEILSON', valor:2998.14},
+  {cod:'266', nome:'MERCADO TRINDADE', valor:2536.73},
+  {cod:'171', nome:'MINI MERCADO GUSTAVINHO', valor:1597.15},
+  {cod:'142', nome:'WANESSA MISSIAS DE SOUZA', valor:1513.91},
+  {cod:'98', nome:'MINI MERCADO REIS LTDA ME', valor:1282.66},
+  {cod:'4242', nome:'PADARIA DUAS IRMAS', valor:1133.67},
+  {cod:'4191', nome:'FENIX SUPERMERCADO', valor:816.40},
+  {cod:'4188', nome:'MERCADO DA CARNE SHOP BUTCHER', valor:546.00},
+],
+'093':[
+  {cod:'4313', nome:'INTECS JARDIM JARAGUA', valor:12914.81},
+  {cod:'4316', nome:'INTECS CIDADE TIRADENTES', valor:10841.38},
+  {cod:'4534', nome:'INTECS M BOI MIRIM', valor:10638.72},
+  {cod:'119', nome:'SAMUEL DE OLIVEIRA CHAGAS', valor:8412.99},
+  {cod:'4314', nome:'INTECS SAO MIGUEL PAULISTA', valor:8234.93},
+  {cod:'4063', nome:'MERCADO PERNAMBUCO', valor:7684.61},
+  {cod:'4983', nome:'PANIFICADORA DELICIAS DO TRIGO', valor:6932.64},
+  {cod:'4311', nome:'INTECS CITY JARAGUA', valor:6691.76},
+  {cod:'4315', nome:'INTECS GUAIANASES', valor:6327.05},
+  {cod:'3998', nome:'AÇOUGUE TENESSE', valor:5634.88},
+  {cod:'4136', nome:'MERCADINHO NITEROI', valor:5100.13},
+  {cod:'258', nome:'LUIZ JACAREÍ', valor:4993.88},
+  {cod:'852', nome:'MERCADO ULTRA ECONOMIA', valor:4870.16},
+  {cod:'4000', nome:'TENESSE CARNES GUABIROBA', valor:4538.46},
+  {cod:'4164', nome:'MERCADINHO LUIGI', valor:4189.87},
+  {cod:'4701', nome:'MERCADO ALCANTARA', valor:3997.04},
+  {cod:'4310', nome:'INTECS BRASILANDIA', valor:3727.50},
+  {cod:'4489', nome:'PLANALTO', valor:3513.59},
+  {cod:'3382', nome:'MERCADO MAIA', valor:3390.10},
+  {cod:'4190', nome:'SUPERMERCADOS SEMPRE JUNTO', valor:3385.72},
+  {cod:'4012', nome:'MERCADO SAO FRANCISCO DE PAULA', valor:3259.50},
+  {cod:'4726', nome:'MERCADO PRECIOSO', valor:3206.49},
+  {cod:'4864', nome:'PADARIA E CONFEITARIA SAO LUIS', valor:2791.39},
+  {cod:'4250', nome:'JM MERCADO', valor:2730.00},
+  {cod:'3999', nome:'TENESSE CARNES RAGUEB', valor:2591.86},
+  {cod:'4380', nome:'MERCADO PROGRESSO', valor:2424.19},
+  {cod:'3933', nome:'WL SUPERMERCADO JACUTINGA', valor:2371.66},
+  {cod:'550', nome:'PATRICIA AP. DA SILVA', valor:2290.18},
+  {cod:'781', nome:'OSVALDO XAVIER DE MACEDO JUNIOR', valor:2096.05},
+  {cod:'4633', nome:'MERCADO ANA MARIA', valor:2084.34},
+  {cod:'4710', nome:'MERCADO JL', valor:1936.25},
+  {cod:'4336', nome:'MERCADO MICHELITO', valor:1882.98},
+  {cod:'4986', nome:'PADARIA DONA ANA', valor:1683.82},
+  {cod:'4964', nome:'MERCADO PROGRESSO LOJA 03', valor:1247.56},
+  {cod:'4735', nome:'MERCADO ECONOMIX', valor:1234.37},
+  {cod:'4849', nome:'MERCADO BEM ESTAR', valor:1090.85},
+  {cod:'4387', nome:'MERCADO ICHIBAN', valor:763.04},
+  {cod:'4963', nome:'MERCADO PROGRESSO LOJA 02', valor:618.00},
+  {cod:'4216', nome:'MINIMERCADO TOPAZIO', valor:414.92},
+],
+'094':[
+  {cod:'2662', nome:'PEG LEVE', valor:17478.35},
+  {cod:'3576', nome:'PADARIA RAIO DE SOL PRA', valor:6942.55},
+  {cod:'4544', nome:'JK MERCADINHO E PADARIA', valor:5845.70},
+  {cod:'2475', nome:'SALGADO LIMA MINIMERCADO', valor:5203.02},
+  {cod:'4331', nome:'PANE DI DIO', valor:5130.36},
+  {cod:'4249', nome:'IGOR MENEZES SOUZA', valor:4934.50},
+  {cod:'3663', nome:'MERCEARIA VITORIA', valor:4872.25},
+  {cod:'3106', nome:'MERCADO ARAUJO', valor:4692.43},
+  {cod:'3623', nome:'MINI MERCADO PADARIA ALIANÇA', valor:4414.55},
+  {cod:'914', nome:'PADARIA E CONFEITARIA PADRÃO', valor:3606.28},
+  {cod:'4471', nome:'MAGAZINE CENTRAL', valor:3545.23},
+  {cod:'3911', nome:'MINIMERCADO EMPORIO BUONO LTDA', valor:3021.33},
+  {cod:'1904', nome:'SM TRÊS MONTANHAS', valor:2739.82},
+  {cod:'4270', nome:'BOM PREÇO', valor:2708.31},
+  {cod:'4597', nome:'LUIZ CARLOS FONSECA', valor:2482.49},
+  {cod:'1105', nome:'BAR E EMPORIO AVAMILENO LTDA ME', valor:2457.08},
+  {cod:'3160', nome:'MERCADO VIDA', valor:2323.82},
+  {cod:'3698', nome:'MERCADINHO XAVIER', valor:2129.25},
+  {cod:'4984', nome:'HORTIFRUTI SANTO ANTONIO', valor:1991.99},
+  {cod:'3411', nome:'MINI MERCADO ENZO', valor:1990.17},
+  {cod:'4768', nome:'TURMA DA MONICA', valor:1917.44},
+  {cod:'1240', nome:'LUCILENE OSASCO', valor:1868.21},
+  {cod:'4152', nome:'SUPERMERCADO MENK LOJA 1', valor:1794.95},
+  {cod:'3311', nome:'PÃES E DOCES MIGUELITO', valor:1787.25},
+  {cod:'4805', nome:'MALIBU EMPORIO E CONVENIENCIA', valor:1442.10},
+  {cod:'4583', nome:'MERCADINHO NOVO LAR', valor:1378.16},
+  {cod:'3636', nome:'RESTAURANTE NERIS E QUITANDA', valor:1357.70},
+  {cod:'4131', nome:'MERCADO GAMA', valor:1273.55},
+  {cod:'4407', nome:'LEONARDO DE OLIVEIRA LIRA', valor:1074.41},
+  {cod:'3924', nome:'SUPERMERCADO DO REI', valor:1034.99},
+  {cod:'4224', nome:'SUPERMERCADO VIDA 2', valor:1034.40},
+  {cod:'3324', nome:'CASA DE FRIOS MUTINGA', valor:996.73},
+  {cod:'4301', nome:'SUPERMERCADO MENK LOJA 2', valor:928.30},
+  {cod:'3934', nome:'MERCADO MASTER', valor:915.13},
+  {cod:'3969', nome:'SUPERMERCADO MOTA 1', valor:850.84},
+  {cod:'4881', nome:'VEM VEM', valor:845.80},
+  {cod:'4254', nome:'ADS MINI MERCADO', valor:703.60},
+  {cod:'4366', nome:'MINIMERCADO MORAIS', valor:680.59},
+  {cod:'4102', nome:'PADARIA SOPHIE', valor:644.53},
+  {cod:'3777', nome:'DI PAES BOLOS E LANCHES', valor:532.00},
+  {cod:'4087', nome:'BAR E RESTAURANTE JGS', valor:499.48},
+  {cod:'4044', nome:'SUPERMERCADO MOTA GUARULHOS', valor:337.33},
+],
+};
+const FATURAMENTO_DIARIO = {
+  '2026-06-08': {
+    resumo: [
+      {cod:'107', total:13750.94, cli:13, ped:13},
+      {cod:'116', total:11691.23, cli:10, ped:10},
+      {cod:'117', total:1408.82, cli:3, ped:3},
+      {cod:'118', total:981.33, cli:1, ped:1},
+      {cod:'119', total:10363.24, cli:10, ped:10},
+      {cod:'093', total:32706.24, cli:16, ped:16},
+      {cod:'094', total:37429.18, cli:28, ped:29},
+    ],
+    carteira:{
+      '107':[
+        {cod:'4827', nome:'SABOR DELICIA GUARULHOS LTDA', valor:2768.08},
+        {cod:'4862', nome:'COMERCIO DO RATINHO', valor:1564.80},
+        {cod:'4654', nome:'MERCADO TRINDADE', valor:1292.85},
+        {cod:'4660', nome:'MERCADO PAGUE MENOS', valor:1283.72},
+        {cod:'4665', nome:'SUPERMERCADO IKA', valor:1243.02},
+        {cod:'4959', nome:'KACULA SUPERMERCADO LTDA', valor:912.60},
+        {cod:'4775', nome:'EDUARDO JESUS DE SOUSA', valor:839.20},
+        {cod:'4639', nome:'HORTIFRUTI MERCEARIA E ACOUGUE BOM SUCESSO', valor:781.63},
+        {cod:'4721', nome:'MERCADINHO JUPI', valor:756.87},
+        {cod:'4672', nome:'MERCADO MELHOR PRECO', valor:682.72},
+        {cod:'4822', nome:'BAR E MERCEARIA J E', valor:588.05},
+        {cod:'4956', nome:'MERCADO PAGUE MENOS LOJA 2', valor:525.27},
+        {cod:'4842', nome:'PADARIA E RESTAURANTE KELLY', valor:512.13},
+      ],
+      '116':[
+        {cod:'3402', nome:'SONHADOR', valor:2106.71},
+        {cod:'4967', nome:'SUPERMERCADO PASTORINHO', valor:2095.35},
+        {cod:'2750', nome:'PAOZINHO DO CEU', valor:1391.42},
+        {cod:'2726', nome:'MERCADO GABRIEL', valor:1301.02},
+        {cod:'92', nome:'FRANCISCO CANIND? DE LUCAS LOJA 02', valor:1066.70},
+        {cod:'1996', nome:'MERCADO PALACIOS', valor:1008.01},
+        {cod:'4907', nome:'MERCADINHO DA VILLA', valor:976.21},
+        {cod:'1982', nome:'BAR E MERCEARIA ROSA', valor:704.63},
+        {cod:'4456', nome:'MERCADO GT', valor:641.68},
+        {cod:'4824', nome:'DOCE PRIMUS LOJA 2', valor:399.50},
+      ],
+      '117':[
+        {cod:'4147', nome:'RANCHO NOGUEIRAS', valor:522.91},
+        {cod:'4792', nome:'MERCADINHO DA FAMILIA', valor:458.29},
+        {cod:'1831', nome:'SOLANGE DE ANDRADE FREITAS', valor:427.62},
+      ],
+      '118':[
+        {cod:'4848', nome:'FAMILIA VAREJO', valor:981.33},
+      ],
+      '119':[
+        {cod:'4927', nome:'SETE MINI MERCADO', valor:1725.22},
+        {cod:'2813', nome:'GERLAINE SOUZA MOREIRA CARLOS', valor:1700.92},
+        {cod:'2103', nome:'FERREIRA PAES E DOCES', valor:1405.10},
+        {cod:'3159', nome:'SOL NASCENTE', valor:1159.22},
+        {cod:'4680', nome:'MERCADO HORA CERTA', valor:1070.40},
+        {cod:'3077', nome:'MERCADO T.D. JARDIM JARAGUA', valor:945.90},
+        {cod:'4820', nome:'PADARIA TEREZINHA', valor:690.84},
+        {cod:'2289', nome:'ACOUGUE E MERCEARIA NANDA', valor:593.14},
+        {cod:'2062', nome:'PADARIA BELLATRIZ', valor:592.50},
+        {cod:'2867', nome:'CHARMOSA', valor:480.00},
+      ],
+      '093':[
+        {cod:'4314', nome:'INTECS SAO MIGUEL PAULISTA', valor:4798.15},
+        {cod:'4063', nome:'MERCADO PERNAMBUCO', valor:4678.62},
+        {cod:'4534', nome:'INTECS M BOI MIRIM', valor:4409.00},
+        {cod:'4316', nome:'INTECS CIDADE TIRADENTES', valor:2975.75},
+        {cod:'4310', nome:'INTECS BRASILANDIA', valor:2908.50},
+        {cod:'258', nome:'LUIZ JACARE?', valor:2397.07},
+        {cod:'4164', nome:'MERCADINHO LUIGI', valor:2327.19},
+        {cod:'4136', nome:'MERCADINHO NITEROI', valor:1870.13},
+        {cod:'4701', nome:'MERCADO ALCANTARA', valor:1351.72},
+        {cod:'4012', nome:'MERCADO SAO FRANCISCO DE PAULA', valor:1062.57},
+        {cod:'4313', nome:'INTECS JARDIM JARAGUA', valor:1019.15},
+        {cod:'4633', nome:'MERCADO ANA MARIA', valor:993.09},
+        {cod:'4986', nome:'PADARIA DONA ANA', valor:694.80},
+        {cod:'781', nome:'OSVALDO XAVIER DE MACEDO JUNIOR', valor:672.10},
+        {cod:'4864', nome:'PADARIA E CONFEITARIA SAO LUIS', valor:419.90},
+        {cod:'4726', nome:'MERCADO PRECIOSO', valor:128.50},
+      ],
+      '094':[
+        {cod:'2662', nome:'PEG LEVE', valor:6294.66},
+        {cod:'4249', nome:'IGOR MENEZES SOUZA', valor:2320.96},
+        {cod:'3106', nome:'MERCADO ARAUJO', valor:2193.40},
+        {cod:'3576', nome:'PADARIA RAIO DE SOL PRA', valor:2114.42},
+        {cod:'3663', nome:'MERCEARIA VITORIA', valor:1746.65},
+        {cod:'4544', nome:'JK MERCADINHO E PADARIA', valor:1676.55},
+        {cod:'3911', nome:'MINIMERCADO EMPORIO BUONO LTDA', valor:1622.93},
+        {cod:'4331', nome:'PANE DI DIO', valor:1591.65},
+        {cod:'1904', nome:'SM TR?S MONTANHAS', valor:1473.42},
+        {cod:'3623', nome:'MINI MERCADO PADARIA ALIAN?A', valor:1434.35},
+        {cod:'2475', nome:'SALGADO LIMA MINIMERCADO', valor:1361.11},
+        {cod:'914', nome:'PADARIA E CONFEITARIA PADR?O', valor:1331.45},
+        {cod:'4597', nome:'LUIZ CARLOS FONSECA', valor:1299.75},
+        {cod:'4984', nome:'HORTIFRUTI SANTO ANTONIO', valor:986.46},
+        {cod:'3411', nome:'MINI MERCADO ENZO', valor:983.91},
+        {cod:'3311', nome:'P?ES E DOCES MIGUELITO', valor:968.90},
+        {cod:'4805', nome:'MALIBU EMPORIO E CONVENIENCIA', valor:920.07},
+        {cod:'4768', nome:'TURMA DA MONICA', valor:863.76},
+        {cod:'3698', nome:'MERCADINHO XAVIER', valor:822.67},
+        {cod:'4583', nome:'MERCADINHO NOVO LAR', valor:794.16},
+        {cod:'1105', nome:'BAR E EMPORIO AVAMILENO LTDA ME', valor:767.10},
+        {cod:'4366', nome:'MINIMERCADO MORAIS', valor:680.59},
+        {cod:'4131', nome:'MERCADO GAMA', valor:627.01},
+        {cod:'3160', nome:'MERCADO VIDA', valor:599.32},
+        {cod:'1240', nome:'LUCILENE OSASCO', valor:571.73},
+        {cod:'4407', nome:'LEONARDO DE OLIVEIRA LIRA', valor:519.46},
+        {cod:'3636', nome:'RESTAURANTE NERIS E QUITANDA', valor:454.99},
+        {cod:'4301', nome:'SUPERMERCADO MENK LOJA 2', valor:407.75},
+      ],
+    },
+  },
 };
 
 /* ─────────────────────────────────────────
    MÊS HELPER
 ───────────────────────────────────────── */
-const MES_LABELS={marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho'};
+const MES_LABELS={marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho',diario:'Por Dia'};
+let CRM_DIA=(()=>{const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();return days[days.length-1]||'';})();
+function getDiaLabel(d){
+  if(!d) return '—';
+  const [y,m,day]=d.split('-');
+  return `${day}/${m}/${y}`;
+}
 function getVendedoresForMes(mes){
+  if(mes==='diario'){
+    const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];
+    if(!d) return VENDEDORES_JUNHO.map(v=>({...v,abr:0,mar:0}));
+    return VENDEDORES_JUNHO.map(v=>{
+      const r=d.resumo.find(x=>x.cod===v.cod);
+      return {...v,abr:r?r.total:0,mar:0,cli:r?r.cli:0,ped:r?r.ped:0};
+    }).sort((a,b)=>b.abr-a.abr);
+  }
   if(mes==='junho') return VENDEDORES_JUNHO.map(v=>({...v, abr:v.total, mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='maio')  return VENDEDORES_MAIO.map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
   if(mes==='marco') return VENDEDORES.map(v=>({...v, abr:v.mar, mar:0}));
   return VENDEDORES; // abril
+}
+function getCarteiraForMes(mes){
+  if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
+  return {marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
+}
+function navDia(dir){
+  const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();
+  const idx=days.indexOf(CRM_DIA);
+  const next=days[idx+dir];
+  if(!next) return;
+  CRM_DIA=next;
+  document.getElementById('dia-label').textContent=getDiaLabel(CRM_DIA);
+  document.getElementById('dia-nav-prev').style.opacity=days.indexOf(CRM_DIA)===0?'0.3':'1';
+  document.getElementById('dia-nav-next').style.opacity=days.indexOf(CRM_DIA)===days.length-1?'0.3':'1';
+  renderKPIs();renderRanking();
+  if(document.getElementById('tab-analise')?.classList.contains('active')){
+    if(document.getElementById('subtab-porvendedor')?.style.display!=='none') renderVendorDetail(activeVendor);
+  }
+  if(window.CRM_VENDOR_ID&&CRM_USER){const vk=CRM_USER.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');renderVendorDashboard(CRM_USER,vk);}
 }
 
 /* ─────────────────────────────────────────
@@ -3472,13 +3631,13 @@ function renderRanking(){
       <div class="rank-pos ${i<3&&!isNew?'top':''}">${String(i+1).padStart(2,'0')}</div>
       <div class="rank-av" style="background:rgba(255,255,255,.12);color:#fff">${v.av}</div>
       <div class="rank-info">
-        <div class="rank-name">${v.name}${v.newHire?' <span style="font-size:9px;color:rgba(255,255,255,.7)">★ Novo</span>':''}</div>
+        <div class="rank-name">${v.name}</div>
         <div class="rank-meta">${isNew&&v.abr===0?'Ingresso 2026 · cód.'+v.cod:v.cli+' cli · '+v.ped+' ped · cód.'+v.cod}</div>
       </div>
       <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%;background:rgba(255,255,255,.65)"></div></div>
       <div class="rank-value">
         <div class="rank-val-main" style="color:${isNew&&v.abr===0?'rgba(255,255,255,.4)':'#fff'}">${isNew&&v.abr===0?'—':fK(v.abr)}</div>
-        <div class="rank-val-change" style="color:${varPctV===null?'rgba(255,255,255,.4)':varPctV>=0?'#4ade80':'#f87171'}">${varPctV===null?'Novo':((varPctV>=0?'▲ +':'▼ ')+Math.abs(varPctV).toFixed(1)+'%')}</div>
+        <div class="rank-val-change" style="color:${varPctV===null?'rgba(255,255,255,.4)':varPctV>=0?'#4ade80':'#f87171'}">${varPctV===null?'—':((varPctV>=0?'▲ +':'▼ ')+Math.abs(varPctV).toFixed(1)+'%')}</div>
       </div>
     </div>`;
   });
@@ -3489,7 +3648,7 @@ function renderRanking(){
   const el2=document.getElementById('rank-total-dynamic');
   if(el2) el2.textContent=fBRL(total);
   const rt=document.getElementById('ranking-title');
-  if(rt) rt.textContent='Ranking de Faturamento — '+(MES_LABELS[CRM_MES]||'Maio')+' 2026';
+  if(rt) rt.textContent='Ranking de Faturamento — '+(CRM_MES==='diario'?getDiaLabel(CRM_DIA):((MES_LABELS[CRM_MES]||'Maio')+' 2026'));
 }
 
 /* ─────────────────────────────────────────
@@ -3517,6 +3676,14 @@ function renderTop5(){
 function setMes(mes, btn){
   CRM_MES=mes;
   document.querySelectorAll('.mes-select').forEach(s=>s.value=mes);
+  // Show/hide day navigator
+  document.querySelectorAll('.dia-nav-wrap').forEach(el=>{el.style.display=mes==='diario'?'flex':'none';});
+  if(mes==='diario'){
+    const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();
+    document.querySelectorAll('#dia-label').forEach(el=>el.textContent=getDiaLabel(CRM_DIA));
+    document.querySelectorAll('#dia-nav-prev').forEach(el=>el.style.opacity=days.indexOf(CRM_DIA)===0?'0.3':'1');
+    document.querySelectorAll('#dia-nav-next').forEach(el=>el.style.opacity=days.indexOf(CRM_DIA)===days.length-1?'0.3':'1');
+  }
   // Dashboard components — always visible
   renderKPIs();
   renderRanking();
@@ -3754,9 +3921,8 @@ function renderAdminCarteira(){
   const lblB=MES_LABELS[mesB]||mesB;
   const titleEl=document.getElementById('adm-cart-title');
   if(titleEl) titleEl.textContent=`Carteira Consolidada · ${lblA} vs ${lblB} 2026`;
-  const carteiraMap={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO};
-  const srcA=carteiraMap[mesA]||{};
-  const srcB=carteiraMap[mesB]||{};
+  const srcA=getCarteiraForMes(mesA);
+  const srcB=getCarteiraForMes(mesB);
   const map=new Map();
   Object.values(srcB).forEach(arr=>arr.forEach(c=>{
     if(!map.has(c.cod)) map.set(c.cod,{cod:c.cod,nome:c.nome,valA:0,valB:0});
@@ -3783,7 +3949,7 @@ function renderAdminCarteira(){
     clients.forEach((c,i)=>{
       const isNew=c.valA===0&&c.valB>0;
       let varHtml;
-      if(isNew) varHtml=`<span class="badge-up">Novo</span>`;
+      if(isNew) varHtml=`<span style="color:rgba(255,255,255,.4)">—</span>`;
       else if(hasA&&hasB&&c.valA>0){const vr=varPct(c.valB,c.valA);varHtml=`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`;}
       else{const pct=(totB>0)?((c.valB/totB)*100).toFixed(1):(totA>0)?((c.valA/totA)*100).toFixed(1):'0';varHtml=pct+'%';}
       html+=`<tr>
@@ -3859,11 +4025,13 @@ function renderVendorDetail(name){
   const vRawJunho=VENDEDORES_JUNHO.find(x=>x.name===name);
   const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod;
 
+  const _vdDia=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===cod);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
   const _D={
-    marco:{label:'Março', total:vRawAbr?.mar||0,    ped:0,               cli:CARTEIRA_MARCO[cod]?.length||0},
-    abril:{label:'Abril', total:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0, cli:vRawAbr?.cli||0},
-    maio: {label:'Maio',  total:vRawMaio?.total||0, ped:vRawMaio?.ped||0,cli:vRawMaio?.cli||0},
-    junho:{label:'Junho', total:vRawJunho?.total||0,ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0},
+    marco: {label:'Março',             total:vRawAbr?.mar||0,    ped:0,               cli:CARTEIRA_MARCO[cod]?.length||0},
+    abril: {label:'Abril',             total:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0, cli:vRawAbr?.cli||0},
+    maio:  {label:'Maio',              total:vRawMaio?.total||0, ped:vRawMaio?.ped||0,cli:vRawMaio?.cli||0},
+    junho: {label:'Junho',             total:vRawJunho?.total||0,ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0},
+    diario:{label:getDiaLabel(CRM_DIA),total:_vdDia.total,       ped:_vdDia.ped,      cli:_vdDia.cli},
   };
 
   const periods=[mesA,mesB,mesC].map(k=>({...(_D[k]||{label:k,total:0,ped:0,cli:0}),key:k}));
@@ -3883,10 +4051,9 @@ function renderVendorDetail(name){
   }).join('');
 
   // Carteira comparativo — une os 3 meses selecionados por código de cliente
-  const carteiraMap={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO};
-  const cA=carteiraMap[mesA]?.[cod]||[];
-  const cB=carteiraMap[mesB]?.[cod]||[];
-  const cC=carteiraMap[mesC]?.[cod]||[];
+  const cA=getCarteiraForMes(mesA)[cod]||[];
+  const cB=getCarteiraForMes(mesB)[cod]||[];
+  const cC=getCarteiraForMes(mesC)[cod]||[];
 
   const clientMap=new Map();
   [[cA,'a'],[cB,'b'],[cC,'c']].forEach(([list,k])=>{
@@ -3918,14 +4085,14 @@ function renderVendorDetail(name){
 
   const _fVal=v=>v>0?fBRL(v):`<span style="color:rgba(255,255,255,.3)">—</span>`;
   const _varCell=(curr,base)=>{
-    if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.5);font-size:11px">Novo</span>`;
+    if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.4)">—</span>`;
     if(!base) return `<span style="color:rgba(255,255,255,.25)">—</span>`;
     if(!curr) return `<span class="badge-dn">▼ -100%</span>`;
     const p=(curr-base)/base*100;
     return `<span class="${p>=0?'badge-up':'badge-dn'}">${p>=0?'▲ +':'▼ '}${Math.abs(p).toFixed(1)}%</span>`;
   };
   const _diffCell=(curr,base)=>{
-    if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.5);font-size:11px">Novo</span>`;
+    if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.4)">—</span>`;
     if(!base) return `<span style="color:rgba(255,255,255,.25)">—</span>`;
     if(!curr) return `<span class="badge-dn">▼ -${fBRL(base)}</span>`;
     const d=curr-base;
@@ -4267,7 +4434,7 @@ function renderVendorDashboard(user, vendorKey){
   if(!vM) return;
 
   const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesAnt=CRM_MES==='diario'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -4284,8 +4451,7 @@ function renderVendorDashboard(user, vendorKey){
   const pct=Math.min(Math.round((vM.abr/meta)*100),100);
   const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
 
-  const carteiraMap={junho:CARTEIRA_JUNHO,maio:CARTEIRA_MAIO,abril:CARTEIRA_ABRIL,marco:CARTEIRA_MARCO};
-  const carteira=((carteiraMap[CRM_MES]||{})[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
+  const carteira=(getCarteiraForMes(CRM_MES)[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
   const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
 
   // Atividades do mês (dos formsCaches já carregados)
@@ -4309,12 +4475,14 @@ function renderVendorDashboard(user, vendorKey){
   const actVal=v=>v===null?'—':String(v);
 
   // Histórico mensal — sempre os últimos 3 meses (atual + 2 anteriores)
-  const _MES_SEQ=['marco','abril','maio','junho'];
+  const _diaRaw=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===user.vendId);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
+  const _MES_SEQ=['marco','abril','maio','junho','diario'];
   const _MES_DATA={
-    marco: {label:'Março', abr:vRawAbr?.mar||0,     ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,                prevLabel:''},
-    abril: {label:'Abril', abr:vRawAbr?.abr||0,     ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,   prev:vRawAbr?.mar||0,  prevLabel:'Março'},
-    maio:  {label:'Maio',  abr:vRawMaio?.total||0,  ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0,  prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
-    junho: {label:'Junho', abr:vRawJunho?.total||0, ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0, prev:vRawMaio?.total||0,prevLabel:'Maio'},
+    marco:  {label:'Março',             abr:vRawAbr?.mar||0,     ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,                  prevLabel:''},
+    abril:  {label:'Abril',             abr:vRawAbr?.abr||0,     ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,   prev:vRawAbr?.mar||0,    prevLabel:'Março'},
+    maio:   {label:'Maio',              abr:vRawMaio?.total||0,  ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0,  prev:vRawAbr?.abr||0,    prevLabel:'Abril'},
+    junho:  {label:'Junho',             abr:vRawJunho?.total||0, ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0, prev:vRawMaio?.total||0, prevLabel:'Maio'},
+    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,       ped:_diaRaw.ped,      cli:_diaRaw.cli,       prev:vRawJunho?.total||0,prevLabel:'Junho'},
   };
   const _mesIdx=_MES_SEQ.indexOf(CRM_MES);
   const _hist3=_MES_SEQ.slice(Math.max(0,_mesIdx-2),_mesIdx+1);
@@ -4338,9 +4506,16 @@ function renderVendorDashboard(user, vendorKey){
         <div class="section-title" id="dash-greeting">Olá, ${user.name} 💼</div>
         <div class="section-sub" id="dash-subgreeting">Cód. ${user.vendId}</div>
       </div>
-      <select class="mes-select" onchange="setMes(this.value)">
-        ${['marco','abril','maio','junho'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
-      </select>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <select class="mes-select" onchange="setMes(this.value)">
+          ${['marco','abril','maio','junho','diario'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
+        </select>
+        <div class="dia-nav-wrap" style="display:${CRM_MES==='diario'?'flex':'none'};align-items:center;gap:6px">
+          <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
+          <span id="dia-label" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.85);min-width:70px;text-align:center">${getDiaLabel(CRM_DIA)}</span>
+          <button id="dia-nav-next" onclick="navDia(1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">›</button>
+        </div>
+      </div>
     </div>
 
     <div class="kpi-grid mb-16" style="grid-template-columns:1fr 1fr">
