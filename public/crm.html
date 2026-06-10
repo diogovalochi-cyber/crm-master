@@ -3311,6 +3311,24 @@ const CARTEIRA_JUNHO = {
 // Base manual por período de comissão (22→22): totais dos dias ANTES do FATURAMENTO_DIARIO diário
 // Chave = 'YYYY-MM-DD' do início do período (dia 22). FATURAMENTO_DIARIO complementa automaticamente.
 const COMISSAO_BASE = {
+  // Período 22/04/2026 → 22/05/2026 (completo, dados do PDF)
+  '2026-04-22': {
+    '093': 566434.51, // Guilherme
+    '094': 312869.31, // Relson
+    '107': 109578.03, // Everaldo
+    '115': 202054.45, // Israel
+    '116': 198285.09, // Natália
+    '117': 131580.04, // Keller
+    '118':  39800.59, // Jorge
+    '119':  66710.21, // Althieres
+    '120':      0.00, // João (sem vendas no período)
+    '121': 507731.49, // Moab
+    '122': 322661.62, // Ramon
+    '123': 527439.11, // Kelly
+    '124':  61314.87, // Luis Henrique
+    '125': 561749.10, // Cezar
+  },
+  // Período 22/05/2026 → 22/06/2026 (base manual 22/05–07/06; FATURAMENTO_DIARIO completa 08/06+)
   '2026-05-22': {
     '093': 0, // Guilherme  — preencher: total 22/05–07/06
     '094': 0, // Relson
