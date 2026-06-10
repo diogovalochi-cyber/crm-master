@@ -991,6 +991,7 @@ body.mode-mobile .section-header{gap:12px}
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
+    <button class="subtab" onclick="showSubtab('comissao',this)">Comissão</button>
     <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)" style="display:none">Pesquisa</button>
   </div>
 
@@ -1101,6 +1102,19 @@ body.mode-mobile .section-header{gap:12px}
     <div class="pill-row" id="vendor-pills"></div>
     <div id="vendor-detail-grid"></div>
   </div>
+
+  <!-- SUB: Comissão 22→22 -->
+  <div id="subtab-comissao" style="display:none;margin-top:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="comissaoNav(-1)" title="Período anterior" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">‹</button>
+        <span id="comissao-period-label" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75);white-space:nowrap"></span>
+        <button id="comissao-next-btn" onclick="comissaoNav(1)" title="Próximo período" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">›</button>
+      </div>
+      <span id="comissao-updated" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500"></span>
+    </div>
+    <div class="comissao-grid" id="comissao-grid"></div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1140,7 +1154,6 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)">Apresentações</button>
     <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)">Cadastros</button>
     <button class="subtab" data-type="rota" onclick="selectFormsType(this)">Rota</button>
-    <button class="subtab" data-type="comissao" onclick="selectFormsType(this)">Comissão</button>
   </div>
 
   <div id="forms-content-wrap">
@@ -1178,19 +1191,6 @@ body.mode-mobile .section-header{gap:12px}
       </div>
     </div>
     <div class="rota-grid" id="rota-grid"></div>
-  </div>
-
-  <!-- Comissão 22→22 -->
-  <div id="comissao-section" style="display:none;margin-top:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="comissaoNav(-1)" title="Período anterior" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">‹</button>
-        <span id="comissao-period-label" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75);white-space:nowrap"></span>
-        <button id="comissao-next-btn" onclick="comissaoNav(1)" title="Próximo período" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">›</button>
-      </div>
-      <span id="comissao-updated" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500"></span>
-    </div>
-    <div class="comissao-grid" id="comissao-grid"></div>
   </div>
 
   <!-- Modal de observação -->
@@ -3826,7 +3826,7 @@ function refreshTab(tab){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  ['comparativo','porvendedor','pesquisa'].forEach(s=>{
+  ['comparativo','porvendedor','pesquisa','comissao'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
@@ -3834,6 +3834,7 @@ function showSubtab(id,el){
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
   if(id==='pesquisa'){const inp=document.getElementById('srch-cod');if(inp) inp.focus();}
+  if(id==='comissao'){comissaoOffset=0;renderComissao();}
 }
 /* ─────────────────────────────────────────
    PESQUISA DE CLIENTE (admin only)
@@ -4539,11 +4540,9 @@ function selectFormsType(el){
   el.classList.add('active');
   if(window._rotaTimer){clearInterval(window._rotaTimer);window._rotaTimer=null;}
   const _rotaSec=document.getElementById('rota-section');
-  const _commSec=document.getElementById('comissao-section');
   const _formsSec=document.getElementById('forms-content-wrap');
   if(currentFormsType==='rota'){
     if(_rotaSec) _rotaSec.style.display='block';
-    if(_commSec) _commSec.style.display='none';
     if(_formsSec) _formsSec.style.display='none';
     renderRota();
     window._rotaTimer=setInterval(()=>{
@@ -4552,16 +4551,7 @@ function selectFormsType(el){
     },45000);
     return;
   }
-  if(currentFormsType==='comissao'){
-    if(_rotaSec) _rotaSec.style.display='none';
-    if(_commSec) _commSec.style.display='block';
-    if(_formsSec) _formsSec.style.display='none';
-    comissaoOffset=0;
-    renderComissao();
-    return;
-  }
   if(_rotaSec) _rotaSec.style.display='none';
-  if(_commSec) _commSec.style.display='none';
   if(_formsSec) _formsSec.style.display='';
   if(!FORMS_CSV[currentFormsType]){
     document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
@@ -4645,14 +4635,12 @@ function renderComissao(){
     return;
   }
 
-  grid.innerHTML=vends.map((v,i)=>{
+  grid.innerHTML=vends.map(v=>{
     const isMine=v.cod===myVendId;
     const pct=maxTotal>0?Math.round((v.comissaoTotal/maxTotal)*100):0;
-    const medal=isVendedor?'':i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-size:11px;opacity:.5">${i+1}º</span>`;
     return `<div class="comissao-card${isMine?' mine':''}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
         <div class="comissao-av" style="background:${v.color}22;color:${v.color}">${v.av}</div>
-        <span style="font-size:16px;line-height:1">${medal}</span>
       </div>
       <div class="comissao-name">${v.name}${isMine?` <span style="font-size:9px;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;vertical-align:middle;font-weight:600">VOCÊ</span>`:''}
       </div>
