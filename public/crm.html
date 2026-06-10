@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -4614,18 +4614,24 @@ function renderComissao(){
   const nxtBtn=document.getElementById('comissao-next-btn');
   if(nxtBtn){nxtBtn.style.opacity=comissaoOffset>=0?'.3':'1';nxtBtn.style.pointerEvents=comissaoOffset>=0?'none':'auto';}
 
-  // Acumula totais de FATURAMENTO_DIARIO dentro do período
   const perVend={};
+  const perVendCart={};
   let lastDate=null;
   Object.entries(FATURAMENTO_DIARIO||{}).forEach(([ds,data])=>{
     const d=new Date(ds+'T00:00:00');
     if(d>=periodo.start&&d<periodo.end){
       if(!lastDate||d>lastDate) lastDate=d;
       (data.resumo||[]).forEach(r=>{perVend[r.cod]=(perVend[r.cod]||0)+(r.total||0);});
+      Object.entries(data.carteira||{}).forEach(([cod,clts])=>{
+        if(!perVendCart[cod]) perVendCart[cod]={};
+        (clts||[]).forEach(c=>{
+          if(!perVendCart[cod][c.cod]) perVendCart[cod][c.cod]={nome:c.nome,valor:0};
+          perVendCart[cod][c.cod].valor+=c.valor;
+        });
+      });
     }
   });
 
-  // Soma base manual (período sem dados diários)
   const base=(COMISSAO_BASE||{})[periodo.startKey]||{};
   Object.entries(base).forEach(([cod,val])=>{if(val) perVend[cod]=(perVend[cod]||0)+val;});
 
@@ -4638,34 +4644,67 @@ function renderComissao(){
   const grid=document.getElementById('comissao-grid');
   if(!grid) return;
 
-  const fmtVal=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtVal=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 
-  // Lista de vendedores — vendor só vê o próprio
   let vends=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length?VENDEDORES_JUNHO:VENDEDORES)
     .filter(v=>!isVendedor||v.cod===myVendId)
     .map(v=>({...v,comissaoTotal:(perVend[v.cod]||0)}))
     .sort((a,b)=>b.comissaoTotal-a.comissaoTotal);
-
-  const maxTotal=vends.reduce((m,v)=>Math.max(m,v.comissaoTotal),1);
 
   if(!vends.length){
     grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.4);padding:32px;font-size:14px">Nenhum dado no período</div>`;
     return;
   }
 
-  grid.innerHTML=vends.map(v=>{
-    const isMine=v.cod===myVendId;
-    const pct=maxTotal>0?Math.round((v.comissaoTotal/maxTotal)*100):0;
-    return `<div class="comissao-card${isMine?' mine':''}">
-      <div>
-        <div class="comissao-av" style="background:${v.color}22;color:${v.color}">${v.av}</div>
+  if(isVendedor){
+    const v=vends[0];
+    const clientes=Object.values(perVendCart[v.cod]||{}).sort((a,b)=>b.valor-a.valor);
+    const hasBase=!!(base[v.cod]&&base[v.cod]>0);
+    const maxCli=clientes.reduce((m,c)=>Math.max(m,c.valor),1);
+    grid.innerHTML=`
+      <div class="comissao-card mine" style="grid-column:1/-1;display:flex;align-items:center;gap:16px">
+        <div class="comissao-av" style="background:${v.color}22;color:${v.color};flex-shrink:0">${v.av}</div>
+        <div style="flex:1;min-width:0">
+          <div class="comissao-name" style="margin-top:0">${v.name}</div>
+          <div class="comissao-total">${fmtVal(v.comissaoTotal)}</div>
+        </div>
       </div>
-      <div class="comissao-name">${v.name}${isMine?` <span style="font-size:9px;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;vertical-align:middle;font-weight:600">VOCÊ</span>`:''}
-      </div>
-      <div class="comissao-total">${fmtVal(v.comissaoTotal)}</div>
-      <div class="comissao-bar-wrap"><div class="comissao-bar" style="width:${pct}%;background:${v.color}"></div></div>
-    </div>`;
-  }).join('');
+      ${clientes.length?`
+      <div style="grid-column:1/-1">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${hasBase?'Vendas por cliente (período atual)':'Vendas por cliente'}</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${clientes.map(c=>{
+            const pct=Math.round((c.valor/maxCli)*100);
+            return `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px">
+                <span style="font-size:13px;color:rgba(255,255,255,.85);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.nome}</span>
+                <span style="font-size:13px;font-weight:700;color:${v.color};flex-shrink:0">${fmtVal(c.valor)}</span>
+              </div>
+              <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px"><div style="height:3px;width:${pct}%;background:${v.color};border-radius:2px;transition:width .6s ease"></div></div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${hasBase?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;text-align:center">Total inclui ${fmtVal(base[v.cod])} de dias sem detalhamento por cliente</div>`:''}
+      </div>`:`
+      <div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.3);font-size:12px;padding:24px 0">
+        Detalhamento por cliente não disponível para este período
+      </div>`}`;
+  } else {
+    const maxTotal=vends.reduce((m,v)=>Math.max(m,v.comissaoTotal),1);
+    grid.innerHTML=vends.map(v=>{
+      const isMine=v.cod===myVendId;
+      const pct=maxTotal>0?Math.round((v.comissaoTotal/maxTotal)*100):0;
+      return `<div class="comissao-card${isMine?' mine':''}">
+        <div>
+          <div class="comissao-av" style="background:${v.color}22;color:${v.color}">${v.av}</div>
+        </div>
+        <div class="comissao-name">${v.name}${isMine?` <span style="font-size:9px;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;vertical-align:middle;font-weight:600">VOCÊ</span>`:''}
+        </div>
+        <div class="comissao-total">${fmtVal(v.comissaoTotal)}</div>
+        <div class="comissao-bar-wrap"><div class="comissao-bar" style="width:${pct}%;background:${v.color}"></div></div>
+      </div>`;
+    }).join('');
+  }
 }
 
 function rotaWeekNav(delta){
@@ -5856,10 +5895,6 @@ function renderVendorDashboard(user, vendorKey){
     ?`<span style="background:${varPctV>=0?'rgba(34,197,94,.18)':'rgba(239,68,68,.18)'};color:${varPctV>=0?'#4ade80':'#f87171'};padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${varPctV>=0?'▲ +':'▼ '}${Math.abs(varPctV).toFixed(1)}%</span> vs ${mesAnt}`
     :vM.ped+' pedidos';
 
-  const metaMap={'093':500000,'094':250000,'115':200000,'116':200000,'117':150000,'107':100000,'119':100000,'118':80000,'120':30000};
-  const meta=metaMap[user.vendId]||200000;
-  const pct=Math.min(Math.round((vM.abr/meta)*100),100);
-  const msg=pct>=100?'✓ Meta atingida!':pct>=80?'Quase lá!':pct>=50?'Em andamento':'Abaixo da meta';
 
   const carteira=(getCarteiraForMes(CRM_MES)[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
   const totalCarteira=carteira.reduce((s,c)=>s+c.valor,0);
@@ -5943,20 +5978,6 @@ function renderVendorDashboard(user, vendorKey){
       </div>
     </div>
 
-    <div class="card mb-16">
-      <div class="card-header">
-        <span class="card-title">Progresso da Meta · ${mesLabel} 2026</span>
-        <span style="font-size:12px;color:#fff;font-weight:700">${fBRL(vM.abr)} de ${fBRL(meta)}</span>
-      </div>
-      <div style="background:rgba(255,255,255,.15);border-radius:8px;height:14px;overflow:hidden;margin-bottom:8px">
-        <div style="height:100%;width:${pct}%;background:rgba(255,255,255,.6);border-radius:8px;transition:width .8s ease"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7)">
-        <span>R$ 0</span>
-        <span style="color:#fff;font-weight:700">${pct>=100?'Meta atingida!':'Faltam '+fBRL(Math.max(0,meta-vM.abr))}</span>
-        <span>${fBRL(meta)}</span>
-      </div>
-    </div>
 
     <div class="dash-second-grid gap-12">
       <div class="card">
