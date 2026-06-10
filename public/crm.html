@@ -5850,9 +5850,9 @@ function applyVendorMode(user){
   const regSellerTabs=document.getElementById('reg-seller-tabs');
   if(regSellerTabs) regSellerTabs.style.display='none';
 
-  // Análise: mostra apenas Comparativo (índice 0), oculta Por Vendedor (índice 1)
+  // Análise: oculta Por Vendedor (índice 1); Comparativo e Comissão visíveis para vendedor
   document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i!==0) btn.style.display='none';
+    if(i===1) btn.style.display='none';
   });
   // Análise: oculta seletor de mês global (vendedor usa apenas os seletores do comparativo)
   const anlMesSel=document.querySelector('#tab-analise .section-header .mes-select');
