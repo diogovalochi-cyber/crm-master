@@ -1894,6 +1894,9 @@ const CARTEIRA_MARCO = {
   {cod:'4287', nome:'PADARIA E MERCEARIA OBA OBA',              valor:  414.38},
   {cod:'3251', nome:'BELEM EXPRESS',                            valor:  359.06},
 ],
+'118':[
+  {cod:'4848', nome:'FAMILIA VAREJO', valor:23963.09},
+],
 };
 
 const CARTEIRA_ABRIL = {
@@ -2306,6 +2309,9 @@ const CARTEIRA_ABRIL = {
   {cod:'3251', nome:'BELEM EXPRESS',                            valor:  353.99},
   {cod:'3325', nome:'PADARIA FAMILIA SILVA',                    valor:  300.00},
 ],
+'118':[
+  {cod:'4848', nome:'FAMILIA VAREJO', valor:28747.07},
+],
 };
 
 const CARTEIRA_MAIO = {
@@ -2551,7 +2557,7 @@ const CARTEIRA_MAIO = {
   {cod:'4945', nome:'RESTAURANTE INCONFIDENCIA MINEIRA',   valor:   444.66},
 ],
 '118':[
-  {cod:'4848', nome:'FAMILIA VAREJO',                      valor:18650.95},
+  {cod:'4848', nome:'FAMILIA VAREJO',                      valor:24760.62},
   {cod:'59',   nome:'MERCADO E MERC.ALIANÇA LTDA',         valor: 9941.79},
   {cod:'2414', nome:'MERCADO E MERCEARIA ALIANÇA LOJA',    valor: 8045.77},
   {cod:'1140', nome:'JANIO/J.M MINI PADARIA E MERCEARIA',  valor: 6045.67},
@@ -3311,6 +3317,23 @@ const CARTEIRA_JUNHO = {
 // Base manual por período de comissão (22→22): totais dos dias ANTES do FATURAMENTO_DIARIO diário
 // Chave = 'YYYY-MM-DD' do início do período (dia 22). FATURAMENTO_DIARIO complementa automaticamente.
 const COMISSAO_BASE = {
+  // Período 22/03/2026 → 22/04/2026 (completo, dados do PDF)
+  '2026-03-22': {
+    '093': 445699.39, // Guilherme
+    '094': 340038.78, // Relson
+    '107':  95540.54, // Everaldo
+    '115':  89184.79, // Israel
+    '116':  70186.20, // Natália
+    '117':  65506.50, // Keller
+    '118':  87868.51, // carteira Alexsandro Gomes (transferida para Jorge em mai/26)
+    '119':      0.00, // Althieres (sem vendas no período)
+    '120':      0.00, // João (sem vendas no período)
+    '121': 446685.54, // Moab
+    '122': 268378.63, // Ramon
+    '123': 497177.82, // Kelly
+    '124':  77242.93, // Luis Henrique
+    '125': 506430.19, // Cezar
+  },
   // Período 22/04/2026 → 22/05/2026 (completo, dados do PDF)
   '2026-04-22': {
     '093': 566434.51, // Guilherme
@@ -3874,7 +3897,8 @@ function searchClient(q){
   const isCodSearch=/^\d+$/.test(q.trim());
 
   // Coleta resultados (pode ser mais de 1 quando pesquisa por nome parcial)
-  const found={}; // cod -> {nome, vendCod, billing:{}, mapsLink, rotaDias:[]}
+  // billing[mes.key] = [{valor, vendCod}] — suporta múltiplos vendedores por mês (transferências)
+  const found={}; // cod -> {nome, billing:{}, mapsLink, rotaDias:[]}
 
   // Busca nas carteiras
   for(const mes of MESES){
@@ -3884,9 +3908,10 @@ function searchClient(q){
         const cNome=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
         const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
         if(!match) continue;
-        if(!found[cNorm]) found[cNorm]={nome:c.nome,vendCod:vcod,billing:{},mapsLink:null,rotaDias:[]};
-        found[cNorm].billing[mes.key]=c.valor;
-        if(!found[cNorm].vendCod) found[cNorm].vendCod=vcod;
+        if(!found[cNorm]) found[cNorm]={nome:c.nome,billing:{},mapsLink:null,rotaDias:[]};
+        if(!found[cNorm].billing[mes.key]) found[cNorm].billing[mes.key]=[];
+        found[cNorm].billing[mes.key].push({valor:c.valor,vendCod:vcod});
+        if(!found[cNorm].nome) found[cNorm].nome=c.nome;
       }
     }
   }
@@ -3900,7 +3925,7 @@ function searchClient(q){
         const cNome=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
         const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
         if(!match) continue;
-        if(!found[cNorm]) found[cNorm]={nome:c.nome,vendCod:vcod,billing:{},mapsLink:null,rotaDias:[]};
+        if(!found[cNorm]) found[cNorm]={nome:c.nome,billing:{},mapsLink:null,rotaDias:[]};
         if(!found[cNorm].nome) found[cNorm].nome=c.nome;
         if(c.maps) found[cNorm].mapsLink=c.maps;
         found[cNorm].rotaDias.push({dia,freq:c.freq||null,vendCod:vcod});
@@ -3918,14 +3943,32 @@ function searchClient(q){
   const getVendName=cod=>(allVend.find(v=>v.cod===cod)?.name)||cod;
 
   el.innerHTML=results.map(([cod,info])=>{
-    const vendName=getVendName(info.vendCod);
+    // Vendedor atual = mês mais recente com dados
+    const mesOrdem=['junho','maio','abril','marco'];
+    let currentVendCod='';
+    for(const mk of mesOrdem){
+      const ents=info.billing[mk];
+      if(ents&&ents.length){currentVendCod=ents[ents.length-1].vendCod;break;}
+    }
+    const vendName=getVendName(currentVendCod);
 
-    const billingRows=MESES.map(mes=>{
-      const v=info.billing[mes.key];
-      return `<tr>
-        <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:60px">${mes.label}</td>
-        <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${v!=null?fBRL(v):'<span style="color:rgba(255,255,255,.2)">—</span>'}</td>
-      </tr>`;
+    // Detecta troca de vendedor entre meses
+    const allVendCods=new Set();
+    for(const mk of MESES.map(m=>m.key)){(info.billing[mk]||[]).forEach(e=>allVendCods.add(e.vendCod));}
+    const hasVendorChange=allVendCods.size>1;
+
+    const billingRows=MESES.flatMap(mes=>{
+      const entries=info.billing[mes.key]||[];
+      if(!entries.length) return [`<tr>
+        <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:64px">${mes.label}</td>
+        ${hasVendorChange?`<td style="padding:3px 0;font-size:10px;color:rgba(255,255,255,.2)">—</td>`:''}
+        <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px"><span style="color:rgba(255,255,255,.2)">—</span></td>
+      </tr>`];
+      return entries.map((e,i)=>`<tr>
+        <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:64px">${i===0?mes.label:''}</td>
+        ${hasVendorChange?`<td style="padding:3px 0;font-size:10px;color:rgba(255,255,255,.38);padding-right:8px;white-space:nowrap">${getVendName(e.vendCod)}</td>`:''}
+        <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${fBRL(e.valor)}</td>
+      </tr>`);
     }).join('');
 
     const rotaChips=info.rotaDias.map(r=>
@@ -3938,13 +3981,13 @@ function searchClient(q){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
         <div>
           <div style="font-size:15px;font-weight:700;margin-bottom:2px">${info.nome}</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.4)">Cód. ${cod} · ${vendName}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4)">Cód. ${cod}${vendName?' · '+vendName:''}</div>
         </div>
         ${info.mapsLink?`<a href="${info.mapsLink}" target="_blank" rel="noopener" style="font-size:20px;text-decoration:none;flex-shrink:0" title="Ver no Maps">📍</a>`:''}
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="display:grid;grid-template-columns:1fr${rotaChips?' 1fr':''};gap:16px">
         <div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:4px">FATURAMENTO</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:4px">FATURAMENTO${hasVendorChange?' <span style="font-weight:400;color:rgba(255,255,255,.25)">(por vendedor)</span>':''}</div>
           <table style="width:100%;border-collapse:collapse">${billingRows}</table>
         </div>
         ${rotaChips?`<div>
@@ -5628,7 +5671,7 @@ const CREDS=[
   {user:'moab',        pass:'123',  role:'VENDEDOR', name:'Moab',         av:'MB', vendId:'121', color:'#FB923C', newHire:true},
   {user:'ramon',       pass:'4959', role:'VENDEDOR', name:'Ramon',        av:'RM', vendId:'122', color:'#A3E635', newHire:true},
   {user:'kelly',       pass:'123',  role:'VENDEDOR', name:'Kelly',        av:'KL', vendId:'123', color:'#E879F9', newHire:true},
-  {user:'luishenrique',pass:'123',  role:'VENDEDOR', name:'Luis Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
+  {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luis Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'123',  role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
