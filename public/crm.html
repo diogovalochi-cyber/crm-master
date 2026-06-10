@@ -657,6 +657,16 @@ body.mode-mobile .section-header{gap:12px}
 .rota-visited .rota-status-dot{color:#10B981}
 .rota-pending .rota-status-dot{color:#F87171}
 .rota-today-badge{font-size:10px;background:rgba(255,255,255,.15);padding:1px 7px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:6px;vertical-align:middle}
+/* ─── COMISSÃO ─── */
+.comissao-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:12px}
+.comissao-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px;transition:.2s}
+.comissao-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+.comissao-card.mine{border-color:rgba(255,255,255,.3)!important;background:rgba(255,255,255,.09)!important}
+.comissao-av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.comissao-name{font-size:13px;font-weight:700;color:#fff;margin-top:10px}
+.comissao-total{font-size:19px;font-weight:800;color:#fff;margin-top:3px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.comissao-bar-wrap{margin-top:10px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.comissao-bar{height:100%;border-radius:2px;transition:width .6s ease}
 .rota-maps-pin{font-size:11px;opacity:.45;flex-shrink:0;text-decoration:none;color:inherit;padding:0 3px;transition:.15s}
 .rota-maps-pin:hover{opacity:1}
 
@@ -1130,6 +1140,7 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab" data-type="apresentacoes" onclick="selectFormsType(this)">Apresentações</button>
     <button class="subtab" data-type="cadastros" onclick="selectFormsType(this)">Cadastros</button>
     <button class="subtab" data-type="rota" onclick="selectFormsType(this)">Rota</button>
+    <button class="subtab" data-type="comissao" onclick="selectFormsType(this)">Comissão</button>
   </div>
 
   <div id="forms-content-wrap">
@@ -1167,6 +1178,19 @@ body.mode-mobile .section-header{gap:12px}
       </div>
     </div>
     <div class="rota-grid" id="rota-grid"></div>
+  </div>
+
+  <!-- Comissão 22→22 -->
+  <div id="comissao-section" style="display:none;margin-top:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="comissaoNav(-1)" title="Período anterior" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">‹</button>
+        <span id="comissao-period-label" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75);white-space:nowrap"></span>
+        <button id="comissao-next-btn" onclick="comissaoNav(1)" title="Próximo período" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">›</button>
+      </div>
+      <span id="comissao-updated" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500"></span>
+    </div>
+    <div class="comissao-grid" id="comissao-grid"></div>
   </div>
 
   <!-- Modal de observação -->
@@ -3284,6 +3308,27 @@ const CARTEIRA_JUNHO = {
   {cod:'3251', nome:'BELEM EXPRESS',                            valor:  341.06},
 ],
 };
+// Base manual por período de comissão (22→22): totais dos dias ANTES do FATURAMENTO_DIARIO diário
+// Chave = 'YYYY-MM-DD' do início do período (dia 22). FATURAMENTO_DIARIO complementa automaticamente.
+const COMISSAO_BASE = {
+  '2026-05-22': {
+    '093': 0, // Guilherme  — preencher: total 22/05–07/06
+    '094': 0, // Relson
+    '107': 0, // Everaldo
+    '115': 0, // Israel
+    '116': 0, // Natália
+    '117': 0, // Keller
+    '118': 0, // Jorge
+    '119': 0, // Althieres
+    '120': 0, // João
+    '121': 0, // Moab
+    '122': 0, // Ramon
+    '123': 0, // Kelly
+    '124': 0, // Luis Henrique
+    '125': 0, // Cezar
+  },
+};
+
 const FATURAMENTO_DIARIO = {
   '2026-06-08': {
     resumo: [
@@ -4216,9 +4261,11 @@ function selectFormsType(el){
   el.classList.add('active');
   if(window._rotaTimer){clearInterval(window._rotaTimer);window._rotaTimer=null;}
   const _rotaSec=document.getElementById('rota-section');
+  const _commSec=document.getElementById('comissao-section');
   const _formsSec=document.getElementById('forms-content-wrap');
   if(currentFormsType==='rota'){
     if(_rotaSec) _rotaSec.style.display='block';
+    if(_commSec) _commSec.style.display='none';
     if(_formsSec) _formsSec.style.display='none';
     renderRota();
     window._rotaTimer=setInterval(()=>{
@@ -4227,7 +4274,16 @@ function selectFormsType(el){
     },45000);
     return;
   }
+  if(currentFormsType==='comissao'){
+    if(_rotaSec) _rotaSec.style.display='none';
+    if(_commSec) _commSec.style.display='block';
+    if(_formsSec) _formsSec.style.display='none';
+    comissaoOffset=0;
+    renderComissao();
+    return;
+  }
   if(_rotaSec) _rotaSec.style.display='none';
+  if(_commSec) _commSec.style.display='none';
   if(_formsSec) _formsSec.style.display='';
   if(!FORMS_CSV[currentFormsType]){
     document.getElementById('forms-status').textContent='Em breve — planilha ainda não configurada';
@@ -4241,6 +4297,92 @@ function selectFormsType(el){
   else loadFormsData();
 }
 
+
+let comissaoOffset=0;
+
+function comissaoNav(delta){
+  comissaoOffset+=delta;
+  if(comissaoOffset>0) comissaoOffset=0;
+  renderComissao();
+}
+
+function getComissaoPeriodo(offset){
+  const now=new Date();now.setHours(0,0,0,0);
+  let sm=now.getMonth(),sy=now.getFullYear();
+  if(now.getDate()<22){sm--;if(sm<0){sm=11;sy--;}}
+  sm+=offset;
+  while(sm<0){sm+=12;sy--;}
+  while(sm>11){sm-=12;sy++;}
+  const start=new Date(sy,sm,22);
+  const end=new Date(sy,sm+1,22);
+  const fmtS=d=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  const fmtL=d=>fmtS(d)+'/'+d.getFullYear();
+  const startKey=sy+'-'+String(sm+1).padStart(2,'0')+'-22';
+  return{start,end,startKey,label:`${fmtL(start)} – ${fmtL(end)}`};
+}
+
+function renderComissao(){
+  const periodo=getComissaoPeriodo(comissaoOffset);
+  const lblEl=document.getElementById('comissao-period-label');
+  if(lblEl) lblEl.textContent=periodo.label;
+  const nxtBtn=document.getElementById('comissao-next-btn');
+  if(nxtBtn){nxtBtn.style.opacity=comissaoOffset>=0?'.3':'1';nxtBtn.style.pointerEvents=comissaoOffset>=0?'none':'auto';}
+
+  // Acumula totais de FATURAMENTO_DIARIO dentro do período
+  const perVend={};
+  let lastDate=null;
+  Object.entries(FATURAMENTO_DIARIO||{}).forEach(([ds,data])=>{
+    const d=new Date(ds+'T00:00:00');
+    if(d>=periodo.start&&d<periodo.end){
+      if(!lastDate||d>lastDate) lastDate=d;
+      (data.resumo||[]).forEach(r=>{perVend[r.cod]=(perVend[r.cod]||0)+(r.total||0);});
+    }
+  });
+
+  // Soma base manual (período sem dados diários)
+  const base=(COMISSAO_BASE||{})[periodo.startKey]||{};
+  Object.entries(base).forEach(([cod,val])=>{if(val) perVend[cod]=(perVend[cod]||0)+val;});
+
+  const updEl=document.getElementById('comissao-updated');
+  const fmtS=d=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  if(updEl) updEl.textContent=lastDate?`Dados até ${fmtS(lastDate)}`:'Sem dados diários no período';
+
+  const isVendedor=CRM_USER?.role==='VENDEDOR';
+  const myVendId=CRM_USER?.vendId;
+  const grid=document.getElementById('comissao-grid');
+  if(!grid) return;
+
+  const fmtVal=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // Lista de vendedores — vendor só vê o próprio
+  let vends=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length?VENDEDORES_JUNHO:VENDEDORES)
+    .filter(v=>!isVendedor||v.cod===myVendId)
+    .map(v=>({...v,comissaoTotal:(perVend[v.cod]||0)}))
+    .sort((a,b)=>b.comissaoTotal-a.comissaoTotal);
+
+  const maxTotal=vends.reduce((m,v)=>Math.max(m,v.comissaoTotal),1);
+
+  if(!vends.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.4);padding:32px;font-size:14px">Nenhum dado no período</div>`;
+    return;
+  }
+
+  grid.innerHTML=vends.map((v,i)=>{
+    const isMine=v.cod===myVendId;
+    const pct=maxTotal>0?Math.round((v.comissaoTotal/maxTotal)*100):0;
+    const medal=isVendedor?'':i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-size:11px;opacity:.5">${i+1}º</span>`;
+    return `<div class="comissao-card${isMine?' mine':''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div class="comissao-av" style="background:${v.color}22;color:${v.color}">${v.av}</div>
+        <span style="font-size:16px;line-height:1">${medal}</span>
+      </div>
+      <div class="comissao-name">${v.name}${isMine?` <span style="font-size:9px;background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;vertical-align:middle;font-weight:600">VOCÊ</span>`:''}
+      </div>
+      <div class="comissao-total">${fmtVal(v.comissaoTotal)}</div>
+      <div class="comissao-bar-wrap"><div class="comissao-bar" style="width:${pct}%;background:${v.color}"></div></div>
+    </div>`;
+  }).join('');
+}
 
 function rotaWeekNav(delta){
   rotaWeekOffset+=delta;
