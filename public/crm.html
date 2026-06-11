@@ -4621,6 +4621,21 @@ function searchClient(q){
     }
   }
 
+  // Enrich with FATURAMENTO_DIARIO actual sales (independent of carteira)
+  const allVendNames=(typeof VENDEDORES_JUNHO!=='undefined'?VENDEDORES_JUNHO:[]);
+  const _getVN=cod2=>allVendNames.find(v=>v.cod===cod2)?.name||cod2;
+  const _fmtDt=ds=>{const[y,m,d]=ds.split('-');return`${d}/${m}`;};
+  for(const [cod,info] of Object.entries(found)){
+    const sales=[];
+    Object.entries(FATURAMENTO_DIARIO||{}).forEach(([ds,dayData])=>{
+      Object.entries(dayData.carteira||{}).forEach(([vendCod,clts])=>{
+        (clts||[]).forEach(c=>{if(normCod(c.cod)===cod) sales.push({dt:ds,vendCod,valor:c.valor});});
+      });
+    });
+    sales.sort((a,b)=>b.dt.localeCompare(a.dt));
+    info.fdSales=sales;
+  }
+
   // Enrich with ROTAS (maps link + visit days)
   const DIAS_LABELS={segunda:'Segunda',terca:'Terça',quarta:'Quarta',quinta:'Quinta',sexta:'Sexta',sabado:'Sábado'};
   for(const [vcod,dias] of Object.entries(ROTAS)){
@@ -4690,6 +4705,17 @@ function searchClient(q){
       </span>`
     ).join('');
 
+    const fdHtml=info.fdSales&&info.fdSales.length?`
+      <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px">
+        <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:6px">PEDIDOS (PDFs DIÁRIOS)</div>
+        <table style="width:100%;border-collapse:collapse">
+          ${info.fdSales.map(s=>`<tr>
+            <td style="padding:3px 0;font-size:12px;color:rgba(255,255,255,.5);width:44px">${_fmtDt(s.dt)}</td>
+            <td style="padding:3px 0;font-size:12px;color:rgba(255,255,255,.65)">${_getVN(s.vendCod)}</td>
+            <td style="padding:3px 0;text-align:right;font-weight:700;font-size:13px">${fBRL(s.valor)}</td>
+          </tr>`).join('')}
+        </table>
+      </div>`:'';
     return `<div style="border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 16px;margin-bottom:10px">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
         <div>
@@ -4708,6 +4734,7 @@ function searchClient(q){
           <div style="display:flex;flex-wrap:wrap;gap:5px">${rotaChips}</div>
         </div>`:''}
       </div>
+      ${fdHtml}
     </div>`;
   }).join('');
 }
