@@ -6678,13 +6678,15 @@ function renderVendorDashboard(user, vendorKey){
 
   // Histórico mensal — sempre os últimos 3 meses (atual + 2 anteriores)
   const _diaRaw=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===user.vendId);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
+  const _fdJunSum=(()=>{let s=0;Object.entries(FATURAMENTO_DIARIO||{}).forEach(([dt,d])=>{if(!dt.startsWith('2026-06-'))return;const r=(d.resumo||[]).find(x=>x.cod===user.vendId);if(r)s+=r.total;});return s;})();
+  const _junhoTotal=(vRawJunho?.total||0)+_fdJunSum;
   const _MES_SEQ=['marco','abril','maio','junho','diario'];
   const _MES_DATA={
-    marco:  {label:'Março',             abr:vRawAbr?.mar||0,     ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,                  prevLabel:''},
-    abril:  {label:'Abril',             abr:vRawAbr?.abr||0,     ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,   prev:vRawAbr?.mar||0,    prevLabel:'Março'},
-    maio:   {label:'Maio',              abr:vRawMaio?.total||0,  ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0,  prev:vRawAbr?.abr||0,    prevLabel:'Abril'},
-    junho:  {label:'Junho',             abr:vRawJunho?.total||0, ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0, prev:vRawMaio?.total||0, prevLabel:'Maio'},
-    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,       ped:_diaRaw.ped,      cli:_diaRaw.cli,       prev:vRawJunho?.total||0,prevLabel:'Junho'},
+    marco:  {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
+    abril:  {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
+    maio:   {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
+    junho:  {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
+    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_junhoTotal,      prevLabel:'Junho'},
   };
   const _mesIdx=_MES_SEQ.indexOf(CRM_MES);
   const _hist3=_MES_SEQ.slice(Math.max(0,_mesIdx-2),_mesIdx+1);
