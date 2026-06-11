@@ -1190,6 +1190,11 @@ body.mode-mobile .section-header{gap:12px}
         <div id="rota-ts" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500;margin-left:4px"></div>
       </div>
     </div>
+    <div style="margin-bottom:12px">
+      <input id="rota-search" type="text" placeholder="Buscar cliente por nome ou código..." autocomplete="off"
+        oninput="rotaFilter=this.value.trim();renderRota()"
+        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none" />
+    </div>
     <div class="rota-grid" id="rota-grid"></div>
   </div>
 
@@ -4710,6 +4715,7 @@ function searchClient(q){
 let currentRegSeller='GUILHERME';
 let currentFormsType='prospeccoes';
 let rotaWeekOffset=0;
+let rotaFilter='';
 const formsCaches={prospeccoes:[],visitas:[],apresentacoes:[],cadastros:[]};
 
 const FORMS_CSV={
@@ -5553,13 +5559,17 @@ function renderRota(){
     const isToday=dayDate.getTime()===today.getTime();
     const isFuture=dayDate>today;
     const clientes=rota[d.key]||[];
+    const _fq=rotaFilter||'';
+    const _qn=_fq.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const _isNum=/^\d+$/.test(_fq.trim());
+    const clientesFilt=_fq?clientes.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm(c.nome).includes(_qn)):clientes;
     const visited=visitedByDay[d.key];
     const _chkVisit=c=>visited.has(normCod(c.cod))||visited.has(_nm(c.nome));
-    const visitedCount=isFuture?null:clientes.filter(_chkVisit).length;
+    const visitedCount=isFuture?null:clientesFilt.filter(_chkVisit).length;
 
     const dayLabel=`${fmt(dayDate)}`;
 
-    const rows=clientes.map(c=>{
+    const rows=clientesFilt.map(c=>{
       const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
       if(isFuture){
         return `<div class="rota-client">
@@ -5578,10 +5588,10 @@ function renderRota(){
     }).join('');
 
     const hdrRight=isFuture
-      ?`<span class="rota-day-count">${clientes.length} cliente${clientes.length!==1?'s':''}</span>`
-      :clientes.length
-        ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientes.length} visitado${visitedCount!==1?'s':''}</span>`
-        :`<span class="rota-day-count">0 clientes</span>`;
+      ?`<span class="rota-day-count">${clientesFilt.length} cliente${clientesFilt.length!==1?'s':''}</span>`
+      :clientesFilt.length
+        ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientesFilt.length} visitado${visitedCount!==1?'s':''}</span>`
+        :`<span class="rota-day-count">${_fq?'—':'0 clientes'}</span>`;
 
     const borderStyle=isToday?'border-color:rgba(255,255,255,.28)':isFuture?'opacity:.6':'';
     const hdrStyle=isToday?'background:rgba(255,255,255,.11)':'';
@@ -5591,7 +5601,7 @@ function renderRota(){
         <span class="rota-day-name">${d.label}<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,.4);margin-left:5px">${dayLabel}</span>${isToday?'<span class="rota-today-badge">HOJE</span>':''}</span>
         ${hdrRight}
       </div>
-      ${rows||'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>'}
+      ${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste dia</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}
     </div>`;
   }).join('');
 }
