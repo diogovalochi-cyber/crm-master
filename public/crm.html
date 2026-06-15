@@ -6117,8 +6117,8 @@ function renderRota(){
     {key:'quarta', label:'Quarta-feira', dow:3},
     {key:'quinta', label:'Quinta-feira', dow:4},
     {key:'sexta',  label:'Sexta-feira',  dow:5},
-    {key:'sabado', label:'Sábado',       dow:6},
   ];
+  const DIAS_ALL=[...DIAS,{key:'sabado',label:'Sábado',dow:6}];
 
   // Calcula a segunda-feira da semana selecionada
   const today=new Date();
@@ -6174,9 +6174,9 @@ function renderRota(){
 
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 
-  // Constrói um Set de visitados por dia da semana
+  // Constrói um Set de visitados por dia da semana (inclui sábado para capturar visitas no sábado)
   const visitedByDay={};
-  DIAS.forEach(d=>{
+  DIAS_ALL.forEach(d=>{
     const dayDate=new Date(weekMon);
     dayDate.setDate(weekMon.getDate()+(d.dow-1));
     const visits=formsCaches.visitas.filter(r=>{
@@ -6197,15 +6197,44 @@ function renderRota(){
     visitedByDay[d.key]=set;
   });
 
-  grid.innerHTML=DIAS.map(d=>{
+  // Mapa de dia agendado por cliente (cod e nome como chave)
+  const scheduledFor={};
+  DIAS.forEach(d=>{
+    (rota[d.key]||[]).forEach(c=>{
+      const codN=normCod(c.cod);
+      if(!scheduledFor[codN]) scheduledFor[codN]={cliente:c,dia:d.key};
+      const nN=_nm(c.nome);
+      if(nN&&!scheduledFor[nN]) scheduledFor[nN]={cliente:c,dia:d.key};
+    });
+  });
+
+  // Clientes visitados fora do dia agendado na rota
+  const foraDeRota=[];
+  const foraAdded=new Set();
+  DIAS_ALL.forEach(d=>{
+    (visitedByDay[d.key]||new Set()).forEach(id=>{
+      if(foraAdded.has(id)) return;
+      const sched=scheduledFor[id];
+      if(!sched||sched.dia===d.key) return;
+      const cCod=normCod(sched.cliente.cod);
+      const cNome=_nm(sched.cliente.nome);
+      if(foraAdded.has(cCod)||foraAdded.has(cNome)) return;
+      foraAdded.add(cCod);
+      foraAdded.add(cNome);
+      foraDeRota.push({...sched.cliente,rotaDia:sched.dia,visitadoDia:d.key});
+    });
+  });
+
+  const _fq=rotaFilter||'';
+  const _qn=_fq.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const _isNum=/^\d+$/.test(_fq.trim());
+
+  const dayCards=DIAS.map(d=>{
     const dayDate=new Date(weekMon);
     dayDate.setDate(weekMon.getDate()+(d.dow-1));
     const isToday=dayDate.getTime()===today.getTime();
     const isFuture=dayDate>today;
     const clientes=rota[d.key]||[];
-    const _fq=rotaFilter||'';
-    const _qn=_fq.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-    const _isNum=/^\d+$/.test(_fq.trim());
     const clientesFilt=_fq?clientes.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm(c.nome).includes(_qn)):clientes;
     const visited=visitedByDay[d.key];
     const _chkVisit=c=>visited.has(normCod(c.cod))||visited.has(_nm(c.nome));
@@ -6248,6 +6277,25 @@ function renderRota(){
       ${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste dia</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}
     </div>`;
   }).join('');
+
+  const DLAB={segunda:'Seg',terca:'Ter',quarta:'Qua',quinta:'Qui',sexta:'Sex',sabado:'Sáb'};
+  const foraFilt=_fq?foraDeRota.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm(c.nome).includes(_qn)):foraDeRota;
+  const foraRows=foraFilt.map(c=>`<div class="rota-client rota-visited">
+    <span class="rota-status-dot">✓</span>
+    <span class="rota-cod">${c.cod}</span>
+    <span class="rota-nome">${c.nome}</span>
+    <span class="rota-freq" style="color:rgba(251,191,36,.75)">${DLAB[c.rotaDia]||c.rotaDia}→${DLAB[c.visitadoDia]||c.visitadoDia}</span>
+  </div>`).join('');
+
+  const foraCard=`<div class="rota-day" style="border-color:rgba(99,102,241,.35)">
+    <div class="rota-day-hdr" style="background:rgba(99,102,241,.08)">
+      <span class="rota-day-name" style="color:rgba(200,200,255,.85)">Fora de Rota</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${foraFilt.length} cliente${foraFilt.length!==1?'s':''}</span>
+    </div>
+    ${foraRows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste filtro</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Nenhum cliente visitado fora da rota</div>')}
+  </div>`;
+
+  grid.innerHTML=dayCards+foraCard;
 }
 
 function parseCSV(text){
