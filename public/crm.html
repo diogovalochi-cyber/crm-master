@@ -5350,6 +5350,8 @@ const FORMS_CSV={
   prospeccoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRDMGydAtyaDITnAo3H7oqAh4HrB9rGYzsDS8sQUPeLvPPAH4IZri4UpK79d4lvYUGN2Q5n3P2qISVC/pub?gid=1717895650&single=true&output=csv',
   visitas:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRAvnHYU0UxBnJXG3Km54hwzBiUibcFhiH-sn-Xe20nCs1WAR0mn79K_aOnQnTdt3Zi2TkoKAWKdZU0/pub?gid=1717895650&single=true&output=csv',
   visitas2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6y53hqMmLAABn59kAbwt2PNuU6Oq6CryZfMHJOY5n3bM4wW97FkGwoEOHVXgosUXZZHDqQBxYfBra/pub?gid=1717895650&single=true&output=csv',
+  visitas3:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-dIqwzUxGLqLu6aCbs-RKoWffq_y8EyYKUSsBU0r35EyduvK8xcFRtUTOiZMVe4u8lYSnP4yQ5CT7/pub?gid=476597622&single=true&output=csv', // Cezar
+  visitas4:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi85POR4NaXWM1B00oHH_bi-ZUNUX6aZIFJ6rNvMBex6di1U6Kqma215ZKJ79w9OiXUxGNiQSjrBK9/pub?gid=1358041991&single=true&output=csv', // Kelly
   apresentacoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnA4sJPRTHJ__POvLyzGFuEWssd5xSqEYxvlL-4sLCTE8ci6vWtqjz1-E3Hd2d39jOQLdrsqYieb8D/pub?gid=1717895650&single=true&output=csv',
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv'
 };
@@ -5878,6 +5880,17 @@ function _vendMatch(rv,sv){
 // Normaliza COD para comparação: "172.0" → "172", "172" → "172"
 function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!isNaN(n)&&n===Math.floor(n)&&t!=='')?String(Math.floor(n)):t;}
 
+// Detecta o layout da linha de Visitas pelo numero de colunas (mais confiavel que
+// inspecionar o conteudo de um campo, ja que respostas de texto livre podem ser
+// numericas ou nao independente do layout real do formulario):
+// 8 colunas = sem MES (Kelly), 9 = com MES sem EMAIL (Cezar/Althieres/Joao Victor),
+// 10+ = com MES+EMAIL (Israel)
+function _visitasOffsets(r){
+  if(r.length<=8) return {iC:2,iR:3,iO1:5,iO2:6,iF:7};
+  if(r.length>=10) return {iC:4,iR:5,iO1:7,iO2:8,iF:9};
+  return {iC:3,iR:4,iO1:6,iO2:7,iF:8};
+}
+
 const FORMS_CONFIG={
   prospeccoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
@@ -5900,7 +5913,7 @@ const FORMS_CONFIG={
       {h:'Razão Social',w:''},
       {h:'📷',w:'36px'},{h:'Obs. Visita',w:'68px'},{h:'Obs. Pão',w:'65px'}
     ],
-    row:r=>{const isN3=/^\d+$/.test((r[3]||'').trim());const iC=isN3?3:4,iR=isN3?4:5,iO1=isN3?6:7,iO2=isN3?7:8,iF=isN3?8:9;const cod=r[iC]||'';return`<td>${fmtDate(r[1])}</td><td>${cod}</td><td class="td-wrap">${_findRS(r,iR,iR+1)||cod}</td>${fotoCell(r[iF])}${obsCell(r[iO1],'ver','Obs. Visita')}${obsCell(r[iO2],'ver','Obs. Pão')}`}
+    row:r=>{const{iC,iR,iO1,iO2,iF}=_visitasOffsets(r);const cod=r[iC]||'';return`<td>${fmtDate(r[1])}</td><td>${cod}</td><td class="td-wrap">${_findRS(r,iR,iR+1)||cod}</td>${fotoCell(r[iF])}${obsCell(r[iO1],'ver','Obs. Visita')}${obsCell(r[iO2],'ver','Obs. Pão')}`}
   },
   apresentacoes:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS(texto) r[3]=DATA APRES r[4..5]=NOME CLIENTE
@@ -6144,6 +6157,8 @@ function renderRota(){
     formsCaches._visitasTs=_rotaNow;
     const _vUrls=[FORMS_CSV.visitas+'&_t='+_rotaNow];
     if(FORMS_CSV.visitas2) _vUrls.push(FORMS_CSV.visitas2+'&_t='+_rotaNow);
+    if(FORMS_CSV.visitas3) _vUrls.push(FORMS_CSV.visitas3+'&_t='+_rotaNow);
+    if(FORMS_CSV.visitas4) _vUrls.push(FORMS_CSV.visitas4+'&_t='+_rotaNow);
     Promise.allSettled(_vUrls.map(u=>fetch(u).then(r=>r.text())))
       .then(results=>{
         const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
@@ -6172,8 +6187,7 @@ function renderRota(){
     });
     const set=new Set();
     visits.forEach(r=>{
-      const isN3=/^\d+$/.test((r[3]||'').trim());
-      const iC=isN3?3:4,iR=isN3?4:5;
+      const{iC,iR}=_visitasOffsets(r);
       const cod=normCod(r[iC]);
       if(/^\d+$/.test(cod)) set.add(cod);
       const nomeRaw=/^\d+$/.test(cod)?(_findRS(r,iR,iR+1)||''):(r[iC]||'');
@@ -6451,6 +6465,8 @@ async function loadAllFormsCaches(){
       try{
         const urls=[FORMS_CSV[t]];
         if(t==='visitas'&&FORMS_CSV.visitas2) urls.push(FORMS_CSV.visitas2);
+        if(t==='visitas'&&FORMS_CSV.visitas3) urls.push(FORMS_CSV.visitas3);
+        if(t==='visitas'&&FORMS_CSV.visitas4) urls.push(FORMS_CSV.visitas4);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
         if(!texts.length) return;
@@ -6472,6 +6488,8 @@ async function loadFormsData(){
   try{
     const _fUrls=[FORMS_CSV[type]];
     if(type==='visitas'&&FORMS_CSV.visitas2) _fUrls.push(FORMS_CSV.visitas2);
+    if(type==='visitas'&&FORMS_CSV.visitas3) _fUrls.push(FORMS_CSV.visitas3);
+    if(type==='visitas'&&FORMS_CSV.visitas4) _fUrls.push(FORMS_CSV.visitas4);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!texts.length) throw new Error('all_failed');
@@ -7274,6 +7292,8 @@ function applySession(user){
         const timer=setTimeout(()=>ctrl.abort(),8000);
         const _pUrls=[url];
         if(t==='visitas'&&FORMS_CSV.visitas2) _pUrls.push(FORMS_CSV.visitas2);
+        if(t==='visitas'&&FORMS_CSV.visitas3) _pUrls.push(FORMS_CSV.visitas3);
+        if(t==='visitas'&&FORMS_CSV.visitas4) _pUrls.push(FORMS_CSV.visitas4);
         const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
         const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
