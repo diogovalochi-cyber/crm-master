@@ -5348,6 +5348,7 @@ const formsCaches={prospeccoes:[],visitas:[],apresentacoes:[],cadastros:[]};
 
 const FORMS_CSV={
   prospeccoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRDMGydAtyaDITnAo3H7oqAh4HrB9rGYzsDS8sQUPeLvPPAH4IZri4UpK79d4lvYUGN2Q5n3P2qISVC/pub?gid=1717895650&single=true&output=csv',
+  prospeccoes2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRovK6QcGVKY0UVHMatzU7GuZRKhnSNyLvDet-8Y7OeOD3CreVfNUDBJK0uNphff2XvI9jnRdkXdYD9/pub?gid=1717895650&single=true&output=csv', // Cezar + Moab + Ramon + Kelly (combinado)
   visitas:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRAvnHYU0UxBnJXG3Km54hwzBiUibcFhiH-sn-Xe20nCs1WAR0mn79K_aOnQnTdt3Zi2TkoKAWKdZU0/pub?gid=1717895650&single=true&output=csv',
   visitas2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6y53hqMmLAABn59kAbwt2PNuU6Oq6CryZfMHJOY5n3bM4wW97FkGwoEOHVXgosUXZZHDqQBxYfBra/pub?gid=1717895650&single=true&output=csv',
   visitas3:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-dIqwzUxGLqLu6aCbs-RKoWffq_y8EyYKUSsBU0r35EyduvK8xcFRtUTOiZMVe4u8lYSnP4yQ5CT7/pub?gid=476597622&single=true&output=csv', // Cezar
@@ -6475,6 +6476,7 @@ async function loadAllFormsCaches(){
         if(t==='visitas'&&FORMS_CSV.visitas3) urls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) urls.push(FORMS_CSV.visitas4);
         if(t==='visitas'&&FORMS_CSV.visitas5) urls.push(FORMS_CSV.visitas5);
+        if(t==='prospeccoes'&&FORMS_CSV.prospeccoes2) urls.push(FORMS_CSV.prospeccoes2);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
         if(!texts.length) return;
@@ -6499,6 +6501,7 @@ async function loadFormsData(){
     if(type==='visitas'&&FORMS_CSV.visitas3) _fUrls.push(FORMS_CSV.visitas3);
     if(type==='visitas'&&FORMS_CSV.visitas4) _fUrls.push(FORMS_CSV.visitas4);
     if(type==='visitas'&&FORMS_CSV.visitas5) _fUrls.push(FORMS_CSV.visitas5);
+    if(type==='prospeccoes'&&FORMS_CSV.prospeccoes2) _fUrls.push(FORMS_CSV.prospeccoes2);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!texts.length) throw new Error('all_failed');
@@ -7304,6 +7307,7 @@ function applySession(user){
         if(t==='visitas'&&FORMS_CSV.visitas3) _pUrls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) _pUrls.push(FORMS_CSV.visitas4);
         if(t==='visitas'&&FORMS_CSV.visitas5) _pUrls.push(FORMS_CSV.visitas5);
+        if(t==='prospeccoes'&&FORMS_CSV.prospeccoes2) _pUrls.push(FORMS_CSV.prospeccoes2);
         const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
         const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
