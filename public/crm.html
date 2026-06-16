@@ -5880,14 +5880,19 @@ function _vendMatch(rv,sv){
 // Normaliza COD para comparação: "172.0" → "172", "172" → "172"
 function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!isNaN(n)&&n===Math.floor(n)&&t!=='')?String(Math.floor(n)):t;}
 
-// Detecta o layout da linha de Visitas pelo numero de colunas (mais confiavel que
-// inspecionar o conteudo de um campo, ja que respostas de texto livre podem ser
-// numericas ou nao independente do layout real do formulario):
-// 8 colunas = sem MES (Kelly), 9 = com MES sem EMAIL (Cezar/Althieres/Joao Victor),
-// 10+ = com MES+EMAIL (Israel)
+// Detecta o layout da linha de Visitas pelos formatos reais já confirmados nos dados:
+// <=8 colunas: sem MES (Kelly)
+// 11 colunas: MES + coluna extra duplicada "Coluna 4" (Guilherme/Relson/Everaldo/Jorge/Keller/Natália)
+// 10 colunas: com EMAIL (Israel, r[3] tem "@") ou sem EMAIL com 1 coluna vazia sobrando no
+//             final (Althieres/João Victor/Moab/Ramon/Luiz)
+// 9 colunas (ou outro): MES sem EMAIL, sem sobra (Cezar)
 function _visitasOffsets(r){
   if(r.length<=8) return {iC:2,iR:3,iO1:5,iO2:6,iF:7};
-  if(r.length>=10) return {iC:4,iR:5,iO1:7,iO2:8,iF:9};
+  if(r.length===11) return {iC:4,iR:5,iO1:7,iO2:8,iF:9};
+  if(r.length===10){
+    const temEmail=/@/.test(r[3]||'')||/@/.test(r[4]||'');
+    return temEmail?{iC:4,iR:5,iO1:7,iO2:8,iF:9}:{iC:3,iR:4,iO1:6,iO2:7,iF:8};
+  }
   return {iC:3,iR:4,iO1:6,iO2:7,iF:8};
 }
 
