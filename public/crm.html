@@ -5352,6 +5352,7 @@ const FORMS_CSV={
   visitas2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6y53hqMmLAABn59kAbwt2PNuU6Oq6CryZfMHJOY5n3bM4wW97FkGwoEOHVXgosUXZZHDqQBxYfBra/pub?gid=1717895650&single=true&output=csv',
   visitas3:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-dIqwzUxGLqLu6aCbs-RKoWffq_y8EyYKUSsBU0r35EyduvK8xcFRtUTOiZMVe4u8lYSnP4yQ5CT7/pub?gid=476597622&single=true&output=csv', // Cezar
   visitas4:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi85POR4NaXWM1B00oHH_bi-ZUNUX6aZIFJ6rNvMBex6di1U6Kqma215ZKJ79w9OiXUxGNiQSjrBK9/pub?gid=1358041991&single=true&output=csv', // Kelly
+  visitas5:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRhAnfCfz9vfD6L-rmOJzrRiw2ZrXFqz1CW7lc_P4KaFqn9D_32kW5_RCMDt-PNTU30ru2M9t0-0YwD/pub?gid=1717895650&single=true&output=csv', // Moab + Ramon (combinado)
   apresentacoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnA4sJPRTHJ__POvLyzGFuEWssd5xSqEYxvlL-4sLCTE8ci6vWtqjz1-E3Hd2d39jOQLdrsqYieb8D/pub?gid=1717895650&single=true&output=csv',
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv'
 };
@@ -6164,6 +6165,7 @@ function renderRota(){
     if(FORMS_CSV.visitas2) _vUrls.push(FORMS_CSV.visitas2+'&_t='+_rotaNow);
     if(FORMS_CSV.visitas3) _vUrls.push(FORMS_CSV.visitas3+'&_t='+_rotaNow);
     if(FORMS_CSV.visitas4) _vUrls.push(FORMS_CSV.visitas4+'&_t='+_rotaNow);
+    if(FORMS_CSV.visitas5) _vUrls.push(FORMS_CSV.visitas5+'&_t='+_rotaNow);
     Promise.allSettled(_vUrls.map(u=>fetch(u).then(r=>r.text())))
       .then(results=>{
         const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
@@ -6472,6 +6474,7 @@ async function loadAllFormsCaches(){
         if(t==='visitas'&&FORMS_CSV.visitas2) urls.push(FORMS_CSV.visitas2);
         if(t==='visitas'&&FORMS_CSV.visitas3) urls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) urls.push(FORMS_CSV.visitas4);
+        if(t==='visitas'&&FORMS_CSV.visitas5) urls.push(FORMS_CSV.visitas5);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
         if(!texts.length) return;
@@ -6495,6 +6498,7 @@ async function loadFormsData(){
     if(type==='visitas'&&FORMS_CSV.visitas2) _fUrls.push(FORMS_CSV.visitas2);
     if(type==='visitas'&&FORMS_CSV.visitas3) _fUrls.push(FORMS_CSV.visitas3);
     if(type==='visitas'&&FORMS_CSV.visitas4) _fUrls.push(FORMS_CSV.visitas4);
+    if(type==='visitas'&&FORMS_CSV.visitas5) _fUrls.push(FORMS_CSV.visitas5);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!texts.length) throw new Error('all_failed');
@@ -7299,6 +7303,7 @@ function applySession(user){
         if(t==='visitas'&&FORMS_CSV.visitas2) _pUrls.push(FORMS_CSV.visitas2);
         if(t==='visitas'&&FORMS_CSV.visitas3) _pUrls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) _pUrls.push(FORMS_CSV.visitas4);
+        if(t==='visitas'&&FORMS_CSV.visitas5) _pUrls.push(FORMS_CSV.visitas5);
         const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
         const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
