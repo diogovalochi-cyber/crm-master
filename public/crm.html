@@ -5031,27 +5031,11 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-  const base={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
-  const mesPrefix={marco:'2026-03',abril:'2026-04',maio:'2026-05',junho:'2026-06'}[mes];
-  let _raw=base;
-  if(mesPrefix&&FATURAMENTO_DIARIO){
-    const fdDays=Object.entries(FATURAMENTO_DIARIO).filter(([d])=>d.startsWith(mesPrefix));
-    if(fdDays.length){
-      const merged={};
-      Object.entries(base).forEach(([vc,cl])=>{merged[vc]=new Map(cl.map(c=>[c.cod,{...c}]));});
-      fdDays.forEach(([,data])=>{
-        Object.entries(data.carteira||{}).forEach(([vc,cl])=>{
-          if(!merged[vc]) merged[vc]=new Map();
-          cl.forEach(c=>{
-            if(merged[vc].has(c.cod)) merged[vc].get(c.cod).valor+=c.valor;
-            else merged[vc].set(c.cod,{...c});
-          });
-        });
-      });
-      _raw={};
-      Object.entries(merged).forEach(([vc,map])=>{_raw[vc]=[...map.values()].sort((a,b)=>b.valor-a.valor);});
-    }
-  }
+  // CARTEIRA_MARCO/ABRIL/MAIO/JUNHO já são o total acumulado completo do mês
+  // (atualizado manualmente a cada PDF recebido) — não somar FATURAMENTO_DIARIO
+  // por cima aqui, senão dias já incluídos no total seriam contados em dobro.
+  // FATURAMENTO_DIARIO continua sendo usado isoladamente em renderComissao().
+  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
   if(!CRM_USER?.team) return _raw;
   const _f={};CRM_USER.team.forEach(cod=>{if(_raw[cod])_f[cod]=_raw[cod];});return _f;
 }
