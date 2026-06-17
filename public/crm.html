@@ -5215,7 +5215,11 @@ function getVendedoresForMes(mes){
     }).sort((a,b)=>b.abr-a.abr);
   }
   if(mes==='junho'){
-    return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v, abr:v.total, mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
+    const _acc={},_cliA={},_pedA={};
+    Object.values(FATURAMENTO_DIARIO||{}).forEach(day=>{
+      day.resumo.forEach(r=>{_acc[r.cod]=(_acc[r.cod]||0)+r.total;_cliA[r.cod]=(_cliA[r.cod]||0)+r.cli;_pedA[r.cod]=(_pedA[r.cod]||0)+r.ped;});
+    });
+    return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v,abr:_acc[v.cod]||0,mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0,cli:_cliA[v.cod]||0,ped:_pedA[v.cod]||0}));
   }
   if(mes==='maio')  return VENDEDORES_MAIO.filter(_tf).map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
   if(mes==='marco') return VENDEDORES.filter(_tf).map(v=>({...v, abr:v.mar, mar:0}));
@@ -5223,11 +5227,19 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-  // CARTEIRA_MARCO/ABRIL/MAIO/JUNHO já são o total acumulado completo do mês
-  // (atualizado manualmente a cada PDF recebido) — não somar FATURAMENTO_DIARIO
-  // por cima aqui, senão dias já incluídos no total seriam contados em dobro.
-  // FATURAMENTO_DIARIO continua sendo usado isoladamente em renderComissao().
-  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO}[mes]||{};
+  if(mes==='junho'){
+    // Junho: sempre acumulado real dos PDFs diários recebidos
+    const _acc={};
+    Object.values(FATURAMENTO_DIARIO||{}).forEach(day=>{
+      Object.entries(day.carteira||{}).forEach(([vcod,clts])=>{
+        if(!_acc[vcod]) _acc[vcod]=[];
+        clts.forEach(c=>{const ex=_acc[vcod].find(x=>x.cod===c.cod);if(ex)ex.valor+=c.valor;else _acc[vcod].push({cod:c.cod,nome:c.nome,valor:c.valor});});
+      });
+    });
+    if(!CRM_USER?.team) return _acc;
+    const _f={};CRM_USER.team.forEach(cod=>{if(_acc[cod])_f[cod]=_acc[cod];});return _f;
+  }
+  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO}[mes]||{};
   if(!CRM_USER?.team) return _raw;
   const _f={};CRM_USER.team.forEach(cod=>{if(_raw[cod])_f[cod]=_raw[cod];});return _f;
 }
@@ -5471,7 +5483,9 @@ function searchClient(q){
 
     let billingRows='';
     if(info.hcBilling){
-      billingRows=info.hcBilling.map((val,i)=>`<tr>
+      const _junFD=(info.fdSales||[]).filter(s=>s.dt.startsWith('2026-06')).reduce((s,x)=>s+x.valor,0);
+      const _hcV=info.hcBilling.map((v,i)=>i===5&&_junFD>0?_junFD:v);
+      billingRows=_hcV.map((val,i)=>`<tr>
         <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:48px">${MES_LABELS[i]}</td>
         <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${val>0?fBRL(val):'<span style="color:rgba(255,255,255,.2)">—</span>'}</td>
       </tr>`).join('');
