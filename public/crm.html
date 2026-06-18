@@ -7019,6 +7019,21 @@ function renderRota(){
   const foraSetCod=new Set(foraDeRota.map(c=>normCod(c.cod)));
   const foraSetNome=new Set(foraDeRota.map(c=>_nm(c.nome)));
 
+  // Contagem de visitas no mês corrente por cliente (cod → N)
+  const _now=new Date();
+  const _curMes=_now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0');
+  const _mesCount={};
+  formsCaches.visitas.forEach(r=>{
+    if(!_vendMatch(_nm(r[0]),currentRegSeller)) return;
+    const dt=toDate(r[1]);if(!dt) return;
+    if((dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))!==_curMes) return;
+    const{iC,iR}=_visitasOffsets(r);
+    const cd=normCod(r[iC]);
+    if(/^\d+$/.test(cd)){_mesCount[cd]=(_mesCount[cd]||0)+1;}
+    const nn=_nm(_findRS(r,iR,iR+1)||'');
+    if(nn&&nn.length>=3){_mesCount[nn]=(_mesCount[nn]||0)+1;}
+  });
+
   // Refaz dayCards com ⚠ amarelo nos clientes que estão fora de rota
   const dayCards=DIAS.map(d=>{
     const dayDate=new Date(weekMon);
@@ -7037,10 +7052,12 @@ function renderRota(){
       const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
       const isFora=foraSetCod.has(normCod(c.cod))||foraSetNome.has(_nm(c.nome));
       const foraIcon=isFora?`<span style="color:#FCD34D;font-size:10px;font-weight:800;margin-left:4px" title="Visitado em outro dia">⚠</span>`:'';
+      const _mc=_mesCount[normCod(c.cod)]||_mesCount[_nm(c.nome)]||0;
+      const _mb=_mc>0?`<span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);border-radius:3px;padding:0 4px;margin-left:3px;letter-spacing:.3px">${_mc}×</span>`:'';
       if(isFuture){
         return `<div class="rota-client">
           <span class="rota-cod">${c.cod}</span>
-          <span class="rota-nome">${c.nome}</span>${pin}${foraIcon}
+          <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
           ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
         </div>`;
       }
@@ -7048,7 +7065,7 @@ function renderRota(){
       return `<div class="rota-client ${v?'rota-visited':'rota-pending'}">
         <span class="rota-status-dot">${v?'✓':'○'}</span>
         <span class="rota-cod">${c.cod}</span>
-        <span class="rota-nome">${c.nome}</span>${pin}${foraIcon}
+        <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
       </div>`;
     }).join('');
