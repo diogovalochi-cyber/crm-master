@@ -991,7 +991,6 @@ body.mode-mobile .section-header{gap:12px}
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('comparativo',this)">Comparativo</button>
     <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
-    <button class="subtab" onclick="showSubtab('comissao',this)">Comissão</button>
     <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)" style="display:none">Pesquisa</button>
   </div>
 
@@ -1104,17 +1103,6 @@ body.mode-mobile .section-header{gap:12px}
   </div>
 
   <!-- SUB: Comissão 22→22 -->
-  <div id="subtab-comissao" style="display:none;margin-top:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="comissaoNav(-1)" title="Período anterior" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">‹</button>
-        <span id="comissao-period-label" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75);white-space:nowrap"></span>
-        <button id="comissao-next-btn" onclick="comissaoNav(1)" title="Próximo período" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:8px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">›</button>
-      </div>
-      <span id="comissao-updated" style="font-size:11px;color:rgba(255,255,255,.3);font-weight:500"></span>
-    </div>
-    <div class="comissao-grid" id="comissao-grid"></div>
-  </div>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -6761,6 +6749,9 @@ function rotaWeekNav(delta){
   renderRota();
 }
 
+function getRotaObs(wk,cod,day){try{return JSON.parse(localStorage.getItem('rotaObs_'+wk+'_'+cod+'_'+day)||'[]');}catch{return[];}}
+function setRotaObs(wk,cod,day,idx,val){const obs=getRotaObs(wk,cod,day);obs[idx]=val;while(obs.length&&!obs[obs.length-1])obs.pop();if(!obs.length)localStorage.removeItem('rotaObs_'+wk+'_'+cod+'_'+day);else localStorage.setItem('rotaObs_'+wk+'_'+cod+'_'+day,JSON.stringify(obs));}
+
 function renderRota(){
   const DIAS=[
     {key:'segunda',label:'Segunda-feira',dow:1},
@@ -6780,6 +6771,7 @@ function renderRota(){
   weekMon.setDate(today.getDate()-daysToMon+(rotaWeekOffset*7));
   const weekSat=new Date(weekMon);
   weekSat.setDate(weekMon.getDate()+5);
+  const weekMonStr=weekMon.getFullYear()+'-'+String(weekMon.getMonth()+1).padStart(2,'0')+'-'+String(weekMon.getDate()).padStart(2,'0');
 
   // Atualiza label da semana e botão próxima
   const fmt=d=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
@@ -6929,12 +6921,30 @@ function renderRota(){
     const borderStyle=isToday?'border-color:rgba(255,255,255,.28)':isFuture?'opacity:.6':'';
     const hdrStyle=isToday?'background:rgba(255,255,255,.11)':'';
 
+    const _obs=getRotaObs(weekMonStr,cod,d.key);
+    const _ob0=(_obs[0]||'').replace(/"/g,'&quot;');
+    const _ob1=(_obs[1]||'').replace(/"/g,'&quot;');
+    const _obShow2=!!(_obs[0]||_obs[1]);
+    const obsSection=`<div style="border-top:1px solid rgba(255,255,255,.07);margin-top:2px;padding:5px 8px 6px">
+      <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.6px;margin-bottom:4px">OBS</div>
+      <input type="text" maxlength="120" placeholder="Observação…" value="${_ob0}"
+        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 8px;color:rgba(255,255,255,.85);font-size:11px;outline:none;${_obShow2?'margin-bottom:4px':''}"
+        oninput="const w=document.getElementById('rota-obs2-${d.key}');if(w)w.style.display=this.value?'block':'none'"
+        onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',0,this.value)">
+      <div id="rota-obs2-${d.key}" style="display:${_obShow2?'block':'none'}">
+        <input type="text" maxlength="120" placeholder="Observação 2…" value="${_ob1}"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 8px;color:rgba(255,255,255,.85);font-size:11px;outline:none"
+          onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',1,this.value)">
+      </div>
+    </div>`;
+
     return `<div class="rota-day" style="${borderStyle}">
       <div class="rota-day-hdr" style="${hdrStyle}">
         <span class="rota-day-name">${d.label}<span style="font-size:10px;font-weight:500;color:rgba(255,255,255,.4);margin-left:5px">${dayLabel}</span>${isToday?'<span class="rota-today-badge">HOJE</span>':''}</span>
         ${hdrRight}
       </div>
       ${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste dia</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}
+      ${obsSection}
     </div>`;
   }).join('');
 
