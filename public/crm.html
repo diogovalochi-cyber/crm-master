@@ -940,7 +940,7 @@ body.mode-mobile .section-header{gap:12px}
           <option value="abril">Abril</option>
           <option value="maio">Maio</option>
           <option value="junho">Junho</option>
-          <option value="diario">Por Dia</option>
+          
         </select>
         <div class="dia-nav-wrap" style="display:none;align-items:center;gap:6px">
           <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
@@ -1079,7 +1079,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril" selected>Abril</option>
         <option value="maio">Maio</option>
         <option value="junho">Junho</option>
-        <option value="diario">Por Dia</option>
+        
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-b" onchange="setVdMes()">
@@ -1087,7 +1087,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril">Abril</option>
         <option value="maio" selected>Maio</option>
         <option value="junho">Junho</option>
-        <option value="diario">Por Dia</option>
+        
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-c" onchange="setVdMes()">
@@ -1095,7 +1095,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril">Abril</option>
         <option value="maio">Maio</option>
         <option value="junho" selected>Junho</option>
-        <option value="diario">Por Dia</option>
+        
       </select>
     </div>
     <div class="pill-row" id="vendor-pills"></div>
@@ -8088,7 +8088,7 @@ function renderVendorDashboard(user, vendorKey){
   // Histórico mensal — sempre os últimos 3 meses (atual + 2 anteriores)
   const _diaRaw=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===user.vendId);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
   const _junhoTotal=vRawJunho?.total||0;
-  const _MES_SEQ=['marco','abril','maio','junho','diario'];
+  const _MES_SEQ=['marco','abril','maio','junho'];
   const _MES_DATA={
     marco:  {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
     abril:  {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
@@ -8120,7 +8120,7 @@ function renderVendorDashboard(user, vendorKey){
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <select class="mes-select" onchange="setMes(this.value)">
-          ${['marco','abril','maio','junho','diario'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
+          ${['marco','abril','maio','junho'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
         </select>
         <div class="dia-nav-wrap" style="display:${CRM_MES==='diario'?'flex':'none'};align-items:center;gap:6px">
           <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
