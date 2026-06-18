@@ -7139,6 +7139,7 @@ async function loadAllFormsCaches(){
         if(t==='visitas'&&FORMS_CSV.visitas4) urls.push(FORMS_CSV.visitas4);
         if(t==='visitas'&&FORMS_CSV.visitas5) urls.push(FORMS_CSV.visitas5);
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes2) urls.push(FORMS_CSV.prospeccoes2);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes2) urls.push(FORMS_CSV.apresentacoes2);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
         if(!texts.length) return;
@@ -7164,6 +7165,7 @@ async function loadFormsData(){
     if(type==='visitas'&&FORMS_CSV.visitas4) _fUrls.push(FORMS_CSV.visitas4);
     if(type==='visitas'&&FORMS_CSV.visitas5) _fUrls.push(FORMS_CSV.visitas5);
     if(type==='prospeccoes'&&FORMS_CSV.prospeccoes2) _fUrls.push(FORMS_CSV.prospeccoes2);
+    if(type==='apresentacoes'&&FORMS_CSV.apresentacoes2) _fUrls.push(FORMS_CSV.apresentacoes2);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!texts.length) throw new Error('all_failed');
