@@ -1220,72 +1220,64 @@ body.mode-mobile .section-header{gap:12px}
 <!-- ══════════════════════════════════════════ -->
 <div class="tab-content" id="tab-agenda">
   <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-      <div>
-        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Agenda Técnica</h2>
-        <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Treinamentos, inaugurações e visitas técnicas</p>
-      </div>
-      <button onclick="abrirAgenda(null)" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Nova Visita</button>
+    <div style="margin-bottom:16px">
+      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Agenda Técnica</h2>
+      <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Treinamentos, inaugurações e visitas técnicas</p>
     </div>
-    <div id="agenda-lista"></div>
+    <!-- Tabs por técnico -->
+    <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+    <!-- Navegação de semana -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">← Anterior</button>
+      <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
+      <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">Próxima →</button>
+      <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+    </div>
+    <!-- Grade de slots -->
+    <div id="ag-slots"></div>
   </div>
 </div>
 
 <!-- Modal Agenda -->
 <div id="modal-agenda" onclick="if(event.target===this)fecharAgenda()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
-    <h3 id="modal-agenda-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 22px">Nova Visita</h3>
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:460px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <div style="margin-bottom:20px">
+      <h3 id="ag-modal-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 5px">Adicionar Visita</h3>
+      <div id="ag-modal-info" style="font-size:12px;color:rgba(255,255,255,.4)"></div>
+    </div>
     <div style="display:grid;gap:14px">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
-          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">DATA INÍCIO *</label>
-          <input id="ag-d1" type="date" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
-        </div>
-        <div>
-          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">DATA FIM</label>
-          <input id="ag-d2" type="date" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
-        </div>
-      </div>
       <div>
         <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">CLIENTE *</label>
-        <input id="ag-cli" type="text" placeholder="Nome ou código" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        <input id="ag-cli" type="text" placeholder="Nome do cliente" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
           <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TIPO *</label>
           <select id="ag-tipo" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
             <option>TREINAMENTO</option>
-            <option>INAUGURAÇÃO</option>
             <option>APRESENTAÇÃO</option>
+            <option>INAUGURAÇÃO</option>
             <option>REAPRESENTAÇÃO</option>
             <option>MANUTENÇÃO</option>
           </select>
         </div>
         <div>
-          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TÉCNICO *</label>
-          <select id="ag-tec" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
-            <option>LEONARDO</option>
-            <option>ROGÉRIO</option>
-            <option>JUAN</option>
-            <option>MATHEUS</option>
-            <option>MARCELO</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
           <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">VENDEDOR</label>
-          <input id="ag-vend" type="text" placeholder="Nome do vendedor" list="ag-vend-dl" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+          <input id="ag-vend" type="text" placeholder="Quem marcou" list="ag-vend-dl"
+            style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
           <datalist id="ag-vend-dl"></datalist>
-        </div>
-        <div>
-          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">LOCALIZAÇÃO</label>
-          <input id="ag-loc" type="text" placeholder="Cidade / região" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
         </div>
       </div>
       <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">REGIÃO / LOCALIZAÇÃO</label>
+        <input id="ag-loc" type="text" placeholder="Ex: COTIA, OSASCO, ZONA SUL..."
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div>
         <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">OBSERVAÇÕES</label>
-        <input id="ag-nota" type="text" placeholder="Notas (opcional)" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        <input id="ag-nota" type="text" placeholder="Notas (opcional)"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
@@ -8112,7 +8104,7 @@ function renderVendorDetail(name){
 // ── CREDENCIAIS OFICIAIS ─────────────────────────────────────────
 const CREDS=[
   // Gestão
-  {user:'diogo',    pass:'diogo',  role:'ANALISTA',   name:'Diogo',     av:'DI', fullAccess:true},
+  {user:'diogo',    pass:'Diogo10@',  role:'ANALISTA',   name:'Diogo',     av:'DI', fullAccess:true},
   {user:'rafael',   pass:'Valochi@24', role:'ANALISTA', name:'Rafael',    av:'RF', fullAccess:true},
   {user:'carlos',   pass:'carlos', role:'GERENTE',    name:'Carlos',    av:'CA', fullAccess:true},
   {user:'lazaro',   pass:'lazaro',  role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true, team:['093','116','117','118','120','121','122']},
@@ -8541,107 +8533,134 @@ document.addEventListener('keydown',e=>{
 })();
 
 /* ── AGENDA TÉCNICA ────────────────────────── */
-const _DIAS_PT=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-const _TIPO_COR={TREINAMENTO:'#3B82F6',INAUGURAÇÃO:'#10B981',APRESENTAÇÃO:'#F59E0B',REAPRESENTAÇÃO:'#8B5CF6',MANUTENÇÃO:'#EF4444'};
+const _AG_TECS=['Caio','Juan','Leandro','Leonardo','Matheus','Rodrigo','Rogério'];
+const _AG_DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const _AG_TIPO_COR={TREINAMENTO:'#3B82F6',APRESENTAÇÃO:'#F59E0B',INAUGURAÇÃO:'#10B981',REAPRESENTAÇÃO:'#8B5CF6',MANUTENÇÃO:'#EF4444'};
+const _AG_MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+let _agTecAtivo=_AG_TECS[3]; // Leonardo default
+let _agWeekOff=0;
+let _agSlotAtivo=null; // {d1,d2,tec} slot being edited
+let _agEditId=null;
 
 function _loadAg(){try{return JSON.parse(localStorage.getItem('crm_agenda')||'[]');}catch(e){return[];}}
 function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));}
 
-let _agEditId=null;
-
-function _fmtAgDate(iso){
-  if(!iso) return '';
-  const[y,m,d]=iso.split('-');return`${d}/${m}`;
+function _agIso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function _agFmtDate(iso){if(!iso)return'';const[,m,d]=iso.split('-');return`${d}/${m}`;}
+function _agMonday(off=0){
+  const d=new Date();d.setHours(0,0,0,0);
+  const dow=d.getDay();
+  d.setDate(d.getDate()-(dow===0?6:dow-1)+off*7);
+  return d;
 }
-function _diaSemana(iso){
-  if(!iso) return '';
-  return _DIAS_PT[new Date(iso+'T12:00').getDay()];
-}
-function _dataRangeStr(e){
-  const d1=_fmtAgDate(e.d1),d2=_fmtAgDate(e.d2);
-  return d2&&d2!==d1?`${d1} – ${d2}`:d1;
-}
-function _diasStr(e){
-  const s=_diaSemana(e.d1),f=_diaSemana(e.d2);
-  return f&&f!==s?`${s}/${f}`:s;
+function _agSlots(mon){
+  const s=[];
+  for(let i=0;i<5;i++){
+    const a=new Date(mon);a.setDate(mon.getDate()+i);
+    const b=new Date(mon);b.setDate(mon.getDate()+i+1);
+    s.push({d1:_agIso(a),d2:_agIso(b)});
+  }
+  return s;
 }
 
 function renderAgenda(){
-  const el=document.getElementById('agenda-lista');
-  if(!el) return;
-  const list=_loadAg().sort((a,b)=>a.d1>b.d1?1:a.d1<b.d1?-1:0);
-  if(!list.length){
-    el.innerHTML='<div style="text-align:center;padding:48px;color:rgba(255,255,255,.28);font-size:14px">Nenhuma visita cadastrada</div>';
-    return;
+  // Tabs por técnico
+  const tabsEl=document.getElementById('ag-tec-tabs');
+  if(tabsEl){
+    tabsEl.innerHTML=_AG_TECS.map(t=>`<button onclick="agSetTec('${t}')" id="ag-tab-${t}"
+      style="background:${t===_agTecAtivo?'#7C3AED':'rgba(255,255,255,.07)'};color:${t===_agTecAtivo?'#fff':'rgba(255,255,255,.55)'};border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:${t===_agTecAtivo?'700':'500'};cursor:pointer;transition:all .15s">${t}</button>`).join('');
   }
-  const rows=list.map(e=>{
-    const cor=_TIPO_COR[e.tipo]||'#6B7280';
-    return`<tr style="border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
-      <td style="padding:10px 14px;font-size:13px;color:#fff;white-space:nowrap">${_dataRangeStr(e)}</td>
-      <td style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap">${_diasStr(e)}</td>
-      <td style="padding:10px 14px;font-size:13px;color:#fff;font-weight:500">${e.cli}</td>
-      <td style="padding:10px 8px"><span style="background:${cor}22;color:${cor};border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap">${e.tipo}</span></td>
-      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.75)">${e.tec}</td>
-      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.55)">${e.vend||'—'}</td>
-      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.45)">${e.loc||'—'}</td>
-      <td style="padding:10px 8px;white-space:nowrap;text-align:right">
-        <button onclick="abrirAgenda('${e.id}')" style="background:rgba(255,255,255,.07);border:none;border-radius:5px;color:rgba(255,255,255,.55);padding:4px 10px;font-size:11px;cursor:pointer;margin-right:4px">Editar</button>
-        <button onclick="excluirAgenda('${e.id}')" style="background:rgba(239,68,68,.12);border:none;border-radius:5px;color:#F87171;padding:4px 10px;font-size:11px;cursor:pointer">×</button>
-      </td>
-    </tr>`;
+  // Semana label
+  const mon=_agMonday(_agWeekOff);
+  const sat=new Date(mon);sat.setDate(mon.getDate()+5);
+  const lbl=document.getElementById('ag-semana-lbl');
+  if(lbl) lbl.textContent=`${_agFmtDate(_agIso(mon))} – ${_agFmtDate(_agIso(sat))}`;
+  // Slots
+  const slots=_agSlots(mon);
+  const list=_loadAg();
+  const slotEl=document.getElementById('ag-slots');
+  if(!slotEl) return;
+  const rows=slots.map(sl=>{
+    const dayA=new Date(sl.d1+'T12:00');const dayB=new Date(sl.d2+'T12:00');
+    const diaLabel=`${_AG_DIAS_PT[dayA.getDay()]}/${_AG_DIAS_PT[dayB.getDay()]}`;
+    const dataLabel=`${_agFmtDate(sl.d1)} – ${_agFmtDate(sl.d2)}`;
+    const entry=list.find(e=>e.tec===_agTecAtivo&&e.d1===sl.d1);
+    let content;
+    if(entry){
+      const cor=_AG_TIPO_COR[entry.tipo]||'#6B7280';
+      content=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${entry.cli}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+            <span style="background:${cor}22;color:${cor};border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700">${entry.tipo}</span>
+            ${entry.vend?`<span style="font-size:11px;color:rgba(255,255,255,.45)">${entry.vend}</span>`:''}
+            ${entry.loc?`<span style="font-size:11px;color:rgba(255,255,255,.35)">📍 ${entry.loc}</span>`:''}
+          </div>
+          ${entry.nota?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;font-style:italic">${entry.nota}</div>`:''}
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar"
+            style="background:rgba(255,255,255,.07);border:none;border-radius:5px;color:rgba(255,255,255,.5);padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
+          <button onclick="excluirAgenda('${entry.id}')"
+            style="background:rgba(239,68,68,.1);border:none;border-radius:5px;color:#F87171;padding:4px 8px;font-size:11px;cursor:pointer">×</button>
+        </div>
+      </div>`;
+    } else {
+      content=`<button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}',null)"
+        style="background:none;border:1px dashed rgba(255,255,255,.12);border-radius:7px;color:rgba(255,255,255,.3);padding:6px 16px;font-size:12px;cursor:pointer;width:100%;transition:all .15s"
+        onmouseover="this.style.borderColor='rgba(124,58,237,.5)';this.style.color='rgba(124,58,237,.8)'"
+        onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.3)'">+ Adicionar</button>`;
+    }
+    return`<div style="display:grid;grid-template-columns:100px 1fr;gap:0;margin-bottom:2px;border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="background:rgba(255,255,255,.04);padding:12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:2px">${diaLabel}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3)">${dataLabel}</div>
+      </div>
+      <div style="padding:12px;background:rgba(255,255,255,.02)">${content}</div>
+    </div>`;
   }).join('');
-  el.innerHTML=`<div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.07)">
-    <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,.015)">
-      <thead><tr style="background:rgba(124,58,237,.12)">
-        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Data</th>
-        <th style="padding:10px 8px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Dias</th>
-        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Cliente</th>
-        <th style="padding:10px 8px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Tipo</th>
-        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Técnico</th>
-        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Vendedor</th>
-        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Local</th>
-        <th style="padding:10px 8px"></th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
+  slotEl.innerHTML=rows||'<div style="color:rgba(255,255,255,.3);text-align:center;padding:24px">Sem slots para esta semana</div>';
 }
 
-function abrirAgenda(id){
-  _agEditId=id;
+function agSetTec(tec){_agTecAtivo=tec;renderAgenda();}
+function agNavSemana(dir,reset){if(reset)_agWeekOff=0;else _agWeekOff+=dir;renderAgenda();}
+
+function abrirAgenda(legacy,d1,d2,editId){
+  _agSlotAtivo={d1,d2};_agEditId=editId||null;
   const m=document.getElementById('modal-agenda');
   m.style.display='flex';
-  document.getElementById('modal-agenda-title').textContent=id?'Editar Visita':'Nova Visita';
+  const dayA=new Date(d1+'T12:00');const dayB=new Date(d2+'T12:00');
+  document.getElementById('ag-modal-title').textContent=editId?'Editar Visita':'Adicionar Visita';
+  document.getElementById('ag-modal-info').textContent=
+    `${_agTecAtivo} · ${_AG_DIAS_PT[dayA.getDay()]}/${_AG_DIAS_PT[dayB.getDay()]} · ${_agFmtDate(d1)} – ${_agFmtDate(d2)}`;
   const dl=document.getElementById('ag-vend-dl');
   if(dl&&typeof VENDEDORES!=='undefined') dl.innerHTML=VENDEDORES.map(v=>`<option value="${v.name}">`).join('');
-  if(id){
-    const e=_loadAg().find(x=>x.id===id);
+  if(editId){
+    const e=_loadAg().find(x=>x.id===editId);
     if(e){
-      document.getElementById('ag-d1').value=e.d1||'';
-      document.getElementById('ag-d2').value=e.d2||'';
-      document.getElementById('ag-cli').value=e.cli||'';
-      document.getElementById('ag-tipo').value=e.tipo||'TREINAMENTO';
-      document.getElementById('ag-tec').value=e.tec||'LEONARDO';
-      document.getElementById('ag-vend').value=e.vend||'';
-      document.getElementById('ag-loc').value=e.loc||'';
-      document.getElementById('ag-nota').value=e.nota||'';
+      ['cli','tipo','vend','loc','nota'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.value=e[k]||'';});
     }
   } else {
-    ['ag-d1','ag-d2','ag-cli','ag-vend','ag-loc','ag-nota'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+    ['ag-cli','ag-vend','ag-loc','ag-nota'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
     document.getElementById('ag-tipo').value='TREINAMENTO';
-    document.getElementById('ag-tec').value='LEONARDO';
   }
+  setTimeout(()=>document.getElementById('ag-cli').focus(),100);
 }
-function fecharAgenda(){document.getElementById('modal-agenda').style.display='none';_agEditId=null;}
+function fecharAgenda(){document.getElementById('modal-agenda').style.display='none';_agSlotAtivo=null;_agEditId=null;}
 function salvarAgenda(){
-  const d1=document.getElementById('ag-d1').value;
   const cli=(document.getElementById('ag-cli').value||'').trim();
-  if(!d1||!cli){alert('Preencha Data Início e Cliente.');return;}
-  const entry={id:_agEditId||String(Date.now()),d1,d2:document.getElementById('ag-d2').value||'',cli,
-    tipo:document.getElementById('ag-tipo').value,tec:document.getElementById('ag-tec').value,
+  if(!cli){alert('Informe o nome do cliente.');return;}
+  const entry={
+    id:_agEditId||String(Date.now()),
+    tec:_agTecAtivo,
+    d1:_agSlotAtivo.d1,d2:_agSlotAtivo.d2,
+    cli,
+    tipo:document.getElementById('ag-tipo').value,
     vend:(document.getElementById('ag-vend').value||'').trim(),
     loc:(document.getElementById('ag-loc').value||'').trim(),
-    nota:(document.getElementById('ag-nota').value||'').trim()};
+    nota:(document.getElementById('ag-nota').value||'').trim()
+  };
   const list=_loadAg();
   if(_agEditId){const i=list.findIndex(x=>x.id===_agEditId);if(i>=0)list[i]=entry;else list.push(entry);}
   else list.push(entry);
