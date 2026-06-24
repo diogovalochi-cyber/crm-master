@@ -8577,33 +8577,33 @@ function renderAgenda(){
       const cor=_AG_TIPO_COR[entry.tipo]||'#6B7280';
       content=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${entry.cli}</div>
+          <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${entry.cli}</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
-            <span style="background:${cor}22;color:${cor};border-radius:4px;padding:1px 8px;font-size:11px;font-weight:700">${entry.tipo}</span>
-            ${entry.vend?`<span style="font-size:11px;color:rgba(255,255,255,.45)">${entry.vend}</span>`:''}
-            ${entry.loc?`<span style="font-size:11px;color:rgba(255,255,255,.35)">📍 ${entry.loc}</span>`:''}
+            <span style="background:${cor};color:#fff;border-radius:4px;padding:2px 10px;font-size:11px;font-weight:700">${entry.tipo}</span>
+            ${entry.vend?`<span style="font-size:12px;color:#444;font-weight:500">${entry.vend}</span>`:''}
+            ${entry.loc?`<span style="font-size:12px;color:#666">📍 ${entry.loc}</span>`:''}
           </div>
-          ${entry.nota?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;font-style:italic">${entry.nota}</div>`:''}
+          ${entry.nota?`<div style="font-size:11px;color:#888;margin-top:4px;font-style:italic">${entry.nota}</div>`:''}
         </div>
         <div style="display:flex;gap:4px;flex-shrink:0">
           <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar"
-            style="background:rgba(255,255,255,.07);border:none;border-radius:5px;color:rgba(255,255,255,.5);padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
+            style="background:#f0f0f0;border:none;border-radius:5px;color:#555;padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
           <button onclick="excluirAgenda('${entry.id}')"
-            style="background:rgba(239,68,68,.1);border:none;border-radius:5px;color:#F87171;padding:4px 8px;font-size:11px;cursor:pointer">×</button>
+            style="background:#fde8e8;border:none;border-radius:5px;color:#c0392b;padding:4px 8px;font-size:11px;cursor:pointer">×</button>
         </div>
       </div>`;
     } else {
       content=`<button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}',null)"
-        style="background:none;border:1px dashed rgba(255,255,255,.12);border-radius:7px;color:rgba(255,255,255,.3);padding:6px 16px;font-size:12px;cursor:pointer;width:100%;transition:all .15s"
-        onmouseover="this.style.borderColor='rgba(124,58,237,.5)';this.style.color='rgba(124,58,237,.8)'"
-        onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.3)'">+ Adicionar</button>`;
+        style="background:none;border:1px dashed #ccc;border-radius:7px;color:#aaa;padding:6px 16px;font-size:12px;cursor:pointer;width:100%;transition:all .15s"
+        onmouseover="this.style.borderColor='#7C3AED';this.style.color='#7C3AED'"
+        onmouseout="this.style.borderColor='#ccc';this.style.color='#aaa'">+ Adicionar</button>`;
     }
-    return`<div style="display:grid;grid-template-columns:100px 1fr;gap:0;margin-bottom:2px;border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
-      <div style="background:rgba(255,255,255,.04);padding:12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(255,255,255,.06)">
-        <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:2px">${diaLabel}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.3)">${dataLabel}</div>
+    return`<div style="display:grid;grid-template-columns:100px 1fr;gap:0;margin-bottom:4px;border-radius:9px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="background:#f5f5f5;padding:12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #e0e0e0">
+        <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:2px">${diaLabel}</div>
+        <div style="font-size:10px;color:#888">${dataLabel}</div>
       </div>
-      <div style="padding:12px;background:rgba(255,255,255,.02)">${content}</div>
+      <div style="padding:12px;background:#fff">${content}</div>
     </div>`;
   }).join('');
   slotEl.innerHTML=rows||'<div style="color:rgba(255,255,255,.3);text-align:center;padding:24px">Sem slots para esta semana</div>';
