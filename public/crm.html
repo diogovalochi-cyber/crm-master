@@ -8323,6 +8323,11 @@ function applyTecnicoMode(user){
   const botItems=document.querySelectorAll('.botnav-item');
   botItems.forEach(item=>item.classList.remove('active'));
   if(botItems[0]) botItems[0].classList.add('active');
+  // Marcelo não precisa do Forms
+  if(user.name==='Marcelo'){
+    document.querySelectorAll('#sidebar .nav-item').forEach(n=>{if(n.textContent.trim()==='Google Forms')n.style.display='none';});
+    document.querySelectorAll('.botnav-item').forEach(n=>{if(n.textContent.trim()==='Forms')n.style.display='none';});
+  }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
 }
