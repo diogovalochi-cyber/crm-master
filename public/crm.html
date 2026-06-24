@@ -6616,6 +6616,66 @@ const ROTAS={
       {cod:'4648',nome:'4648'},
     ],
   },
+  '125':{
+    segunda:[
+      {cod:'3892',nome:'Antonio Orestes'},
+      {cod:'3251',nome:'Belem Express'},
+      {cod:'4238',nome:'Stilo Vip'},
+      {cod:'4431',nome:'Lu Marmitaria'},
+      {cod:'3477',nome:'Erle Gomes'},
+      {cod:'3097',nome:'Regina Paula'},
+      {cod:'4123',nome:'Sup. Combate loja 1'},
+      {cod:'3293',nome:'Jp Adega loja 1'},
+      {cod:'489', nome:'Mercado Dallas'},
+      {cod:'3702',nome:'Feitosa'},
+    ],
+    terca:[
+      {cod:'3647',nome:'Kamimura loja 2'},
+      {cod:'3647',nome:'Kamimura loja 1'},
+      {cod:'4083',nome:'Super Vital Biritiba Mirim'},
+      {cod:'2931',nome:'Fofosul'},
+      {cod:'4978',nome:'Mercearia Real Park'},
+      {cod:'4401',nome:'Padaria Royale'},
+      {cod:'3467',nome:'Vanubia Fernandes'},
+      {cod:'4480',nome:'Big boom loja 1'},
+      {cod:'4749',nome:'Big boom loja 2'},
+      {cod:'4297',nome:'Natalia do Nascimento'},
+    ],
+    quarta:[
+      {cod:'4449',nome:'Padaria e Mercearia N N'},
+      {cod:'4124',nome:'Sup. Combate loja 2'},
+      {cod:'3205',nome:'Economia Familiar loja 1'},
+      {cod:'3205',nome:'Economia Familiar loja 2'},
+      {cod:'1185',nome:'Mauro Cezar'},
+      {cod:'3716',nome:'Diego da Silva'},
+      {cod:'4622',nome:'Padaria Souza'},
+      {cod:'4867',nome:'Padaria Costa'},
+      {cod:'4814',nome:'Mercearia Santo Antonio'},
+      {cod:'3293',nome:'JP Adega loja 2'},
+      {cod:'4990',nome:'Mercado Veredas'},
+    ],
+    quinta:[
+      {cod:'3635',nome:'Padaria Mil Folhas'},
+      {cod:'3812',nome:'Mercadinho Fernando'},
+      {cod:'164', nome:'Mercadinho Estrela'},
+      {cod:'3448',nome:'Mercadinho Matarazzo'},
+      {cod:'3874',nome:'Mini Mercado Capricho'},
+      {cod:'3482',nome:'Michel Freire'},
+      {cod:'3447',nome:'Jeferson Fernandes'},
+      {cod:'4023',nome:'Albuquerque loja 2'},
+      {cod:'73',  nome:'Albuquerque loja 1'},
+      {cod:'3826',nome:'Padaria Trem Bala'},
+    ],
+    sexta:[
+      {cod:'572', nome:'Mercadinho Coqueiro'},
+      {cod:'3004',nome:'Gilmar'},
+      {cod:'4402',nome:'Padaria MK'},
+      {cod:'116', nome:'Mercadinho Esperança'},
+      {cod:'3075',nome:'Mercadinho do Gordo'},
+      {cod:'3966',nome:'Bonsucesso'},
+      {cod:'2523',nome:'Boa Ventura'},
+    ],
+  },
 };
 
 function fmtDate(v){
@@ -6705,7 +6765,7 @@ const FORMS_CONFIG={
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[11])}${obsCell(r[9],'Obs.','Observação')}`
+    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[10])}${obsCell(r[9],'Obs.','Observação')}`
   },
   visitas:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
