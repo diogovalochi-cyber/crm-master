@@ -805,6 +805,12 @@ body.mode-mobile .section-header{gap:12px}
         </button>
       </div>
 
+      <!-- Lembrar senha -->
+      <label style="display:flex;align-items:center;gap:8px;margin-top:2px;cursor:pointer">
+        <input type="checkbox" id="login-remember" style="accent-color:#7C3AED;width:15px;height:15px;cursor:pointer">
+        <span style="font-size:13px;color:rgba(255,255,255,.45);user-select:none">Lembrar senha</span>
+      </label>
+
       <!-- Botão -->
       <button class="login-btn" id="login-btn" onclick="doLogin()">
         Entrar
@@ -857,6 +863,10 @@ body.mode-mobile .section-header{gap:12px}
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     Google Forms
   </div>
+  <div class="nav-item" id="nav-agenda" onclick="showTab('agenda',this)" style="display:none">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Agenda Técnica
+  </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
     <span>Abril 2026</span>
@@ -877,6 +887,10 @@ body.mode-mobile .section-header{gap:12px}
     <div class="botnav-item" onclick="showTabMobile('registrar',this)">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
       Forms
+    </div>
+    <div class="botnav-item" id="botnav-agenda" onclick="showTabMobile('agenda',this)" style="display:none">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Agenda
     </div>
   </div>
 </div>
@@ -1202,6 +1216,85 @@ body.mode-mobile .section-header{gap:12px}
 </div>
 
 <!-- ══════════════════════════════════════════ -->
+<!-- ABA 4: AGENDA TÉCNICA -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-agenda">
+  <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Agenda Técnica</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Treinamentos, inaugurações e visitas técnicas</p>
+      </div>
+      <button onclick="abrirAgenda(null)" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Nova Visita</button>
+    </div>
+    <div id="agenda-lista"></div>
+  </div>
+</div>
+
+<!-- Modal Agenda -->
+<div id="modal-agenda" onclick="if(event.target===this)fecharAgenda()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <h3 id="modal-agenda-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 22px">Nova Visita</h3>
+    <div style="display:grid;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">DATA INÍCIO *</label>
+          <input id="ag-d1" type="date" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        </div>
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">DATA FIM</label>
+          <input id="ag-d2" type="date" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">CLIENTE *</label>
+        <input id="ag-cli" type="text" placeholder="Nome ou código" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TIPO *</label>
+          <select id="ag-tipo" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+            <option>TREINAMENTO</option>
+            <option>INAUGURAÇÃO</option>
+            <option>APRESENTAÇÃO</option>
+            <option>REAPRESENTAÇÃO</option>
+            <option>MANUTENÇÃO</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TÉCNICO *</label>
+          <select id="ag-tec" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+            <option>LEONARDO</option>
+            <option>ROGÉRIO</option>
+            <option>JUAN</option>
+            <option>MATHEUS</option>
+            <option>MARCELO</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">VENDEDOR</label>
+          <input id="ag-vend" type="text" placeholder="Nome do vendedor" list="ag-vend-dl" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+          <datalist id="ag-vend-dl"></datalist>
+        </div>
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">LOCALIZAÇÃO</label>
+          <input id="ag-loc" type="text" placeholder="Cidade / região" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">OBSERVAÇÕES</label>
+        <input id="ag-nota" type="text" placeholder="Notas (opcional)" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
+      <button onclick="fecharAgenda()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarAgenda()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Salvar</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <script>
@@ -5790,6 +5883,7 @@ function showTab(tab, el){
     else loadFormsData();
     loadAllFormsCaches();
   }
+  if(tab==='agenda') renderAgenda();
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
@@ -7116,6 +7210,19 @@ function renderRota(){
     if(nn&&nn.length>=3){_mesCount[nn]=(_mesCount[nn]||0)+1;}
   });
 
+  // Obs mais recente por cliente (das visitas registradas)
+  const _lastVisitObs={};
+  formsCaches.visitas.forEach(r=>{
+    if(!_vendMatch(_nm(r[0]),currentRegSeller)) return;
+    const dt=toDate(r[1]);if(!dt) return;
+    const{iC,iO1}=_visitasOffsets(r);
+    const cd=normCod(r[iC]);
+    const obs=(r[iO1]||'').trim();
+    if(cd&&obs&&!/^pedido\s*semanal$/i.test(obs)){
+      if(!_lastVisitObs[cd]||dt>_lastVisitObs[cd].dt) _lastVisitObs[cd]={obs,dt};
+    }
+  });
+
   // Refaz dayCards com ⚠ amarelo nos clientes que estão fora de rota
   const dayCards=DIAS.map(d=>{
     const dayDate=new Date(weekMon);
@@ -7136,10 +7243,12 @@ function renderRota(){
       const foraIcon=isFora?`<span style="color:#FCD34D;font-size:10px;font-weight:800;margin-left:4px" title="Visitado em outro dia">⚠</span>`:'';
       const _mc=_mesCount[normCod(c.cod)]||_mesCount[_nm(c.nome)]||0;
       const _mb=_mc>0?`<span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);border-radius:3px;padding:0 4px;margin-left:3px;letter-spacing:.3px">${_mc}×</span>`:'';
+      const _vo=_lastVisitObs[normCod(c.cod)];
+      const _vBtn=_vo?`<button class="obs-btn" onclick="showObs(this)" data-obs="${_vo.obs.replace(/"/g,'&quot;')}" data-label="Obs. Última Visita" style="font-size:9px;padding:2px 6px;opacity:.65;margin-left:3px">obs</button>`:'';
       if(isFuture){
         return `<div class="rota-client">
           <span class="rota-cod">${c.cod}</span>
-          <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
+          <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}${_vBtn}
           ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
         </div>`;
       }
@@ -7147,7 +7256,7 @@ function renderRota(){
       return `<div class="rota-client ${v?'rota-visited':'rota-pending'}">
         <span class="rota-status-dot">${v?'✓':'○'}</span>
         <span class="rota-cod">${c.cod}</span>
-        <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
+        <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}${_vBtn}
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
       </div>`;
     }).join('');
@@ -8123,6 +8232,10 @@ function doLogin(){
       _loginOk(user);
       CRM_USER=match;
       btn.textContent='✓ Bem-vindo, '+match.name+'!';
+      try{const rem=document.getElementById('login-remember');
+        if(rem?.checked) localStorage.setItem('crm_remember',JSON.stringify({u:user,p:pass}));
+        else localStorage.removeItem('crm_remember');
+      }catch(e){}
       setTimeout(()=>{
         applySession(match);
         const ls=document.getElementById('login-screen');
@@ -8168,6 +8281,11 @@ function applySession(user){
   // Copy protection: non-admins cannot select/copy text; admins can
   if(!user.fullAccess) document.body.classList.add('no-copy');
   else document.body.classList.add('admin-mode');
+  // Agenda Técnica: visível para fullAccess e para Marcelo
+  if(user.fullAccess||user.name==='Marcelo'){
+    const na=document.getElementById('nav-agenda'),ba=document.getElementById('botnav-agenda');
+    if(na)na.style.display='';if(ba)ba.style.display='';
+  }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
@@ -8410,6 +8528,129 @@ document.addEventListener('keydown',e=>{
     doLogin();
   }
 });
+
+/* ── LEMBRAR SENHA ─────────────────────────── */
+(function(){
+  try{
+    const s=localStorage.getItem('crm_remember');
+    if(s){const{u,p}=JSON.parse(s);
+      const eu=document.getElementById('login-user'),ep=document.getElementById('login-pass'),er=document.getElementById('login-remember');
+      if(eu)eu.value=u;if(ep)ep.value=p;if(er)er.checked=true;
+    }
+  }catch(e){}
+})();
+
+/* ── AGENDA TÉCNICA ────────────────────────── */
+const _DIAS_PT=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const _TIPO_COR={TREINAMENTO:'#3B82F6',INAUGURAÇÃO:'#10B981',APRESENTAÇÃO:'#F59E0B',REAPRESENTAÇÃO:'#8B5CF6',MANUTENÇÃO:'#EF4444'};
+
+function _loadAg(){try{return JSON.parse(localStorage.getItem('crm_agenda')||'[]');}catch(e){return[];}}
+function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));}
+
+let _agEditId=null;
+
+function _fmtAgDate(iso){
+  if(!iso) return '';
+  const[y,m,d]=iso.split('-');return`${d}/${m}`;
+}
+function _diaSemana(iso){
+  if(!iso) return '';
+  return _DIAS_PT[new Date(iso+'T12:00').getDay()];
+}
+function _dataRangeStr(e){
+  const d1=_fmtAgDate(e.d1),d2=_fmtAgDate(e.d2);
+  return d2&&d2!==d1?`${d1} – ${d2}`:d1;
+}
+function _diasStr(e){
+  const s=_diaSemana(e.d1),f=_diaSemana(e.d2);
+  return f&&f!==s?`${s}/${f}`:s;
+}
+
+function renderAgenda(){
+  const el=document.getElementById('agenda-lista');
+  if(!el) return;
+  const list=_loadAg().sort((a,b)=>a.d1>b.d1?1:a.d1<b.d1?-1:0);
+  if(!list.length){
+    el.innerHTML='<div style="text-align:center;padding:48px;color:rgba(255,255,255,.28);font-size:14px">Nenhuma visita cadastrada</div>';
+    return;
+  }
+  const rows=list.map(e=>{
+    const cor=_TIPO_COR[e.tipo]||'#6B7280';
+    return`<tr style="border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
+      <td style="padding:10px 14px;font-size:13px;color:#fff;white-space:nowrap">${_dataRangeStr(e)}</td>
+      <td style="padding:10px 8px;font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap">${_diasStr(e)}</td>
+      <td style="padding:10px 14px;font-size:13px;color:#fff;font-weight:500">${e.cli}</td>
+      <td style="padding:10px 8px"><span style="background:${cor}22;color:${cor};border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap">${e.tipo}</span></td>
+      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.75)">${e.tec}</td>
+      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.55)">${e.vend||'—'}</td>
+      <td style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.45)">${e.loc||'—'}</td>
+      <td style="padding:10px 8px;white-space:nowrap;text-align:right">
+        <button onclick="abrirAgenda('${e.id}')" style="background:rgba(255,255,255,.07);border:none;border-radius:5px;color:rgba(255,255,255,.55);padding:4px 10px;font-size:11px;cursor:pointer;margin-right:4px">Editar</button>
+        <button onclick="excluirAgenda('${e.id}')" style="background:rgba(239,68,68,.12);border:none;border-radius:5px;color:#F87171;padding:4px 10px;font-size:11px;cursor:pointer">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+  el.innerHTML=`<div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.07)">
+    <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,.015)">
+      <thead><tr style="background:rgba(124,58,237,.12)">
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Data</th>
+        <th style="padding:10px 8px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Dias</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Cliente</th>
+        <th style="padding:10px 8px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Tipo</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Técnico</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Vendedor</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-align:left;text-transform:uppercase;letter-spacing:.5px">Local</th>
+        <th style="padding:10px 8px"></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function abrirAgenda(id){
+  _agEditId=id;
+  const m=document.getElementById('modal-agenda');
+  m.style.display='flex';
+  document.getElementById('modal-agenda-title').textContent=id?'Editar Visita':'Nova Visita';
+  const dl=document.getElementById('ag-vend-dl');
+  if(dl&&typeof VENDEDORES!=='undefined') dl.innerHTML=VENDEDORES.map(v=>`<option value="${v.name}">`).join('');
+  if(id){
+    const e=_loadAg().find(x=>x.id===id);
+    if(e){
+      document.getElementById('ag-d1').value=e.d1||'';
+      document.getElementById('ag-d2').value=e.d2||'';
+      document.getElementById('ag-cli').value=e.cli||'';
+      document.getElementById('ag-tipo').value=e.tipo||'TREINAMENTO';
+      document.getElementById('ag-tec').value=e.tec||'LEONARDO';
+      document.getElementById('ag-vend').value=e.vend||'';
+      document.getElementById('ag-loc').value=e.loc||'';
+      document.getElementById('ag-nota').value=e.nota||'';
+    }
+  } else {
+    ['ag-d1','ag-d2','ag-cli','ag-vend','ag-loc','ag-nota'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+    document.getElementById('ag-tipo').value='TREINAMENTO';
+    document.getElementById('ag-tec').value='LEONARDO';
+  }
+}
+function fecharAgenda(){document.getElementById('modal-agenda').style.display='none';_agEditId=null;}
+function salvarAgenda(){
+  const d1=document.getElementById('ag-d1').value;
+  const cli=(document.getElementById('ag-cli').value||'').trim();
+  if(!d1||!cli){alert('Preencha Data Início e Cliente.');return;}
+  const entry={id:_agEditId||String(Date.now()),d1,d2:document.getElementById('ag-d2').value||'',cli,
+    tipo:document.getElementById('ag-tipo').value,tec:document.getElementById('ag-tec').value,
+    vend:(document.getElementById('ag-vend').value||'').trim(),
+    loc:(document.getElementById('ag-loc').value||'').trim(),
+    nota:(document.getElementById('ag-nota').value||'').trim()};
+  const list=_loadAg();
+  if(_agEditId){const i=list.findIndex(x=>x.id===_agEditId);if(i>=0)list[i]=entry;else list.push(entry);}
+  else list.push(entry);
+  _saveAg(list);fecharAgenda();renderAgenda();
+}
+function excluirAgenda(id){
+  if(!confirm('Excluir esta visita?')) return;
+  _saveAg(_loadAg().filter(x=>x.id!==id));renderAgenda();
+}
 
 // Generate floating particles — fewer on mobile for GPU budget
 (function(){
