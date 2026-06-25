@@ -6783,33 +6783,19 @@ function fotoCell(url){
 function showObs(btn){
   document.getElementById('obs-modal-label').textContent=btn.dataset.label||'Observação';
   document.getElementById('obs-modal-text').textContent=btn.dataset.obs;
+  // Maps link opcional
+  let _ml=document.getElementById('_obs-maps-link');
+  if(!_ml){_ml=document.createElement('a');_ml.id='_obs-maps-link';_ml.target='_blank';_ml.rel='noopener';
+    _ml.style.cssText='display:none;margin-top:12px;color:#7C3AED;font-size:13px;font-weight:600;text-decoration:none';
+    const _mt=document.getElementById('obs-modal-text');if(_mt)_mt.parentNode.insertBefore(_ml,_mt.nextSibling);
+  }
+  const _mu=btn.dataset.maps||'';
+  _ml.href=_mu;_ml.textContent=_mu?'📍 Ver no Google Maps':'';_ml.style.display=_mu?'block':'none';
   document.getElementById('obs-modal').style.display='flex';
 }
-function closeObsModal(){document.getElementById('obs-modal').style.display='none';}
-
-function _showClientInfo(cod,nome){
-  // Procura link do Maps nas ROTAS
-  let mapsUrl='';
-  if(typeof ROTAS!=='undefined'){
-    outer:for(const vc of Object.keys(ROTAS)){
-      for(const day of Object.values(ROTAS[vc])){
-        if(!Array.isArray(day)) continue;
-        const f=day.find(c=>normCod(c.cod)===normCod(cod)&&c.maps);
-        if(f){mapsUrl=f.maps;break outer;}
-      }
-    }
-  }
-  const modal=document.getElementById('obs-modal');
-  const lbl=document.getElementById('obs-modal-label');
-  const txt=document.getElementById('obs-modal-text');
-  if(!modal||!lbl||!txt) return;
-  lbl.textContent='Cód. '+cod;
-  if(mapsUrl){
-    txt.innerHTML='<strong style="font-size:14px">'+nome+'</strong><br><br><a href="'+mapsUrl+'" target="_blank" rel="noopener" style="color:#7C3AED;text-decoration:underline;font-size:13px">📍 Ver no Google Maps</a>';
-  } else {
-    txt.innerHTML='<strong style="font-size:14px">'+nome+'</strong>';
-  }
-  modal.style.display='flex';
+function closeObsModal(){
+  document.getElementById('obs-modal').style.display='none';
+  const _ml=document.getElementById('_obs-maps-link');if(_ml)_ml.style.display='none';
 }
 
 /* Detecta RAZÃO SOCIAL na linha do CSV: varre colunas iStart..iEnd
@@ -8013,6 +7999,21 @@ function renderVendorDetail(name){
     return _vdSort.dir==='asc'?vx-vy:vy-vx;
   });
 
+  // Mapa cod → maps link (para botão ver dos clientes)
+  const _mapsMap={};
+  if(typeof ROTAS!=='undefined'){
+    for(const vc of Object.keys(ROTAS)){
+      for(const day of Object.values(ROTAS[vc])){
+        if(!Array.isArray(day)) continue;
+        day.forEach(c=>{if(c.maps&&!_mapsMap[normCod(c.cod)])_mapsMap[normCod(c.cod)]=c.maps;});
+      }
+    }
+  }
+  const _clientCell=(c)=>{
+    const mu=_mapsMap[normCod(c.cod)]||'';
+    const no=c.nome.replace(/"/g,'&quot;');
+    return `<td style="max-width:140px"><div style="display:flex;align-items:center;gap:4px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${c.nome}</span><button class="obs-btn" onclick="showObs(this)" data-obs="${no}" data-label="Cód. ${c.cod}"${mu?' data-maps="'+mu+'"':''} style="flex-shrink:0;font-size:9px;padding:2px 5px">ver</button></div></td>`;
+  };
   const _fVal=v=>v>0?fBRL(v):`<span style="color:rgba(255,255,255,.3)">—</span>`;
   const _varCell=(curr,base)=>{
     if(!base&&curr>0) return `<span style="color:rgba(255,255,255,.4)">—</span>`;
@@ -8040,7 +8041,7 @@ function renderVendorDetail(name){
       rows=allClients.map((c,i)=>`<tr>
         <td style="color:rgba(255,255,255,.5)">${i+1}</td>
         <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
-        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer" onclick="_showClientInfo(this.dataset.cod,this.dataset.nome)" data-cod="${c.cod}" data-nome="${c.nome.replace(/"/g,'&quot;')}">${c.nome}</td>
+        ${_clientCell(c)}
         <td style="font-weight:700;color:#fff">${_fVal(c.a||c.b||c.c)}</td>
       </tr>`).join('');
       const totS=allClients.reduce((s,c)=>s+(c.a||c.b||c.c),0);
@@ -8052,7 +8053,7 @@ function renderVendorDetail(name){
         return `<tr>
           <td style="color:rgba(255,255,255,.5)">${i+1}</td>
           <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
-          <td style="max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer" onclick="_showClientInfo(this.dataset.cod,this.dataset.nome)" data-cod="${c.cod}" data-nome="${c.nome.replace(/"/g,'&quot;')}">${c.nome}</td>
+          ${_clientCell(c)}
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
           <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
