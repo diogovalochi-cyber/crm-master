@@ -7216,7 +7216,7 @@ function renderRota(){
         renderRota();
       })
       .catch(()=>{formsCaches._visitasFetching=false;formsCaches._visitasTs=0;});
-    if(!formsCaches.visitas.length) return;
+    // não retorna mais — renderiza já com os dados que tiver (OBS aparece imediatamente)
   }
 
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
@@ -7294,19 +7294,6 @@ function renderRota(){
     if(nn&&nn.length>=3){_mesCount[nn]=(_mesCount[nn]||0)+1;}
   });
 
-  // Obs mais recente por cliente (das visitas registradas)
-  const _lastVisitObs={};
-  formsCaches.visitas.forEach(r=>{
-    if(!_vendMatch(_nm(r[0]),currentRegSeller)) return;
-    const dt=toDate(r[1]);if(!dt) return;
-    const{iC,iO1}=_visitasOffsets(r);
-    const cd=normCod(r[iC]);
-    const obs=(r[iO1]||'').trim();
-    if(cd&&obs&&!/^pedido\s*semanal$/i.test(obs)){
-      if(!_lastVisitObs[cd]||dt>_lastVisitObs[cd].dt) _lastVisitObs[cd]={obs,dt};
-    }
-  });
-
   // Refaz dayCards com ⚠ amarelo nos clientes que estão fora de rota
   const dayCards=DIAS.map(d=>{
     const dayDate=new Date(weekMon);
@@ -7327,12 +7314,10 @@ function renderRota(){
       const foraIcon=isFora?`<span style="color:#FCD34D;font-size:10px;font-weight:800;margin-left:4px" title="Visitado em outro dia">⚠</span>`:'';
       const _mc=_mesCount[normCod(c.cod)]||_mesCount[_nm(c.nome)]||0;
       const _mb=_mc>0?`<span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);border-radius:3px;padding:0 4px;margin-left:3px;letter-spacing:.3px">${_mc}×</span>`:'';
-      const _vo=_lastVisitObs[normCod(c.cod)];
-      const _vBtn=_vo?`<button class="obs-btn" onclick="showObs(this)" data-obs="${_vo.obs.replace(/"/g,'&quot;')}" data-label="Obs. Última Visita" style="font-size:9px;padding:2px 6px;opacity:.65;margin-left:3px">obs</button>`:'';
       if(isFuture){
         return `<div class="rota-client">
           <span class="rota-cod">${c.cod}</span>
-          <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}${_vBtn}
+          <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
           ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
         </div>`;
       }
@@ -7340,7 +7325,7 @@ function renderRota(){
       return `<div class="rota-client ${v?'rota-visited':'rota-pending'}">
         <span class="rota-status-dot">${v?'✓':'○'}</span>
         <span class="rota-cod">${c.cod}</span>
-        <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}${_vBtn}
+        <span class="rota-nome">${c.nome}</span>${_mb}${pin}${foraIcon}
         ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
       </div>`;
     }).join('');
