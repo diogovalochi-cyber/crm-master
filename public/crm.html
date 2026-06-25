@@ -1191,14 +1191,6 @@ body.mode-mobile .section-header{gap:12px}
     <div class="rota-grid" id="rota-grid"></div>
   </div>
 
-  <!-- Modal de observação -->
-  <div id="obs-modal" onclick="if(event.target===this)closeObsModal()">
-    <div id="obs-modal-box">
-      <button id="obs-modal-close" onclick="closeObsModal()">✕</button>
-      <div id="obs-modal-label">Observação</div>
-      <p id="obs-modal-text"></p>
-    </div>
-  </div>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1275,6 +1267,15 @@ body.mode-mobile .section-header{gap:12px}
 </div>
 
 </div><!-- /main -->
+
+<!-- Modal de observação — fora das tabs para funcionar em qualquer aba -->
+<div id="obs-modal" onclick="if(event.target===this)closeObsModal()">
+  <div id="obs-modal-box">
+    <button id="obs-modal-close" onclick="closeObsModal()">✕</button>
+    <div id="obs-modal-label">Observação</div>
+    <p id="obs-modal-text"></p>
+  </div>
+</div>
 
 <script>
 /* ─────────────────────────────────────────
