@@ -8323,10 +8323,25 @@ function applyTecnicoMode(user){
   const botItems=document.querySelectorAll('.botnav-item');
   botItems.forEach(item=>item.classList.remove('active'));
   if(botItems[0]) botItems[0].classList.add('active');
-  // Marcelo não precisa do Forms
+  // Marcelo: sem Forms nem Dashboard — abre direto na Agenda
   if(user.name==='Marcelo'){
-    document.querySelectorAll('#sidebar .nav-item').forEach(n=>{if(n.textContent.trim()==='Google Forms')n.style.display='none';});
-    document.querySelectorAll('.botnav-item').forEach(n=>{if(n.textContent.trim()==='Forms')n.style.display='none';});
+    document.querySelectorAll('#sidebar .nav-item').forEach(n=>{
+      const t=n.textContent.trim();
+      if(t==='Google Forms'||t==='Dashboard')n.style.display='none';
+    });
+    document.querySelectorAll('.botnav-item').forEach(n=>{
+      const t=n.textContent.trim();
+      if(t==='Forms'||t==='Dashboard')n.style.display='none';
+    });
+    // Abre na Agenda
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-agenda').classList.add('active');
+    document.querySelectorAll('#sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+    const agNav=document.getElementById('nav-agenda');
+    if(agNav){agNav.style.display='';agNav.classList.add('active');}
+    const agBot=document.getElementById('botnav-agenda');
+    if(agBot){agBot.style.display='';agBot.classList.add('active');}
+    renderAgenda();
   }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
