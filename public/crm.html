@@ -6831,7 +6831,17 @@ function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!i
 // 9 colunas (ou outro): MES sem EMAIL, sem sobra (Cezar)
 function _visitasOffsets(r){
   if(r.length<=8) return {iC:2,iR:3,iO1:5,iO2:6,iF:7};
-  if(r.length===11) return {iC:4,iR:5,iO1:7,iO2:8,iF:9};
+  if(r.length===11){
+    const temEmail=/@/.test(r[3]||'')||/@/.test(r[4]||'');
+    // 10-col data (Althieres/JoãoVictor/Moab/Ramon) promovido a 11 pelo K vazio do COMBINED
+    // Nesses casos CÓDIGO está em r[3], não r[4] — detecta pela última coluna vazia
+    if(!temEmail&&!(r[10]||'').trim()){
+      const h3=/^\d+$/.test(normCod(r[3]||''));
+      const h4=/^\d+$/.test(normCod(r[4]||''));
+      if(h3&&!h4) return {iC:3,iR:4,iO1:6,iO2:7,iF:8};
+    }
+    return {iC:4,iR:5,iO1:7,iO2:8,iF:9};
+  }
   if(r.length===10){
     const temEmail=/@/.test(r[3]||'')||/@/.test(r[4]||'');
     return temEmail?{iC:4,iR:5,iO1:7,iO2:8,iF:9}:{iC:3,iR:4,iO1:6,iO2:7,iF:8};
