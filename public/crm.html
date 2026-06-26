@@ -8665,10 +8665,27 @@ function _dbSave(key,data){
   try{fetch(_DB_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key,data})});}catch(e){}
 }
 async function _syncFromServer(){
-  const ag=await _dbLoad('agenda');
-  if(ag){const t=document.getElementById('tab-agenda');if(t&&t.classList.contains('active'))renderAgenda();}
-  const mt=await _dbLoad('mat');
-  if(mt){const t=document.getElementById('tab-materiais');if(t&&t.classList.contains('active'))renderMateriais();}
+  // Agenda
+  const agSrv=await _dbLoad('agenda');
+  const agLoc=_loadAg();
+  if(agSrv!==null){
+    if(agSrv.length===0&&agLoc.length>0){
+      // Migração automática: servidor vazio mas temos dados locais → envia
+      _dbSave('agenda',agLoc);
+    } else if(agSrv.length>0){
+      const t=document.getElementById('tab-agenda');if(t&&t.classList.contains('active'))renderAgenda();
+    }
+  }
+  // Materiais
+  const mtSrv=await _dbLoad('mat');
+  const mtLoc=_loadMat();
+  if(mtSrv!==null){
+    if(mtSrv.length===0&&mtLoc.length>0){
+      _dbSave('mat',mtLoc);
+    } else if(mtSrv.length>0){
+      const t=document.getElementById('tab-materiais');if(t&&t.classList.contains('active'))renderMateriais();
+    }
+  }
 }
 
 const _AG_TECS=['Caio','Hélio','Juan','Leonardo','Matheus','Rogério'];
