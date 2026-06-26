@@ -6122,7 +6122,15 @@ function searchClient(q){
 
     let billingRows='';
     if(info.hcBilling){
-billingRows=info.hcBilling.map((val,i)=>`<tr>
+      // Sobrescreve Junho (índice 5) com CARTEIRA_JUNHO atualizado
+      const hcArr=[...info.hcBilling];
+      if(typeof CARTEIRA_JUNHO!=='undefined'){
+        for(const clts of Object.values(CARTEIRA_JUNHO)){
+          const c=clts.find(x=>normCod(x.cod)===cod);
+          if(c){hcArr[5]=c.valor;break;}
+        }
+      }
+billingRows=hcArr.map((val,i)=>`<tr>
         <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:48px">${MES_LABELS[i]}</td>
         <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${val>0?fBRL(val):'<span style="color:rgba(255,255,255,.2)">—</span>'}</td>
       </tr>`).join('');
