@@ -8878,7 +8878,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.btn-primary').forEach(b=>{b.dataset.orig=b.textContent});
 });
 /* ─── COPY / SCREENSHOT PROTECTION ─── */
-document.addEventListener('contextmenu',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
+document.addEventListener('contextmenu',e=>{if(CRM_USER?.fullAccess||CRM_USER?.name==='Marcelo')return;e.preventDefault();});
 /* ── CONTROLE DE MATERIAIS ─────────────────── */
 let _matFiltro='todos';
 let _matEditId=null;
@@ -9007,12 +9007,13 @@ function deletarMat(id){
   renderMateriais();
 }
 
-document.addEventListener('copy',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
-document.addEventListener('cut',e=>{if(CRM_USER?.fullAccess)return;e.preventDefault();});
+const _isFree=()=>CRM_USER?.fullAccess||CRM_USER?.name==='Marcelo';
+document.addEventListener('copy',e=>{if(_isFree())return;e.preventDefault();});
+document.addEventListener('cut',e=>{if(_isFree())return;e.preventDefault();});
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
   const ctrl=e.ctrlKey||e.metaKey;
-  if(CRM_USER?.fullAccess){
+  if(_isFree()){
     if(ctrl&&['p','s','u'].includes(k)){e.preventDefault();return;}
     if(k==='f12'&&!window.DEV_MODE){e.preventDefault();return;}
     return;
