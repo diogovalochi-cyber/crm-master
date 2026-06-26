@@ -8364,7 +8364,7 @@ function applySession(user){
   const phMeta=document.querySelector('#print-header .ph-meta');
   if(phMeta) phMeta.innerHTML='<div>Emissão: '+nowBRDateStr()+'</div><div>'+user.name+' · '+user.role+'</div>';
   // Copy protection: non-admins cannot select/copy text; admins can
-  if(!user.fullAccess) document.body.classList.add('no-copy');
+  if(!user.fullAccess&&user.name!=='Marcelo') document.body.classList.add('no-copy');
   else document.body.classList.add('admin-mode');
   // Agenda Técnica e Materiais: visível para fullAccess e para Marcelo
   if(user.fullAccess||user.name==='Marcelo'){
