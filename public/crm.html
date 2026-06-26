@@ -8650,19 +8650,30 @@ document.addEventListener('keydown',e=>{
 })();
 
 /* ── AGENDA TÉCNICA ────────────────────────── */
-/* ── BANCO DE DADOS (Google Apps Script) ──── */
-const _DB_URL='https://script.google.com/macros/s/AKfycbxo1kWpKo7gbeP8648GCygtGi4p6rmJ3fQaj4177UFDQc-KGc5SerZ3InzTMSXbwI2T/exec';
+/* ── BANCO DE DADOS (Supabase) ──────────── */
+const _SB_URL='https://glphhuzmxxhomljhcmoh.supabase.co';
+const _SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGhodXpteHhob21samhjbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NzYyMjAsImV4cCI6MjA5ODA1MjIyMH0.wMWk6LptYvQtDyWPsDVUJC_K5uF_mOo0E6m1snQcbL0';
+const _SB_H={'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'};
 
 async function _dbLoad(key){
   try{
-    const r=await fetch(_DB_URL+'?key='+key,{cache:'no-store'});
-    const d=await r.json();
-    if(Array.isArray(d)){localStorage.setItem('crm_'+key,JSON.stringify(d));return d;}
-    return null;
+    const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.${key}&select=value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await r.json();
+    if(Array.isArray(rows)&&rows.length>0){
+      const d=JSON.parse(rows[0].value||'[]');
+      if(Array.isArray(d)){localStorage.setItem('crm_'+key,JSON.stringify(d));return d;}
+    }
+    return [];
   }catch(e){return null;}
 }
 function _dbSave(key,data){
-  try{fetch(_DB_URL+'?action=save&key='+key+'&d='+encodeURIComponent(JSON.stringify(data)),{mode:'no-cors',cache:'no-store'});}catch(e){}
+  try{
+    fetch(`${_SB_URL}/rest/v1/crm_data`,{
+      method:'POST',
+      headers:{..._SB_H,'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({key,value:JSON.stringify(data)})
+    });
+  }catch(e){}
 }
 async function _syncFromServer(){
   // Agenda
