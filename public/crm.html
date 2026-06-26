@@ -8662,7 +8662,7 @@ async function _dbLoad(key){
   }catch(e){return null;}
 }
 function _dbSave(key,data){
-  try{fetch(_DB_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key,data})});}catch(e){}
+  try{fetch(_DB_URL+'?action=save&key='+key+'&d='+encodeURIComponent(JSON.stringify(data)),{mode:'no-cors',cache:'no-store'});}catch(e){}
 }
 async function _syncFromServer(){
   // Agenda
