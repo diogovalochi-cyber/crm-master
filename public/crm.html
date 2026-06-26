@@ -1295,6 +1295,28 @@ body.mode-mobile .section-header{gap:12px}
   </div>
 </div>
 
+<!-- Modal Duplicar Agenda -->
+<div id="modal-dup-agenda" onclick="if(event.target===this)fecharDupAgenda()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:380px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px">Duplicar Visita</h3>
+    <p id="dup-ag-origem" style="font-size:12px;color:rgba(255,255,255,.4);margin:0 0 20px"></p>
+    <div style="display:grid;gap:14px">
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TÉCNICO *</label>
+        <select id="dup-ag-tec" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none"></select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">DIA *</label>
+        <select id="dup-ag-slot" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none"></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
+      <button onclick="fecharDupAgenda()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarDupAgenda()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Duplicar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Materiais -->
 <div id="modal-materiais" onclick="if(event.target===this)fecharMatModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:480px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
@@ -8768,6 +8790,8 @@ function renderAgenda(){
         <div style="display:flex;gap:4px;flex-shrink:0">
           <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar"
             style="background:#f0f0f0;border:none;border-radius:5px;color:#555;padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
+          <button onclick="abrirDupAgenda('${entry.id}')" title="Duplicar"
+            style="background:#e8f4fd;border:none;border-radius:5px;color:#2980b9;padding:4px 8px;font-size:11px;cursor:pointer">⊕</button>
           <button onclick="excluirAgenda('${entry.id}')"
             style="background:#fde8e8;border:none;border-radius:5px;color:#c0392b;padding:4px 8px;font-size:11px;cursor:pointer">×</button>
         </div>
@@ -8835,6 +8859,43 @@ function salvarAgenda(){
 function excluirAgenda(id){
   if(!confirm('Excluir esta visita?')) return;
   _saveAg(_loadAg().filter(x=>x.id!==id));renderAgenda();
+}
+
+let _agDupId=null;
+function abrirDupAgenda(id){
+  const e=_loadAg().find(x=>x.id===id);
+  if(!e) return;
+  _agDupId=id;
+  // Info da origem
+  const orig=document.getElementById('dup-ag-origem');
+  if(orig) orig.textContent=`${e.cli} · ${e.tipo}${e.vend?' · '+e.vend:''}`;
+  // Técnicos
+  const tecSel=document.getElementById('dup-ag-tec');
+  if(tecSel) tecSel.innerHTML=_AG_TECS.map(t=>`<option value="${t}"${t===e.tec?' selected':''}>${t}</option>`).join('');
+  // Slots da semana atual
+  const mon=_agMonday(_agWeekOff);
+  const slots=_agSlots(mon);
+  const slotSel=document.getElementById('dup-ag-slot');
+  if(slotSel) slotSel.innerHTML=slots.map(sl=>{
+    const a=new Date(sl.d1+'T12:00'),b=new Date(sl.d2+'T12:00');
+    const lbl=`${_AG_DIAS_PT[a.getDay()]}/${_AG_DIAS_PT[b.getDay()]} · ${_agFmtDate(sl.d1)}–${_agFmtDate(sl.d2)}`;
+    return`<option value="${sl.d1}|${sl.d2}">${lbl}</option>`;
+  }).join('');
+  document.getElementById('modal-dup-agenda').style.display='flex';
+}
+function fecharDupAgenda(){document.getElementById('modal-dup-agenda').style.display='none';_agDupId=null;}
+function salvarDupAgenda(){
+  const orig=_loadAg().find(x=>x.id===_agDupId);
+  if(!orig) return;
+  const tec=document.getElementById('dup-ag-tec').value;
+  const slotVal=document.getElementById('dup-ag-slot').value;
+  const [d1,d2]=slotVal.split('|');
+  const list=_loadAg();
+  list.push({...orig, id:String(Date.now()), tec, d1, d2});
+  _saveAg(list);
+  fecharDupAgenda();
+  _agTecAtivo=tec;
+  renderAgenda();
 }
 
 // Generate floating particles — fewer on mobile for GPU budget
