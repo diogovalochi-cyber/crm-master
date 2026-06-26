@@ -5946,8 +5946,8 @@ function showTab(tab, el){
     else loadFormsData();
     loadAllFormsCaches();
   }
-  if(tab==='agenda') renderAgenda();
-  if(tab==='materiais') renderMateriais();
+  if(tab==='agenda'){renderAgenda();_dbLoad('agenda').then(d=>{if(d)renderAgenda();});}
+  if(tab==='materiais'){renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});}
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
@@ -8419,6 +8419,8 @@ function applySession(user){
       }catch(e){console.error(e);}
     })).then(()=>renderVendorDashboard(user,vk));
   }
+  // Sincroniza Agenda e Materiais do servidor em background
+  _syncFromServer();
 }
 
 function applyTecnicoMode(user){
@@ -8648,6 +8650,27 @@ document.addEventListener('keydown',e=>{
 })();
 
 /* ── AGENDA TÉCNICA ────────────────────────── */
+/* ── BANCO DE DADOS (Google Apps Script) ──── */
+const _DB_URL='https://script.google.com/macros/s/AKfycbxo1kWpKo7gbeP8648GCygtGi4p6rmJ3fQaj4177UFDQc-KGc5SerZ3InzTMSXbwI2T/exec';
+
+async function _dbLoad(key){
+  try{
+    const r=await fetch(_DB_URL+'?key='+key,{cache:'no-store'});
+    const d=await r.json();
+    if(Array.isArray(d)){localStorage.setItem('crm_'+key,JSON.stringify(d));return d;}
+    return null;
+  }catch(e){return null;}
+}
+function _dbSave(key,data){
+  try{fetch(_DB_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key,data})});}catch(e){}
+}
+async function _syncFromServer(){
+  const ag=await _dbLoad('agenda');
+  if(ag){const t=document.getElementById('tab-agenda');if(t&&t.classList.contains('active'))renderAgenda();}
+  const mt=await _dbLoad('mat');
+  if(mt){const t=document.getElementById('tab-materiais');if(t&&t.classList.contains('active'))renderMateriais();}
+}
+
 const _AG_TECS=['Caio','Hélio','Juan','Leonardo','Matheus','Rogério'];
 const _AG_DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const _AG_TIPO_COR={TREINAMENTO:'#3B82F6',APRESENTAÇÃO:'#F59E0B',INAUGURAÇÃO:'#10B981',REAPRESENTAÇÃO:'#8B5CF6',MANUTENÇÃO:'#EF4444',FOLGA:'#94A3B8'};
@@ -8659,7 +8682,7 @@ let _agSlotAtivo=null; // {d1,d2,tec} slot being edited
 let _agEditId=null;
 
 function _loadAg(){try{return JSON.parse(localStorage.getItem('crm_agenda')||'[]');}catch(e){return[];}}
-function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));}
+function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));_dbSave('agenda',d);}
 
 function _agIso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function _agFmtDate(iso){if(!iso)return'';const[,m,d]=iso.split('-');return`${d}/${m}`;}
@@ -8833,7 +8856,7 @@ let _matFiltro='todos';
 let _matEditId=null;
 
 function _loadMat(){try{return JSON.parse(localStorage.getItem('crm_mat')||'[]');}catch(e){return[];}}
-function _saveMat(d){localStorage.setItem('crm_mat',JSON.stringify(d));}
+function _saveMat(d){localStorage.setItem('crm_mat',JSON.stringify(d));_dbSave('mat',d);}
 
 function matSetFiltro(f){
   _matFiltro=f;
