@@ -1206,21 +1206,88 @@ body.mode-mobile .section-header{gap:12px}
 <!-- ══════════════════════════════════════════ -->
 <div class="tab-content" id="tab-agenda">
   <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
-    <div style="margin-bottom:16px">
-      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Agenda Técnica</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Treinamentos, inaugurações e visitas técnicas</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Agenda Técnica</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Treinamentos, inaugurações e visitas técnicas</p>
+      </div>
+      <!-- Sub-navegação: Agenda / Lembretes -->
+      <div style="display:flex;gap:6px">
+        <button id="ag-subnav-agenda" onclick="agSubnav('agenda')"
+          style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Agenda</button>
+        <button id="ag-subnav-lembretes" onclick="agSubnav('lembretes')"
+          style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Lembretes</button>
+      </div>
     </div>
-    <!-- Tabs por técnico -->
-    <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
-    <!-- Navegação de semana -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-      <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">← Anterior</button>
-      <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
-      <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">Próxima →</button>
-      <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+
+    <!-- SEÇÃO AGENDA -->
+    <div id="ag-section-agenda">
+      <!-- Tabs por técnico -->
+      <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+      <!-- Navegação de semana -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">← Anterior</button>
+        <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
+        <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">Próxima →</button>
+        <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+      </div>
+      <!-- Grade de slots -->
+      <div id="ag-slots"></div>
     </div>
-    <!-- Grade de slots -->
-    <div id="ag-slots"></div>
+
+    <!-- SEÇÃO LEMBRETES -->
+    <div id="ag-section-lembretes" style="display:none">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button onclick="abrirLembreteModal(null)" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">+ Novo Lembrete</button>
+      </div>
+      <div id="ag-lembretes-lista"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lembrete -->
+<div id="modal-lembrete" onclick="if(event.target===this)fecharLembreteModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:460px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <h3 id="lemb-modal-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 20px">Novo Lembrete</h3>
+    <div style="display:grid;gap:14px">
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">CLIENTE *</label>
+        <input id="lemb-cli" type="text" placeholder="Nome do cliente" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TIPO *</label>
+          <select id="lemb-tipo" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+            <option>TREINAMENTO</option>
+            <option>APRESENTAÇÃO</option>
+            <option>INAUGURAÇÃO</option>
+            <option>REAPRESENTAÇÃO</option>
+            <option>MANUTENÇÃO</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">VENDEDOR</label>
+          <input id="lemb-vend" type="text" placeholder="Quem marcou" list="lemb-vend-dl" autocomplete="off"
+            style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+          <datalist id="lemb-vend-dl"></datalist>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">PERÍODO / DATA APROXIMADA</label>
+        <input id="lemb-data" type="text" placeholder="Ex: Agosto 2026, 2ª quinzena de Julho..." autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">REGIÃO / OBS</label>
+        <input id="lemb-obs" type="text" placeholder="Região ou observação" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
+      <button onclick="fecharLembreteModal()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarLembrete()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Salvar</button>
+    </div>
   </div>
 </div>
 
@@ -1705,7 +1772,7 @@ const VENDEDORES_MAIO = [
   {name:'Luiz Henrique', av:'LH', color:'#38BDF8', total: 60306.27, cli:17, ped: 51, cod:'124', newHire:true},
   {name:'Cezar',        av:'CZ', color:'#F43F5E', total:518111.38, cli:50, ped:392, cod:'125', newHire:true},
 ];
-
+
 
 const CARTEIRA_MARCO = {
 'ALX':[
@@ -5186,7 +5253,12 @@ function showTab(tab, el){
     else loadFormsData();
     loadAllFormsCaches();
   }
-  if(tab==='agenda'){renderAgenda();_dbLoad('agenda').then(d=>{if(d)renderAgenda();});}
+  if(tab==='agenda'){
+    if(_agSubnavAtivo==='lembretes') renderLembretes();
+    else renderAgenda();
+    _dbLoad('agenda').then(d=>{if(d&&_agSubnavAtivo==='agenda')renderAgenda();});
+    _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
+  }
   if(tab==='materiais'){renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});}
 }
 function showTabMobile(tab, el){
@@ -7951,6 +8023,13 @@ async function _syncFromServer(){
       const t=document.getElementById('tab-materiais');if(t&&t.classList.contains('active'))renderMateriais();
     }
   }
+  // Lembretes
+  const lbSrv=await _dbLoad('lembretes');
+  const lbLoc=_loadLemb();
+  if(lbSrv!==null){
+    if(lbSrv.length===0&&lbLoc.length>0) _dbSave('lembretes',lbLoc);
+    else if(lbSrv.length>0&&_agSubnavAtivo==='lembretes') renderLembretes();
+  }
 }
 
 const _AG_TECS=['Caio','Hélio','Juan','Leonardo','Matheus','Rogério'];
@@ -8091,6 +8170,99 @@ function salvarAgenda(){
 function excluirAgenda(id){
   if(!confirm('Excluir esta visita?')) return;
   _saveAg(_loadAg().filter(x=>x.id!==id));renderAgenda();
+}
+
+/* ── SUB-NAVEGAÇÃO AGENDA / LEMBRETES ─── */
+let _agSubnavAtivo='agenda';
+function agSubnav(aba){
+  _agSubnavAtivo=aba;
+  const isAg=aba==='agenda';
+  document.getElementById('ag-section-agenda').style.display=isAg?'':'none';
+  document.getElementById('ag-section-lembretes').style.display=isAg?'none':'';
+  const ba=document.getElementById('ag-subnav-agenda');
+  const bl=document.getElementById('ag-subnav-lembretes');
+  if(ba){ba.style.background=isAg?'#7C3AED':'rgba(255,255,255,.07)';ba.style.color=isAg?'#fff':'rgba(255,255,255,.55)';ba.style.fontWeight=isAg?'700':'500';}
+  if(bl){bl.style.background=!isAg?'#F59E0B':'rgba(255,255,255,.07)';bl.style.color=!isAg?'#fff':'rgba(255,255,255,.55)';bl.style.fontWeight=!isAg?'700':'500';}
+  if(!isAg) renderLembretes();
+}
+
+/* ── LEMBRETES ───────────────────────── */
+let _lembEditId=null;
+function _loadLemb(){try{return JSON.parse(localStorage.getItem('crm_lembretes')||'[]');}catch(e){return[];}}
+function _saveLemb(d){localStorage.setItem('crm_lembretes',JSON.stringify(d));_dbSave('lembretes',d);}
+
+function renderLembretes(){
+  const dl=document.getElementById('lemb-vend-dl');
+  if(dl&&typeof VENDEDORES!=='undefined') dl.innerHTML=VENDEDORES.map(v=>`<option value="${v.name}">`).join('');
+  const lista=document.getElementById('ag-lembretes-lista');
+  if(!lista) return;
+  const all=_loadLemb();
+  if(!all.length){
+    lista.innerHTML='<div style="text-align:center;padding:48px 0;color:rgba(255,255,255,.3);font-size:14px">Nenhum lembrete ainda</div>';
+    return;
+  }
+  lista.innerHTML=all.map(e=>{
+    const cor=_AG_TIPO_COR[e.tipo]||'#6B7280';
+    return `<div style="background:#1e2a3a;border-radius:12px;padding:16px;margin-bottom:10px;border-left:3px solid #F59E0B">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:8px">${e.cli}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+            <span style="background:${cor};color:#fff;border-radius:4px;padding:2px 10px;font-size:11px;font-weight:700">${e.tipo}</span>
+            ${e.vend?`<span style="font-size:12px;color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);border-radius:4px;padding:2px 8px">${e.vend}</span>`:''}
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px">
+            ${e.data?`<div><div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.4px;margin-bottom:2px">PERÍODO</div><div style="font-size:12px;color:#F59E0B;font-weight:600">${e.data}</div></div>`:''}
+            ${e.obs?`<div><div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.4px;margin-bottom:2px">OBS</div><div style="font-size:12px;color:rgba(255,255,255,.7)">${e.obs}</div></div>`:''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          <button onclick="abrirLembreteModal('${e.id}')" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 12px;font-size:11px;cursor:pointer">Editar</button>
+          <button onclick="deletarLembrete('${e.id}')" style="background:rgba(239,68,68,.1);color:#f87171;border:none;border-radius:7px;padding:6px 12px;font-size:11px;cursor:pointer">Excluir</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirLembreteModal(id){
+  const all=_loadLemb();
+  const e=id?all.find(x=>x.id===id):null;
+  _lembEditId=id||null;
+  document.getElementById('lemb-modal-title').textContent=id?'Editar Lembrete':'Novo Lembrete';
+  document.getElementById('lemb-cli').value=e?.cli||'';
+  document.getElementById('lemb-tipo').value=e?.tipo||'TREINAMENTO';
+  document.getElementById('lemb-vend').value=e?.vend||'';
+  document.getElementById('lemb-data').value=e?.data||'';
+  document.getElementById('lemb-obs').value=e?.obs||'';
+  const dl=document.getElementById('lemb-vend-dl');
+  if(dl&&typeof VENDEDORES!=='undefined') dl.innerHTML=VENDEDORES.map(v=>`<option value="${v.name}">`).join('');
+  document.getElementById('modal-lembrete').style.display='flex';
+  setTimeout(()=>document.getElementById('lemb-cli').focus(),100);
+}
+function fecharLembreteModal(){document.getElementById('modal-lembrete').style.display='none';_lembEditId=null;}
+function salvarLembrete(){
+  const cli=document.getElementById('lemb-cli').value.trim();
+  if(!cli){alert('Informe o cliente.');return;}
+  const entry={
+    id:_lembEditId||String(Date.now()),
+    cli,
+    tipo:document.getElementById('lemb-tipo').value,
+    vend:document.getElementById('lemb-vend').value.trim(),
+    data:document.getElementById('lemb-data').value.trim(),
+    obs:document.getElementById('lemb-obs').value.trim(),
+  };
+  const all=_loadLemb();
+  if(_lembEditId){const i=all.findIndex(x=>x.id===_lembEditId);if(i>=0)all[i]=entry;else all.push(entry);}
+  else all.push(entry);
+  _saveLemb(all);
+  fecharLembreteModal();
+  renderLembretes();
+}
+function deletarLembrete(id){
+  if(!confirm('Excluir este lembrete?')) return;
+  _saveLemb(_loadLemb().filter(x=>x.id!==id));
+  renderLembretes();
 }
 
 let _agDupId=null;
