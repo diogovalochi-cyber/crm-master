@@ -1705,7 +1705,7 @@ const VENDEDORES_MAIO = [
   {name:'Luiz Henrique', av:'LH', color:'#38BDF8', total: 60306.27, cli:17, ped: 51, cod:'124', newHire:true},
   {name:'Cezar',        av:'CZ', color:'#F43F5E', total:518111.38, cli:50, ped:392, cod:'125', newHire:true},
 ];
-
+
 
 const CARTEIRA_MARCO = {
 'ALX':[
@@ -5277,6 +5277,12 @@ function searchClient(q){
           if(!found[cNorm].billing[mes.key]) found[cNorm].billing[mes.key]=[];
           found[cNorm].billing[mes.key].push({valor:c.valor,vendCod:vcod});
         }
+      }
+    }
+    // Enriquecer com HC pelo código — nomes variam entre meses, HC tem histórico completo
+    if(typeof HC!=='undefined'){
+      for(const [cod,info] of Object.entries(found)){
+        if(!info.hcBilling&&HC[cod]) info.hcBilling=HC[cod].v;
       }
     }
   }
