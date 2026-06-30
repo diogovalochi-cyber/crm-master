@@ -6478,8 +6478,25 @@ function rotaWeekNav(delta){
   renderRota();
 }
 
-function getRotaObs(wk,cod,day){try{return JSON.parse(localStorage.getItem('rotaObs_'+wk+'_'+cod+'_'+day)||'[]');}catch{return[];}}
-function setRotaObs(wk,cod,day,idx,val){const obs=getRotaObs(wk,cod,day);obs[idx]=val;while(obs.length&&!obs[obs.length-1])obs.pop();if(!obs.length)localStorage.removeItem('rotaObs_'+wk+'_'+cod+'_'+day);else localStorage.setItem('rotaObs_'+wk+'_'+cod+'_'+day,JSON.stringify(obs));}
+const _rotaObsServerCache={};
+function getRotaObs(wk,cod,day){
+  if(CRM_USER?.vendId!==cod){
+    const ck=cod+'_'+wk,sd=_rotaObsServerCache[ck];
+    if(sd&&typeof sd==='object') return sd[day]||[];
+  }
+  try{return JSON.parse(localStorage.getItem('rotaObs_'+wk+'_'+cod+'_'+day)||'[]');}catch{return[];}
+}
+function setRotaObs(wk,cod,day,idx,val){
+  const obs=JSON.parse(localStorage.getItem('rotaObs_'+wk+'_'+cod+'_'+day)||'[]');
+  obs[idx]=val;
+  while(obs.length&&!obs[obs.length-1])obs.pop();
+  if(!obs.length) localStorage.removeItem('rotaObs_'+wk+'_'+cod+'_'+day);
+  else localStorage.setItem('rotaObs_'+wk+'_'+cod+'_'+day,JSON.stringify(obs));
+  const ck=cod+'_'+wk;
+  if(!_rotaObsServerCache[ck]||typeof _rotaObsServerCache[ck]!=='object') _rotaObsServerCache[ck]={};
+  if(!obs.length) delete _rotaObsServerCache[ck][day]; else _rotaObsServerCache[ck][day]=obs;
+  _saveRotaObsServer(wk,cod,_rotaObsServerCache[ck]);
+}
 
 function renderRota(){
   const DIAS=[
@@ -6513,6 +6530,12 @@ function renderRota(){
   const vend=VENDEDORES.find(v=>v.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')===currentRegSeller);
   const cod=vend?.cod||'';
   const rota=ROTAS[cod];
+  if(cod&&CRM_USER?.vendId!==cod){
+    const _ck=cod+'_'+weekMonStr;
+    if(_rotaObsServerCache[_ck]===undefined){
+      _loadRotaObsServer(weekMonStr,cod).then(()=>renderRota());
+    }
+  }
   const grid=document.getElementById('rota-grid');
   const nameEl=document.getElementById('rota-vendor-name');
   if(nameEl) nameEl.textContent=vend?`Rota de Visitas — ${vend.name}`:'';
@@ -6671,16 +6694,17 @@ function renderRota(){
     const _ob0=(_obs[0]||'').replace(/"/g,'&quot;');
     const _ob1=(_obs[1]||'').replace(/"/g,'&quot;');
     const _obShow2=!!(_obs[0]||_obs[1]);
+    const _isOwnRota=CRM_USER?.vendId===cod;
+    const _roAttr=_isOwnRota?'':`readonly style="pointer-events:none;opacity:.75"`;
     const obsSection=`<div style="border-top:1px solid rgba(255,255,255,.07);margin-top:2px;padding:5px 8px 6px">
-      <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.6px;margin-bottom:4px">OBS</div>
-      <input type="text" maxlength="120" placeholder="Observação…" value="${_ob0}"
+      <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.6px;margin-bottom:4px">OBS${_isOwnRota?'':' <span style=\'font-size:8px;opacity:.5\'>(somente leitura)</span>'}</div>
+      <input type="text" maxlength="120" placeholder="${_ob0||(_isOwnRota?'Observação…':'—')}" value="${_ob0}"
         style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 8px;color:rgba(255,255,255,.85);font-size:11px;outline:none;${_obShow2?'margin-bottom:4px':''}"
-        oninput="const w=document.getElementById('rota-obs2-${d.key}');if(w)w.style.display=this.value?'block':'none'"
-        onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',0,this.value)">
+        ${_isOwnRota?`oninput="const w=document.getElementById('rota-obs2-${d.key}');if(w)w.style.display=this.value?'block':'none'" onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',0,this.value)"`:'readonly'}>
       <div id="rota-obs2-${d.key}" style="display:${_obShow2?'block':'none'}">
-        <input type="text" maxlength="120" placeholder="Observação 2…" value="${_ob1}"
+        <input type="text" maxlength="120" placeholder="${_ob1||(_isOwnRota?'Observação 2…':'')}" value="${_ob1}"
           style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 8px;color:rgba(255,255,255,.85);font-size:11px;outline:none"
-          onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',1,this.value)">
+          ${_isOwnRota?`onchange="setRotaObs('${weekMonStr}','${cod}','${d.key}',1,this.value)"`:'readonly'}>
       </div>
     </div>`;
 
@@ -8001,6 +8025,19 @@ function _dbSave(key,data){
       body:JSON.stringify({key,value:JSON.stringify(data)})
     });
   }catch(e){}
+}
+async function _loadRotaObsServer(wk,cod){
+  const ck=cod+'_'+wk;
+  if(_rotaObsServerCache[ck]!==undefined) return;
+  _rotaObsServerCache[ck]=null;
+  try{
+    const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.rotaObs_${cod}_${wk}&select=value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await r.json();
+    _rotaObsServerCache[ck]=(Array.isArray(rows)&&rows.length>0)?JSON.parse(rows[0].value||'{}'):{};
+  }catch(e){_rotaObsServerCache[ck]={};}
+}
+function _saveRotaObsServer(wk,cod,data){
+  try{fetch(`${_SB_URL}/rest/v1/crm_data`,{method:'POST',headers:{..._SB_H,'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:'rotaObs_'+cod+'_'+wk,value:JSON.stringify(data)})});}catch(e){}
 }
 async function _syncFromServer(){
   // Agenda
