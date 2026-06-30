@@ -443,6 +443,9 @@ body.mode-desktop .analise-main-grid{display:grid;grid-template-columns:1.8fr 1f
 }
 .subtab:hover{color:#fff;border-color:rgba(255,255,255,.4)}
 .subtab.active{background:#fff;color:var(--blue);border-color:#fff}
+.equipe-btn{padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.equipe-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.equipe-btn.active{background:rgba(255,255,255,.22);color:#fff;border-color:rgba(255,255,255,.5)}
 
 /* ─── TABLE ─── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
@@ -939,6 +942,13 @@ body.mode-mobile .section-header{gap:12px}
 
   <!-- KPI Cards Semanais removidos a pedido -->
 
+  <!-- Filtro de equipe (admin only) -->
+  <div id="admin-equipe-filter" style="display:none;margin-bottom:12px;gap:8px;justify-content:center">
+    <button class="equipe-btn active" onclick="setEquipeFilter('total')">Total</button>
+    <button class="equipe-btn" onclick="setEquipeFilter('lazaro')">Equipe Lázaro</button>
+    <button class="equipe-btn" onclick="setEquipeFilter('val')">Equipe Val</button>
+  </div>
+
   <!-- Ranking (largura total) -->
   <div class="card mb-16">
     <div class="card-header">
@@ -959,7 +969,7 @@ body.mode-mobile .section-header{gap:12px}
     </div>
     <div id="ranking-list"></div>
     <div class="rank-total">
-      <span class="rank-total-label">Total Geral</span>
+      <span class="rank-total-label" id="rank-total-label">Total Geral</span>
       <span class="rank-total-val" id="rank-total-dynamic">R$ 1.113.506,46</span>
     </div>
   </div>
@@ -1608,6 +1618,17 @@ function updateGreetingClock(userName, roleEmoji){
 }
 
 let CRM_MES = (()=>{const b=nowBR();return b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
+let CRM_EQUIPE_FILTER = 'total';
+const EQUIPES = {
+  lazaro: ['093','116','117','118','120','121','122'],
+  val:    ['115','094','107','119','123','124','125'],
+};
+function getVendedoresFiltered(mes){
+  const src=getVendedoresForMes(mes);
+  if(!CRM_EQUIPE_FILTER||CRM_EQUIPE_FILTER==='total') return src;
+  const cods=EQUIPES[CRM_EQUIPE_FILTER]||[];
+  return src.filter(v=>cods.includes(v.cod));
+}
 /* ─────────────────────────────────────────
    DATA
 ───────────────────────────────────────── */
@@ -1637,7 +1658,7 @@ function renderKPIs(){
   const arrow=v=>v>=0?'▲ +':'▼ ';
 
   // Fonte de dados do mês
-  const src=getVendedoresForMes(CRM_MES);
+  const src=getVendedoresFiltered(CRM_MES);
   const active=src.filter(v=>!v.newHire);
   const totalAbr=src.reduce((s,v)=>s+v.abr,0);
   const totalMar=src.reduce((s,v)=>s+v.mar,0);
@@ -6961,7 +6982,7 @@ function submitForm(btn){
    RANKING
 ───────────────────────────────────────── */
 function renderRanking(){
-  const source=getVendedoresForMes(CRM_MES);
+  const source=getVendedoresFiltered(CRM_MES);
   const sorted=[...source].sort((a,b)=>b.abr-a.abr);
   const max=sorted.find(v=>v.abr>0)?.abr||1;
   let html='';
@@ -7055,6 +7076,16 @@ function setMes(mes, btn){
   }
 }
 
+function setEquipeFilter(v){
+  CRM_EQUIPE_FILTER=v;
+  document.querySelectorAll('.equipe-btn').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick').includes("'"+v+"'"));
+  });
+  const lbl=document.getElementById('rank-total-label');
+  if(lbl) lbl.textContent=v==='lazaro'?'Total Lázaro':v==='val'?'Total Val':'Total Geral';
+  renderKPIs();renderRanking();renderTop5();renderDonut('donut-svg','donut-legend');
+}
+
 /* ─────────────────────────────────────────
    DONUT
 ───────────────────────────────────────── */
@@ -7062,7 +7093,7 @@ function renderDonut(svgId, legendId){
   const svg=document.getElementById(svgId);
   const legend=document.getElementById(legendId);
   if(!svg||!legend) return;
-  const source=getVendedoresForMes(CRM_MES).map(v=>({name:v.name,abr:v.abr,mar:v.mar,color:v.color}));
+  const source=getVendedoresFiltered(CRM_MES).map(v=>({name:v.name,abr:v.abr,mar:v.mar,color:v.color}));
   const sorted=[...source].filter(v=>v.abr>0).sort((a,b)=>b.abr-a.abr);
   const total=sorted.reduce((s,v)=>s+v.abr,0);
   if(total===0||sorted.length===0){
@@ -7100,7 +7131,7 @@ function renderDonut(svgId, legendId){
    ANALISE TABLE
 ───────────────────────────────────────── */
 function renderAnaliseTable(){
-  const src=getVendedoresForMes(CRM_MES);
+  const src=getVendedoresFiltered(CRM_MES);
   const sorted=[...src].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const maxAbr=sorted.length>0?sorted[0].abr:1;
   const lblAt=MES_LABELS[CRM_MES]||'Atual';
@@ -7730,6 +7761,7 @@ function applySession(user){
   else if(user.role==='VENDEDOR') applyVendorMode(user);
   else if(user.fullAccess){
     renderWeeklyKPIs();
+    const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     if(user.team){
       // Supervisor com equipe restrita: filtra reg-seller-tabs e marca primeiro visível como ativo
