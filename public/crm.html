@@ -7808,6 +7808,35 @@ function applyTecnicoMode(user){
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
 }
 
+function _migrateRotaObsToServer(cod){
+  // Varre localStorage e envia todos os rotaObs do vendedor para Supabase
+  const byWeek={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k||!k.startsWith('rotaObs_')) continue;
+    // formato: rotaObs_{wk}_{cod}_{day}  ex: rotaObs_2026-06-16_093_segunda
+    const parts=k.split('_');
+    if(parts.length<5) continue;
+    // parts: ['rotaObs', '2026', '06', '16', '093', 'segunda']  (wk split by _)
+    // Mais robusto: encontrar o cod dentro do key
+    const codIdx=parts.findIndex((p,i)=>i>0&&p===cod);
+    if(codIdx<0) continue;
+    const wk=parts.slice(1,codIdx).join('-'); // reconstrói 2026-06-16
+    const day=parts.slice(codIdx+1).join('_');
+    if(!wk||!day) continue;
+    try{
+      const val=JSON.parse(localStorage.getItem(k)||'[]');
+      if(!byWeek[wk]) byWeek[wk]={};
+      if(val.length) byWeek[wk][day]=val;
+    }catch(e){}
+  }
+  for(const [wk,dayData] of Object.entries(byWeek)){
+    const ck=cod+'_'+wk;
+    _rotaObsServerCache[ck]=dayData;
+    _saveRotaObsServer(wk,cod,dayData);
+  }
+}
+
 function applyVendorMode(user){
   window.CRM_VENDOR_ID  =user.vendId;
   window.CRM_VENDOR_NAME=user.name;
@@ -7846,6 +7875,8 @@ function applyVendorMode(user){
 
   // Substitui dashboard pelo painel pessoal do vendedor
   renderVendorDashboard(user, vendorKey);
+  // Sobe OBS antigos do localStorage para Supabase (migração única silenciosa)
+  setTimeout(()=>_migrateRotaObsToServer(user.vendId),2000);
 }
 
 function renderVendorDashboard(user, vendorKey){
