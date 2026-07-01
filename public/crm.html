@@ -6836,10 +6836,14 @@ function applySession(user){
   else if(user.role==='VENDEDOR') applyVendorMode(user);
   else if(user.fullAccess){
     renderWeeklyKPIs();
-    const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     if(user.team){
-      // Supervisor com equipe restrita: filtra reg-seller-tabs e marca primeiro visível como ativo
+      // Supervisor: vê somente a própria equipe (sem botões de filtro)
+      const teamKey=Object.keys(EQUIPES).find(k=>EQUIPES[k].includes(user.team[0]))||'total';
+      CRM_EQUIPE_FILTER=teamKey;
+      const lbl=document.getElementById('rank-total-label');
+      if(lbl) lbl.textContent=teamKey==='lazaro'?'Total Lázaro':teamKey==='val'?'Total Val':'Total Geral';
+      // filtra reg-seller-tabs e marca primeiro visível como ativo
       const _allV=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
       const _nm2=n=>n.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
       const teamNames=new Set(user.team.map(cod=>{const v=_allV.find(x=>x.cod===cod);return v?_nm2(v.name):null;}).filter(Boolean));
@@ -6852,6 +6856,9 @@ function applySession(user){
         firstBtn.classList.add('active');
         currentRegSeller=firstBtn.dataset.seller;
       }
+    } else {
+      // Adm/Analista/Gerente: mostra filtro de equipes completo
+      const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
     }
   }
 
