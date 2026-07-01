@@ -5404,7 +5404,7 @@ function searchClient(q){
   }
 
   // Enrich with ROTAS (maps link + visit days)
-  const DIAS_LABELS={segunda:'Segunda',terca:'Terça',quarta:'Quarta',quinta:'Quinta',sexta:'Sexta',sabado:'Sábado'};
+  const DIAS_LABELS={segunda:'Segunda',terca:'Terça',quarta:'Quarta',quinta:'Quinta',sexta:'Sexta',sabado:'Sábado',setor1Sul:'Setor 01 — Sul',setor2Norte:'Setor 02 — Norte'};
   for(const [vcod,dias] of Object.entries(ROTAS)){
     for(const [dia,clientes] of Object.entries(dias)){
       for(const c of clientes){
@@ -6190,6 +6190,37 @@ const ROTAS={
       {cod:'2523',nome:'Boa Ventura'},
     ],
   },
+
+  '124':{
+    setor1Sul:[
+      {cod:'4794',nome:'Panif. São Bento'},
+      {cod:'4584',nome:'Sup. Três Poderes'},
+      {cod:'4755',nome:'Sup. M M'},
+      {cod:'4675',nome:'Pad. Café da Manhã'},
+      {cod:'4914',nome:'Abreu Pães e Doces'},
+      {cod:'4740',nome:'Pad. Morena'},
+      {cod:'4683',nome:'Mercado Tonhão'},
+      {cod:'4727',nome:'Merc. Peq. Príncipe'},
+      {cod:'4705',nome:'Padaria Guapurá'},
+      {cod:'4901',nome:'Donegana Pães e Doces'},
+      {cod:'4793',nome:'Padaria Suarão'},
+      {cod:'4653',nome:'Merc. do Povo'},
+      {cod:'4804',nome:'Merc. Céu e Mar'},
+      {cod:'4684',nome:'Pad. e Rest. Panera'},
+    ],
+    setor2Norte:[
+      {cod:'4670',nome:'Mercado Família'},
+      {cod:'4806',nome:'Point Certo Pad.'},
+      {cod:'4674',nome:'Mercado Laura'},
+      {cod:'5025',nome:'Mercado Laura 2'},
+      {cod:'4754',nome:'Padaria Vitória'},
+      {cod:'4696',nome:'Pad. e Merc. Baracho'},
+      {cod:'4808',nome:'Empório Família'},
+      {cod:'4691',nome:'Empório Lands'},
+      {cod:'4913',nome:'Panif. Liberdade'},
+      {cod:'4637',nome:'Cauê Borba da Silva'},
+    ],
+  },
 };
 
 function fmtDate(v){
@@ -6571,6 +6602,39 @@ function renderRota(){
   if(!grid) return;
   if(!rota){
     grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,.4);padding:32px;font-size:14px">Rota ainda não cadastrada para este vendedor</div>`;
+    return;
+  }
+
+  // Rota por setores (não por dia da semana)
+  const _stdKeys=new Set(['segunda','terca','quarta','quinta','sexta','sabado']);
+  const _rotaKeys=Object.keys(rota);
+  const _isSectorBased=_rotaKeys.length>0&&_rotaKeys.every(k=>!_stdKeys.has(k));
+  if(_isSectorBased){
+    const SECTOR_LABELS={setor1Sul:'Setor 01 — Sul',setor2Norte:'Setor 02 — Norte'};
+    const _fq=rotaFilter||'';
+    const _qn=_fq.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const _isNum=/^\d+$/.test(_fq.trim());
+    const sectorCards=_rotaKeys.map(key=>{
+      const clientes=rota[key]||[];
+      const clientesFilt=_fq?clientes.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm(c.nome).includes(_qn)):clientes;
+      const rows=clientesFilt.map(c=>{
+        const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
+        return `<div class="rota-client">
+          <span class="rota-cod">${c.cod}</span>
+          <span class="rota-nome">${c.nome}</span>${pin}
+          ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
+        </div>`;
+      }).join('');
+      const label=SECTOR_LABELS[key]||key;
+      return `<div class="rota-day">
+        <div class="rota-day-hdr">
+          <span class="rota-day-name">${label}</span>
+          <span class="rota-day-count">${clientesFilt.length} cliente${clientesFilt.length!==1?'s':''}</span>
+        </div>
+        ${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste setor</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}
+      </div>`;
+    }).join('');
+    grid.innerHTML=sectorCards;
     return;
   }
 
