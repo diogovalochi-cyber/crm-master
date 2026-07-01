@@ -6272,12 +6272,12 @@ function renderComparativo(){
     const hasA=cartA.length>0;
     const hasB=cartB.length>0;
 
-    // Merge clientes dos dois meses pelo nome
+    // Merge clientes dos dois meses pelo código (evita duplicatas por variação de nome)
     const map=new Map();
-    cartB.forEach(c=>map.set(c.nome,{cod:c.cod,nome:c.nome,valB:c.valor,valA:0}));
+    cartB.forEach(c=>map.set(c.cod,{cod:c.cod,nome:c.nome,valB:c.valor,valA:0}));
     cartA.forEach(c=>{
-      if(map.has(c.nome)){map.get(c.nome).valA=c.valor;if(!map.get(c.nome).cod)map.get(c.nome).cod=c.cod;}
-      else map.set(c.nome,{cod:c.cod,nome:c.nome,valB:0,valA:c.valor});
+      if(map.has(c.cod)){map.get(c.cod).valA=c.valor;}
+      else map.set(c.cod,{cod:c.cod,nome:c.nome,valB:0,valA:c.valor});
     });
     const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
     const totA=clients.reduce((s,c)=>s+c.valA,0);
