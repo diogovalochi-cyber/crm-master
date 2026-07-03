@@ -8255,6 +8255,8 @@ function applyTecnicoMode(user){
       const t=n.textContent.trim();
       if(t==='Forms'||t==='Dashboard')n.style.display='none';
     });
+    // Libera aba Pesquisa (busca de cliente por código/nome com endereços)
+    const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     // Abre na Agenda
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-agenda').classList.add('active');
