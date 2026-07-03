@@ -8481,7 +8481,25 @@ async function _dbLoad(key){
     const rows=await r.json();
     if(Array.isArray(rows)&&rows.length>0){
       const d=JSON.parse(rows[0].value||'[]');
-      if(Array.isArray(d)){localStorage.setItem('crm_'+key,JSON.stringify(d));return d;}
+      if(Array.isArray(d)){
+        // Preserva itens locais ainda não sincronizados com o servidor (race condition de _dbSave)
+        try{
+          const loc=JSON.parse(localStorage.getItem('crm_'+key)||'[]');
+          if(Array.isArray(loc)&&loc.length>0){
+            const srvIds=new Set(d.map(x=>x&&x.id).filter(Boolean));
+            const unsync=loc.filter(x=>x&&x.id&&!srvIds.has(x.id));
+            if(unsync.length>0){
+              const merged=[...d,...unsync];
+              localStorage.setItem('crm_'+key,JSON.stringify(merged));
+              // Reenvia ao servidor para garantir persistência
+              _dbSave(key,merged);
+              return merged;
+            }
+          }
+        }catch(e2){}
+        localStorage.setItem('crm_'+key,JSON.stringify(d));
+        return d;
+      }
     }
     return [];
   }catch(e){return null;}
