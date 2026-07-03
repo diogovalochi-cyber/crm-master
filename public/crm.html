@@ -5734,6 +5734,13 @@ function searchClient(q){
     }
   }
 
+  // Enrich mapsLink from MAPS_CLIENTS (override ROTAS when present)
+  if(typeof MAPS_CLIENTS!=='undefined'){
+    for(const [cod,info] of Object.entries(found)){
+      if(MAPS_CLIENTS[cod]) info.mapsLink=MAPS_CLIENTS[cod];
+    }
+  }
+
   // Find current vendor from carteiras (most recent month first)
   const CART_ORDER=[
     {cart:typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{}},
@@ -5853,6 +5860,22 @@ const FORMS_CSV={
   apresentacoes2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgkBwxWlj55lvExCRHvferJvbjO1jND8MLdHRx6tB2-vjjzYE5Os9shPMPBdsYvbgqQc9FKNoiVUOn/pub?gid=1717895650&single=true&output=csv', // Cezar+Moab+Ramon+Kelly (combinado)
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv',
   cadastros2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQM8MHUnHEG9Krjo-6yLus-W4s0Xma5Pb0BpNvfmlwCer8qB00BcuvYJ68a9gXsalMhO_eFgfdBMam1/pub?gid=1717895650&single=true&output=csv' // Cezar+Moab+Ramon+Kelly (combinado)
+};
+
+// Links Maps por código de cliente (independente da rota)
+const MAPS_CLIENTS={
+  '4852':'https://maps.app.goo.gl/sK5qSUAqCx2zGta6A',
+  '3421':'https://maps.app.goo.gl/chbjPZxfXvn5hrxq8',
+  '3960':'https://maps.app.goo.gl/F4qU1ybZMJ3YHi8h7',
+  '3795':'https://maps.app.goo.gl/8Sh3XpRLguPhpy5x6',
+  '4395':'https://maps.app.goo.gl/hX49XZQm5tsUNHdq8',
+  '4561':'https://maps.app.goo.gl/YguUQGYts64UBYRJ7',
+  '3640':'https://maps.app.goo.gl/WbFssgq9hDb1DBKJ7',
+  '1994':'https://maps.app.goo.gl/bpMoSRuKxXsVkXDH8',
+  '4605':'https://maps.app.goo.gl/61hqi9P5DCD3NXtM6',
+  '4614':'https://maps.app.goo.gl/ifkBrMhPhY1TxJt57',
+  '4077':'https://maps.app.goo.gl/nSv3BdiRy14yMoju9',
+  '3965':'https://maps.app.goo.gl/8UKF86TPnGYQUsEQ8',
 };
 
 const ROTAS={
