@@ -8534,6 +8534,9 @@ const _SB_URL='https://glphhuzmxxhomljhcmoh.supabase.co';
 const _SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscGhodXpteHhob21samhjbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NzYyMjAsImV4cCI6MjA5ODA1MjIyMH0.wMWk6LptYvQtDyWPsDVUJC_K5uF_mOo0E6m1snQcbL0';
 const _SB_H={'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'};
 
+function _loadDeletedIds(key){try{return new Set(JSON.parse(localStorage.getItem('crm_del_'+key)||'[]'));}catch(e){return new Set();}}
+function _trackDeleted(key,id){try{const s=_loadDeletedIds(key);s.add(id);const arr=[...s].slice(-500);localStorage.setItem('crm_del_'+key,JSON.stringify(arr));}catch(e){}}
+
 async function _dbLoad(key){
   try{
     const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.${key}&select=value`,{headers:_SB_H,cache:'no-store'});
@@ -8541,23 +8544,25 @@ async function _dbLoad(key){
     if(Array.isArray(rows)&&rows.length>0){
       const d=JSON.parse(rows[0].value||'[]');
       if(Array.isArray(d)){
-        // Preserva itens locais ainda não sincronizados com o servidor (race condition de _dbSave)
+        const deletedIds=_loadDeletedIds(key);
+        // Filtra itens deletados localmente antes do merge (fix: item deletado voltava ao recarregar)
+        const srvFiltered=deletedIds.size>0?d.filter(x=>x&&x.id&&!deletedIds.has(x.id)):d;
         try{
           const loc=JSON.parse(localStorage.getItem('crm_'+key)||'[]');
-          if(Array.isArray(loc)&&loc.length>0){
-            const srvIds=new Set(d.map(x=>x&&x.id).filter(Boolean));
-            const unsync=loc.filter(x=>x&&x.id&&!srvIds.has(x.id));
+          if(Array.isArray(loc)){
+            const srvIds=new Set(srvFiltered.map(x=>x&&x.id).filter(Boolean));
+            const unsync=loc.filter(x=>x&&x.id&&!srvIds.has(x.id)&&!deletedIds.has(x.id));
             if(unsync.length>0){
-              const merged=[...d,...unsync];
+              const merged=[...srvFiltered,...unsync];
               localStorage.setItem('crm_'+key,JSON.stringify(merged));
-              // Reenvia ao servidor para garantir persistência
               _dbSave(key,merged);
               return merged;
             }
           }
         }catch(e2){}
-        localStorage.setItem('crm_'+key,JSON.stringify(d));
-        return d;
+        localStorage.setItem('crm_'+key,JSON.stringify(srvFiltered));
+        if(deletedIds.size>0) _dbSave(key,srvFiltered);
+        return srvFiltered;
       }
     }
     return [];
@@ -8753,6 +8758,7 @@ function salvarAgenda(){
 }
 function excluirAgenda(id){
   if(!confirm('Excluir esta visita?')) return;
+  _trackDeleted('agenda',id);
   _saveAg(_loadAg().filter(x=>x.id!==id));renderAgenda();
 }
 
@@ -8845,6 +8851,7 @@ function salvarLembrete(){
 }
 function deletarLembrete(id){
   if(!confirm('Excluir este lembrete?')) return;
+  _trackDeleted('lembretes',id);
   _saveLemb(_loadLemb().filter(x=>x.id!==id));
   renderLembretes();
 }
