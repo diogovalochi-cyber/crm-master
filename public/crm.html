@@ -985,84 +985,16 @@ body.mode-mobile .section-header{gap:12px}
   <div class="section-header">
     <div>
       <div class="section-title">Análise Comercial</div>
-      <div class="section-sub">Comparativo e carteiras por vendedor</div>
+      <div class="section-sub">Carteiras por vendedor</div>
     </div>
     <button class="refresh-btn" id="refresh-btn-analise" onclick="refreshTab('analise')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
-    <button class="subtab active" onclick="showSubtab('comparativo',this)">Comparativo</button>
-    <button class="subtab" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
+    <button class="subtab active" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
     <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)" style="display:none">Pesquisa</button>
   </div>
 
-  <!-- SUB: Comparativo -->
-  <div id="subtab-comparativo">
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title" id="comp-title">Comparativo Abril vs Maio vs Junho 2026</span>
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          <select id="comp-mes-a" class="comp-mes-sel" onchange="renderComparativo()">
-            <option value="marco">Março</option>
-            <option value="abril" selected>Abril</option>
-            <option value="maio">Maio</option>
-            <option value="junho">Junho</option>
-            <option value="julho">Julho</option>
-          </select>
-          <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
-          <select id="comp-mes-b" class="comp-mes-sel" onchange="renderComparativo()">
-            <option value="marco">Março</option>
-            <option value="abril">Abril</option>
-            <option value="maio" selected>Maio</option>
-            <option value="junho">Junho</option>
-            <option value="julho">Julho</option>
-          </select>
-          <span id="comp-3rd-sel" style="display:flex;align-items:center;gap:6px">
-            <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
-            <select id="comp-mes-c" class="comp-mes-sel" onchange="renderComparativo()">
-              <option value="marco">Março</option>
-              <option value="abril">Abril</option>
-              <option value="maio">Maio</option>
-              <option value="junho" selected>Junho</option>
-              <option value="julho">Julho</option>
-            </select>
-          </span>
-        </div>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="tbl" id="comp-table"></table>
-      </div>
-    </div>
-    <!-- Carteira consolidada admin (hidden for vendors) -->
-    <div id="admin-carteira-card" style="display:none;margin-top:16px">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title" id="adm-cart-title">Carteira Consolidada · Abril vs Maio 2026</span>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODO</span>
-            <select class="comp-mes-sel" id="adm-cart-mes-a" onchange="renderAdminCarteira()">
-              <option value="marco">Março</option>
-              <option value="abril" selected>Abril</option>
-              <option value="maio">Maio</option>
-              <option value="junho">Junho</option>
-              <option value="julho">Julho</option>
-            </select>
-            <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
-            <select class="comp-mes-sel" id="adm-cart-mes-b" onchange="renderAdminCarteira()">
-              <option value="marco">Março</option>
-              <option value="abril">Abril</option>
-              <option value="maio" selected>Maio</option>
-              <option value="junho">Junho</option>
-              <option value="julho">Julho</option>
-            </select>
-          </div>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="tbl" id="adm-cart-table"></table>
-        </div>
-      </div>
-    </div>
-  </div>
   <div id="subtab-pesquisa" style="display:none">
     <div class="card">
       <div class="card-header"><span class="card-title">Pesquisa de Cliente</span></div>
@@ -1077,7 +1009,7 @@ body.mode-mobile .section-header{gap:12px}
     </div>
   </div>
 
-  <div id="subtab-porvendedor" style="display:none">
+  <div id="subtab-porvendedor">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODOS</span>
       <select class="comp-mes-sel" id="vd-mes-a" onchange="setVdMes()">
@@ -5632,13 +5564,8 @@ function showTab(tab, el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
   if(tab==='analise'){
-    if(window.CRM_VENDOR_ID){
-      const compBtn=document.querySelectorAll('#tab-analise .subtab')[0];
-      if(compBtn) showSubtab('comparativo',compBtn);
-    }
     if(_analiseNeedsRender){
       _analiseNeedsRender=false;
-      renderComparativo();
       renderVendorDetail(activeVendor);
     }
   }
@@ -5675,7 +5602,6 @@ function refreshTab(tab){
     renderKPIs();renderRanking();
     if(!window.CRM_VENDOR_ID) renderWeeklyKPIs();
   } else if(tab==='analise'){
-    renderComparativo();
     if(activeVendor) renderVendorDetail(activeVendor);
   } else if(tab==='registrar'){
     if(currentFormsType==='rota'){
@@ -5695,7 +5621,7 @@ function refreshTab(tab){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  ['comparativo','porvendedor','pesquisa','comissao'].forEach(s=>{
+  ['porvendedor','pesquisa','comissao'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
@@ -7525,8 +7451,7 @@ function setMes(mes, btn){
   renderRanking();
   // Analise tab — lazy: only render when the tab is open
   if(document.getElementById('tab-analise')?.classList.contains('active')){
-    if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
-    if(document.getElementById('subtab-porvendedor')?.style.display!=='none') renderVendorDetail(activeVendor);
+    renderVendorDetail(activeVendor);
   } else {
     _analiseNeedsRender=true;
   }
@@ -7590,186 +7515,6 @@ function renderAnaliseTable(){
   </tr></tfoot>`;
   document.getElementById('analise-table').innerHTML=html;
 }
-
-/* ─────────────────────────────────────────
-   COMPARATIVO TABLE
-───────────────────────────────────────── */
-function renderComparativo(){
-  const selA=document.getElementById('comp-mes-a');
-  const selB=document.getElementById('comp-mes-b');
-  const mesA=selA?selA.value:'abril';
-  const mesB=selB?selB.value:'maio';
-  const lblA=MES_LABELS[mesA]||mesA;
-  const lblB=MES_LABELS[mesB]||mesB;
-  const titleEl=document.getElementById('comp-title');
-  const tblEl=document.getElementById('comp-table');
-
-  // Modo vendedor: carteira de clientes com comparativo entre os dois meses
-  if(window.CRM_VENDOR_ID){
-    const getCart=mes=>{
-      if(mes==='julho') return (CARTEIRA_JULHO[window.CRM_VENDOR_ID]||[]);
-      if(mes==='junho') return (CARTEIRA_JUNHO[window.CRM_VENDOR_ID]||[]);
-      if(mes==='maio')  return (CARTEIRA_MAIO[window.CRM_VENDOR_ID]||[]);
-      if(mes==='abril') return (CARTEIRA_ABRIL[window.CRM_VENDOR_ID]||[]);
-      if(mes==='marco') return (CARTEIRA_MARCO[window.CRM_VENDOR_ID]||[]);
-      return [];
-    };
-    const cartA=getCart(mesA);
-    const cartB=getCart(mesB);
-    const hasA=cartA.length>0;
-    const hasB=cartB.length>0;
-
-    // Merge clientes dos dois meses pelo código (evita duplicatas por variação de nome)
-    const map=new Map();
-    cartB.forEach(c=>map.set(c.cod,{cod:c.cod,nome:c.nome,valB:c.valor,valA:0}));
-    cartA.forEach(c=>{
-      if(map.has(c.cod)){map.get(c.cod).valA=c.valor;}
-      else map.set(c.cod,{cod:c.cod,nome:c.nome,valB:0,valA:c.valor});
-    });
-    const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
-    const totA=clients.reduce((s,c)=>s+c.valA,0);
-    const totB=clients.reduce((s,c)=>s+c.valB,0);
-
-    if(titleEl) titleEl.textContent=`Carteira de Clientes · ${lblA} vs ${lblB} 2026`;
-
-    let html=`<thead><tr>
-      <th>#</th><th>Cód.</th><th>Cliente</th>
-      <th>${lblA}</th>
-      <th>${lblB}</th>
-      <th>${hasA&&hasB?'Variação %':'% do Total'}</th>
-    </tr></thead><tbody>`;
-
-    if(!clients.length){
-      html+=`<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados de carteira para o período selecionado</td></tr>`;
-    } else {
-      clients.forEach((c,i)=>{
-        const vr=(hasA&&hasB&&c.valA>0)?varPct(c.valB,c.valA):null;
-        const pct=(totB>0)?((c.valB/totB)*100).toFixed(1):(totA>0)?((c.valA/totA)*100).toFixed(1):'0';
-        const dc=vr?(vr.up?'#4ade80':'#f87171'):'rgba(255,255,255,.65)';
-        html+=`<tr>
-          <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
-          <td style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600">${c.cod||'—'}</td>
-          <td style="font-weight:600">${c.nome}</td>
-          <td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>
-          <td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>
-          <td style="color:${dc}">${vr?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:pct+'%'}</td>
-        </tr>`;
-      });
-      html+=`</tbody><tfoot><tr class="total-row">
-        <td colspan="3">Total</td>
-        <td>${totA>0?fBRL(totA):'—'}</td>
-        <td>${totB>0?fBRL(totB):'—'}</td>
-        <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
-      </tr></tfoot>`;
-    }
-    tblEl.innerHTML=html;
-    return;
-  }
-
-  // Modo gestor: comparativo de vendedores entre três meses
-  const mesC=document.getElementById('comp-mes-c')?.value||'junho';
-  const lblC=MES_LABELS[mesC]||mesC;
-  if(titleEl) titleEl.textContent=`Comparativo ${lblA} vs ${lblB} vs ${lblC} 2026`;
-  const dataA=getVendedoresForMes(mesA);
-  const dataB=getVendedoresForMes(mesB);
-  const dataC=getVendedoresForMes(mesC);
-  const merged=dataA.map(vA=>{
-    const vB=dataB.find(x=>x.cod===vA.cod)||{abr:0};
-    const vC=dataC.find(x=>x.cod===vA.cod)||{abr:0};
-    return {...vA, valA:vA.abr, valB:vB.abr, valC:vC.abr};
-  }).sort((a,b)=>b.valC-a.valC);
-  let html=`<thead><tr>
-    <th>Vendedor</th><th>${lblA}</th><th>${lblB}</th><th>${lblC}</th><th>${lblA}→${lblB}</th><th>${lblB}→${lblC}</th>
-  </tr></thead><tbody>`;
-  let tA=0,tB=0,tC=0;
-  merged.forEach(v=>{
-    const vrAB=v.valA>0?varPct(v.valB,v.valA):null;
-    const vrBC=v.valB>0?varPct(v.valC,v.valB):null;
-    tA+=v.valA;tB+=v.valB;tC+=v.valC;
-    html+=`<tr>
-      <td><span style="font-weight:700">${v.name}${v.warn?' ⚠':''}</span></td>
-      <td style="color:rgba(255,255,255,.55)">${fBRL(v.valA)}</td>
-      <td style="color:rgba(255,255,255,.75)">${fBRL(v.valB)}</td>
-      <td style="font-weight:700;color:#fff">${fBRL(v.valC)}</td>
-      <td>${vrAB?`<span class="${vrAB.up?'badge-up':'badge-dn'}">${vrAB.str}</span>`:'—'}</td>
-      <td>${vrBC?`<span class="${vrBC.up?'badge-up':'badge-dn'}">${vrBC.str}</span>`:'—'}</td>
-    </tr>`;
-  });
-  const vrTAB=tA>0?varPct(tB,tA):null;
-  const vrTBC=tB>0?varPct(tC,tB):null;
-  html+=`</tbody><tfoot><tr class="total-row">
-    <td>Total</td><td>${fBRL(tA)}</td><td>${fBRL(tB)}</td><td>${fBRL(tC)}</td>
-    <td>${vrTAB?`<span class="${vrTAB.up?'badge-up':'badge-dn'}">${vrTAB.str}</span>`:'—'}</td>
-    <td>${vrTBC?`<span class="${vrTBC.up?'badge-up':'badge-dn'}">${vrTBC.str}</span>`:'—'}</td>
-  </tr></tfoot>`;
-  tblEl.innerHTML=html;
-  renderAdminCarteira();
-}
-
-/* ─────────────────────────────────────────
-   CARTEIRA CONSOLIDADA (admin only)
-───────────────────────────────────────── */
-function renderAdminCarteira(){
-  const card=document.getElementById('admin-carteira-card');
-  if(!card) return;
-  if(window.CRM_VENDOR_ID){card.style.display='none';return;}
-  card.style.display='';
-  const mesA=document.getElementById('adm-cart-mes-a')?.value||'abril';
-  const mesB=document.getElementById('adm-cart-mes-b')?.value||'maio';
-  const lblA=MES_LABELS[mesA]||mesA;
-  const lblB=MES_LABELS[mesB]||mesB;
-  const titleEl=document.getElementById('adm-cart-title');
-  if(titleEl) titleEl.textContent=`Carteira Consolidada · ${lblA} vs ${lblB} 2026`;
-  const srcA=getCarteiraForMes(mesA);
-  const srcB=getCarteiraForMes(mesB);
-  const map=new Map();
-  Object.values(srcB).forEach(arr=>arr.forEach(c=>{
-    if(!map.has(c.cod)) map.set(c.cod,{cod:c.cod,nome:c.nome,valA:0,valB:0});
-    const e=map.get(c.cod);e.valB+=c.valor;e.nome=c.nome;
-  }));
-  Object.values(srcA).forEach(arr=>arr.forEach(c=>{
-    if(!map.has(c.cod)) map.set(c.cod,{cod:c.cod,nome:c.nome,valA:0,valB:0});
-    const e=map.get(c.cod);e.valA+=c.valor;if(!e.nome)e.nome=c.nome;
-  }));
-  const clients=[...map.values()].sort((a,b)=>b.valB-a.valB||b.valA-a.valA);
-  const totA=clients.reduce((s,c)=>s+c.valA,0);
-  const totB=clients.reduce((s,c)=>s+c.valB,0);
-  const hasA=totA>0,hasB=totB>0;
-  const tbl=document.getElementById('adm-cart-table');
-  if(!tbl) return;
-  let html=`<thead><tr>
-    <th>#</th><th>Cód.</th><th>Cliente</th>
-    <th>${lblA}</th><th>${lblB}</th>
-    <th>${hasA&&hasB?'Variação %':'% do Total'}</th>
-  </tr></thead><tbody>`;
-  if(!clients.length){
-    html+=`<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.5);padding:24px">Sem dados para o período selecionado</td></tr></tbody>`;
-  } else {
-    clients.forEach((c,i)=>{
-      const isNew=c.valA===0&&c.valB>0;
-      let varHtml;
-      if(isNew) varHtml=`<span style="color:rgba(255,255,255,.4)">—</span>`;
-      else if(hasA&&hasB&&c.valA>0){const vr=varPct(c.valB,c.valA);varHtml=`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`;}
-      else{const pct=(totB>0)?((c.valB/totB)*100).toFixed(1):(totA>0)?((c.valA/totA)*100).toFixed(1):'0';varHtml=pct+'%';}
-      html+=`<tr>
-        <td style="color:rgba(255,255,255,.45);font-weight:700">${String(i+1).padStart(2,'0')}</td>
-        <td style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600">${c.cod||'—'}</td>
-        <td style="font-weight:600">${c.nome}</td>
-        <td style="color:rgba(255,255,255,.65)">${c.valA>0?fBRL(c.valA):'—'}</td>
-        <td style="font-weight:700;color:#fff">${c.valB>0?fBRL(c.valB):'—'}</td>
-        <td>${varHtml}</td>
-      </tr>`;
-    });
-    html+=`</tbody><tfoot><tr class="total-row">
-      <td colspan="3">Total</td>
-      <td>${totA>0?fBRL(totA):'—'}</td>
-      <td>${totB>0?fBRL(totB):'—'}</td>
-      <td>${(hasA&&hasB&&totA>0)?`<span class="${totB>=totA?'badge-up':'badge-dn'}">${varPct(totB,totA).str}</span>`:'—'}</td>
-    </tr></tfoot>`;
-  }
-  tbl.innerHTML=html;
-}
-
 
 /* ─────────────────────────────────────────
    POR VENDEDOR
@@ -8291,17 +8036,6 @@ function applyVendorMode(user){
   currentRegSeller=vendorKey;
   const regSellerTabs=document.getElementById('reg-seller-tabs');
   if(regSellerTabs) regSellerTabs.style.display='none';
-
-  // Análise: oculta Por Vendedor (índice 1); Comparativo e Comissão visíveis para vendedor
-  document.querySelectorAll('#tab-analise .subtab').forEach((btn,i)=>{
-    if(i===1) btn.style.display='none';
-  });
-  // Análise: oculta seletor de mês global (vendedor usa apenas os seletores do comparativo)
-  const anlMesSel=document.querySelector('#tab-analise .section-header .mes-select');
-  if(anlMesSel) anlMesSel.style.display='none';
-  // Oculta 3º seletor de mês no Comparativo (vendedor usa apenas 2 períodos)
-  const comp3rd=document.getElementById('comp-3rd-sel');
-  if(comp3rd) comp3rd.style.display='none';
 
   // Detecta mês efetivo (último com dados reais) e seta CRM_MES
   const vRawM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
