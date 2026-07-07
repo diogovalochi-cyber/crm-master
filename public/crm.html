@@ -7521,7 +7521,7 @@ function renderAnaliseTable(){
 ───────────────────────────────────────── */
 let activeVendor='Guilherme';
 let VD_MES=CRM_MES;
-let _vdSort={col:'total',dir:'desc'};
+let _vdSort={col:'c',dir:'desc'};
 function _vdSortBy(col){
   if(_vdSort.col===col) _vdSort.dir=_vdSort.dir==='asc'?'desc':'asc';
   else{_vdSort.col=col;_vdSort.dir=col==='nome'?'asc':'desc';}
@@ -7683,18 +7683,14 @@ function renderVendorDetail(name){
       thead=`<tr><th>#</th><th>Cód.</th><th>Cliente</th><th>${lblA}</th></tr>`;
       tfoot=`<tr class="total-row"><td colspan="3">Total</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
     } else {
-      rows=allClients.map((c,i)=>{
-        const tot=c.a+c.b+c.c;
-        return `<tr>
+      rows=allClients.map((c,i)=>`<tr>
           <td style="color:rgba(255,255,255,.5)">${i+1}</td>
           <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
           ${_clientCell(c)}
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.a)}</td>
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
           <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
-          <td style="font-weight:800;color:#fff">${fBRL(tot)}</td>
-        </tr>`;
-      }).join('');
+        </tr>`).join('');
       const totA=allClients.reduce((s,c)=>s+c.a,0);
       const totB=allClients.reduce((s,c)=>s+c.b,0);
       const totC=allClients.reduce((s,c)=>s+c.c,0);
@@ -7705,14 +7701,12 @@ function renderVendorDetail(name){
         <th style="${_thS}" onclick="_vdSortBy('a')">${lblA}${_ico('a')}</th>
         <th style="${_thS}" onclick="_vdSortBy('b')">${lblB}${_ico('b')}</th>
         <th style="${_thS}" onclick="_vdSortBy('c')">${lblC}${_ico('c')}</th>
-        <th style="${_thS}" onclick="_vdSortBy('total')">Total${_ico('total')}</th>
       </tr>`;
       tfoot=`<tr class="total-row">
         <td colspan="3">Total</td>
         <td>${fBRL(totA)}</td>
         <td>${fBRL(totB)}</td>
         <td style="font-weight:800">${fBRL(totC)}</td>
-        <td style="font-weight:800">${fBRL(totA+totB+totC)}</td>
       </tr>`;
     }
     tblHtml=`<table class="tbl"><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table>`;
