@@ -974,21 +974,9 @@ body.mode-mobile .section-header{gap:12px}
     </div>
   </div>
 
-  <!-- Linha 2: Donut + Top5 -->
-  <div class="dash-second-grid gap-12">
-    <div class="card">
-      <div class="card-header"><span class="card-title" id="dash-donut-title">Distribuição Abril</span></div>
-      <div class="donut-wrap">
-        <svg id="donut-svg" width="120" height="120" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="18"/>
-        </svg>
-        <div class="donut-legend" id="donut-legend"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Top 5 Clientes</span></div>
-      <div id="top5-list"></div>
-    </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Top 5 Clientes</span></div>
+    <div id="top5-list"></div>
   </div>
 
 </div>
@@ -5689,8 +5677,6 @@ function refreshTab(tab){
   if(btn){btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);}
   if(tab==='dashboard'){
     renderKPIs();renderRanking();renderTop5();
-    renderDonut('donut-svg','donut-legend');
-    if(document.getElementById('donut-svg2')) renderDonut('donut-svg2','donut-legend2');
     if(!window.CRM_VENDOR_ID) renderWeeklyKPIs();
   } else if(tab==='analise'){
     renderComparativo();
@@ -7564,7 +7550,6 @@ function setMes(mes, btn){
   renderKPIs();
   renderRanking();
   renderTop5();
-  renderDonut('donut-svg','donut-legend');
   // Analise tab — lazy: only render when the tab is open
   if(document.getElementById('tab-analise')?.classList.contains('active')){
     if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
@@ -7574,8 +7559,6 @@ function setMes(mes, btn){
   }
   // Labels
   // analise-section-sub removido (estático agora)
-  const dt=document.getElementById('dash-donut-title');
-  if(dt) dt.textContent='Distribuição '+(MES_LABELS[mes]||mes);
   if(window.CRM_VENDOR_ID&&CRM_USER){
     const vk=CRM_USER.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
     renderVendorDashboard(CRM_USER,vk);
@@ -7589,48 +7572,7 @@ function setEquipeFilter(v){
   });
   const lbl=document.getElementById('rank-total-label');
   if(lbl) lbl.textContent=v==='lazaro'?'Total Lázaro':v==='val'?'Total Val':'Total Geral';
-  renderKPIs();renderRanking();renderTop5();renderDonut('donut-svg','donut-legend');
-}
-
-/* ─────────────────────────────────────────
-   DONUT
-───────────────────────────────────────── */
-function renderDonut(svgId, legendId){
-  const svg=document.getElementById(svgId);
-  const legend=document.getElementById(legendId);
-  if(!svg||!legend) return;
-  const source=getVendedoresFiltered(CRM_MES).map(v=>({name:v.name,abr:v.abr,mar:v.mar,color:v.color}));
-  const sorted=[...source].filter(v=>v.abr>0).sort((a,b)=>b.abr-a.abr);
-  const total=sorted.reduce((s,v)=>s+v.abr,0);
-  if(total===0||sorted.length===0){
-    svg.innerHTML='<text x="60" y="65" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="10">Sem dados</text>';
-    legend.innerHTML='';
-    return;
-  }
-  const R=50, C=Math.PI*2*R;
-  let offset=0;
-  let segs='', legendHtml='';
-  sorted.forEach((v)=>{
-    const share=v.abr/total;
-    const dash=share*C;
-    const clr=v.color||'rgba(255,255,255,.6)';
-    const varP=v.mar>0?((v.abr-v.mar)/v.mar*100):null;
-    const pctStr=varP!==null?`${varP>=0?'▲ +':'▼ '}${Math.abs(varP).toFixed(1)}%`:`${Math.round(share*100)}%`;
-    const lc=varP===null?'rgba(255,255,255,.7)':varP>=0?'#4ade80':'#f87171';
-    segs+=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${clr}" stroke-width="18"
-      stroke-dasharray="${dash} ${C-dash}"
-      stroke-dashoffset="${C-offset}"
-      transform="rotate(-90 60 60)"
-      style="transition:stroke-dashoffset .6s ease"/>`;
-    legendHtml+=`<div class="donut-legend-item">
-      <div class="donut-legend-dot" style="background:${clr}"></div>
-      <span style="color:#fff">${v.name}</span>
-      <span style="margin-left:auto;font-weight:700;color:${lc}">${pctStr}</span>
-    </div>`;
-    offset+=dash;
-  });
-  svg.innerHTML='<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="18"/>'+segs;
-  legend.innerHTML=legendHtml;
+  renderKPIs();renderRanking();renderTop5();
 }
 
 /* ─────────────────────────────────────────
