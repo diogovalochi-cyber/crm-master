@@ -7594,9 +7594,7 @@ function renderVendorDetail(name){
     return `<tr>
       <td style="font-weight:700;color:#fff">${m.label}</td>
       <td style="font-weight:${i===2?'700':'400'};color:${isEmpty?'rgba(255,255,255,.35)':'#fff'}">${isEmpty?'—':fBRL(m.total)}</td>
-      <td style="color:rgba(255,255,255,.6)">${m.ped||'—'}</td>
       <td style="color:rgba(255,255,255,.6)">${m.cli||'—'}</td>
-      <td>${vr?`<span class="${vr.up?'badge-up':'badge-dn'}">${vr.str}</span>`:'—'}</td>
       <td style="color:${diff===null?'rgba(255,255,255,.4)':diff>=0?'#4ade80':'#f87171'};font-weight:600">${diff===null?'—':(diff>=0?'▲ +':'▼ ')+fBRL(Math.abs(diff))}</td>
     </tr>`;
   }).join('');
@@ -7722,7 +7720,7 @@ function renderVendorDetail(name){
       </div>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Mês</th><th>Faturamento</th><th>Ped.</th><th>Cli.</th><th>Variação %</th><th>Diferença R$</th></tr></thead>
+          <thead><tr><th>Mês</th><th>Faturamento</th><th>Cli.</th><th>Diferença R$</th></tr></thead>
           <tbody>${compRows}</tbody>
         </table>
       </div>
