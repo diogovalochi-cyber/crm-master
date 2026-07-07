@@ -6741,16 +6741,19 @@ function _visitasOffsets(r){
 
 const FORMS_CONFIG={
   prospeccoes:{
-    // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=RAZÃO SOCIAL r[4]=ENDEREÇO
-    // r[5]=RESPONSÁVEL r[6]=CONTATOS r[7]=EMPRESA ATUAL r[8]=QTD PÃES
-    // r[9]=OBSERVAÇÃO r[10]=? r[11]=FOTO
+    // Layout padrão (≥11 cols): r[7]=EMPRESA ATUAL r[8]=QTD PÃES r[10]=FOTO
+    // Layout Guilherme (≤10 cols): sem EMPRESA ATUAL → r[7]=QTD PÃES r[8]=FOTO r[9]=OBS
     vendCol:0, dateCol:1,
     cols:[
       {h:'Data',w:'95px'},{h:'Razão Social',w:''},{h:'Empresa Atual',w:'150px'},
       {h:'Qtd Pães',w:'62px'},{h:'End.',w:'44px'},{h:'Resp.',w:'44px'},
       {h:'Cont.',w:'44px'},{h:'📷',w:'36px'},{h:'Obs.',w:'44px'}
     ],
-    row:r=>`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[10])}${obsCell(r[9],'Obs.','Observação')}`
+    row:r=>{
+      const noEA=r.length<=10||(r[8]||'').startsWith('http');
+      if(noEA) return`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,6)||r[3]||''}</td><td></td><td style="text-align:center">${r[7]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[8])}${obsCell(r[9],'Obs.','Observação')}`;
+      return`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[10])}${obsCell(r[9],'Obs.','Observação')}`;
+    }
   },
   visitas:{
     // r[0]=VENDEDOR r[1]=Carimbo r[2]=MÊS r[3]=EMAIL(skip) r[4]=CÓD r[5]=RAZÃO SOCIAL
