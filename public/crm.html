@@ -7051,25 +7051,83 @@ function renderRota(){
     const _fq=rotaFilter||'';
     const _qn=_fq.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
     const _isNum=/^\d+$/.test(_fq.trim());
+    const _nm2=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+
+    // Fetch visitas (mesmo cache-bust do day-based)
+    const _sNow=Date.now();
+    const _sStale=!formsCaches.visitas.length||(_sNow-(formsCaches._visitasTs||0))>30000;
+    if(_sStale&&FORMS_CSV.visitas&&!formsCaches._visitasFetching){
+      formsCaches._visitasFetching=true;
+      formsCaches._visitasTs=_sNow;
+      const _sUrls=[FORMS_CSV.visitas+'&_t='+_sNow];
+      if(FORMS_CSV.visitas2) _sUrls.push(FORMS_CSV.visitas2+'&_t='+_sNow);
+      if(FORMS_CSV.visitas3) _sUrls.push(FORMS_CSV.visitas3+'&_t='+_sNow);
+      if(FORMS_CSV.visitas4) _sUrls.push(FORMS_CSV.visitas4+'&_t='+_sNow);
+      if(FORMS_CSV.visitas5) _sUrls.push(FORMS_CSV.visitas5+'&_t='+_sNow);
+      Promise.allSettled(_sUrls.map(u=>fetch(u).then(r=>r.text())))
+        .then(results=>{
+          const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
+          const rows=texts.flatMap(t=>parseCSV(t).filter(r=>r[0]&&r[0].trim()));
+          if(rows.length>0) formsCaches.visitas=rows;
+          formsCaches._visitasFetching=false;
+          const tsEl=document.getElementById('rota-ts');
+          if(tsEl){const h=new Date();tsEl.textContent='Atualizado '+String(h.getHours()).padStart(2,'0')+':'+String(h.getMinutes()).padStart(2,'0');}
+          renderRota();
+        })
+        .catch(()=>{formsCaches._visitasFetching=false;formsCaches._visitasTs=0;});
+    }
+
+    // Visitas da semana (todos os dias, setor não tem dia fixo)
+    const _weekEnd=new Date(weekMon);_weekEnd.setDate(weekMon.getDate()+6);_weekEnd.setHours(23,59,59,999);
+    const visitedWeek=new Set();
+    formsCaches.visitas.forEach(r=>{
+      if(!_vendMatch(_nm2(r[0]),currentRegSeller)) return;
+      const dt=toDate(r[1]);if(!dt) return;
+      if(dt<weekMon||dt>_weekEnd) return;
+      const{iC,iR}=_visitasOffsets(r);
+      const cd=normCod(r[iC]);
+      if(/^\d+$/.test(cd)) visitedWeek.add(cd);
+      const nn=_nm2(_findRS(r,iR,iR+1)||'');
+      if(nn&&nn.length>=3) visitedWeek.add(nn);
+    });
+
+    // Badge mensal
+    const _now2=new Date();
+    const _curMes2=_now2.getFullYear()+'-'+String(_now2.getMonth()+1).padStart(2,'0');
+    const _mesCount2={};
+    formsCaches.visitas.forEach(r=>{
+      if(!_vendMatch(_nm2(r[0]),currentRegSeller)) return;
+      const dt=toDate(r[1]);if(!dt) return;
+      if((dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))!==_curMes2) return;
+      const{iC,iR}=_visitasOffsets(r);
+      const cd=normCod(r[iC]);
+      if(/^\d+$/.test(cd)){_mesCount2[cd]=(_mesCount2[cd]||0)+1;}
+      const nn=_nm2(_findRS(r,iR,iR+1)||'');
+      if(nn&&nn.length>=3){_mesCount2[nn]=(_mesCount2[nn]||0)+1;}
+    });
+
+    const _isFutWk=weekMon>today;
+    const _chkS=c=>visitedWeek.has(normCod(c.cod))||visitedWeek.has(_nm2(c.nome));
+
     const sectorCards=_rotaKeys.map(key=>{
       const clientes=rota[key]||[];
-      const clientesFilt=_fq?clientes.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm(c.nome).includes(_qn)):clientes;
+      const clientesFilt=_fq?clientes.filter(c=>_isNum?normCod(c.cod)===normCod(_fq):_nm2(c.nome).includes(_qn)):clientes;
+      const visitedCount=_isFutWk?null:clientesFilt.filter(_chkS).length;
+      const label=SECTOR_LABELS[key]||key;
+      const hdrRight=_isFutWk
+        ?`<span class="rota-day-count">${clientesFilt.length} cliente${clientesFilt.length!==1?'s':''}</span>`
+        :clientesFilt.length
+          ?`<span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:600">${visitedCount}/${clientesFilt.length} visitado${visitedCount!==1?'s':''}</span>`
+          :`<span class="rota-day-count">0 clientes</span>`;
       const rows=clientesFilt.map(c=>{
         const pin=c.maps?`<a class="rota-maps-pin" href="${c.maps}" target="_blank" rel="noopener">📍</a>`:'';
-        return `<div class="rota-client">
-          <span class="rota-cod">${c.cod}</span>
-          <span class="rota-nome">${c.nome}</span>${pin}
-          ${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}
-        </div>`;
+        const _mc=_mesCount2[normCod(c.cod)]||_mesCount2[_nm2(c.nome)]||0;
+        const _mb=_mc>0?`<span style="font-size:9px;font-weight:700;color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);border-radius:3px;padding:0 4px;margin-left:3px;letter-spacing:.3px">${_mc}×</span>`:'';
+        if(_isFutWk) return`<div class="rota-client"><span class="rota-cod">${c.cod}</span><span class="rota-nome">${c.nome}</span>${_mb}${pin}${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}</div>`;
+        const v=_chkS(c);
+        return`<div class="rota-client ${v?'rota-visited':'rota-pending'}"><span class="rota-status-dot">${v?'✓':'○'}</span><span class="rota-cod">${c.cod}</span><span class="rota-nome">${c.nome}</span>${_mb}${pin}${c.freq?`<span class="rota-freq">${c.freq}</span>`:''}</div>`;
       }).join('');
-      const label=SECTOR_LABELS[key]||key;
-      return `<div class="rota-day">
-        <div class="rota-day-hdr">
-          <span class="rota-day-name">${label}</span>
-          <span class="rota-day-count">${clientesFilt.length} cliente${clientesFilt.length!==1?'s':''}</span>
-        </div>
-        ${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste setor</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}
-      </div>`;
+      return`<div class="rota-day"><div class="rota-day-hdr"><span class="rota-day-name">${label}</span>${hdrRight}</div>${rows||(_fq?'<div class="rota-client" style="color:rgba(255,255,255,.2);font-style:italic;font-size:12px;justify-content:center">Não neste setor</div>':'<div class="rota-client" style="color:rgba(255,255,255,.3);font-style:italic;font-size:12px">Sem clientes cadastrados</div>')}</div>`;
     }).join('');
     grid.innerHTML=sectorCards;
     return;
