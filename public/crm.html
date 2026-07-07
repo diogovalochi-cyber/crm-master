@@ -8829,7 +8829,7 @@ function renderLembretes(){
   if(dl&&typeof VENDEDORES!=='undefined') dl.innerHTML=VENDEDORES.map(v=>`<option value="${v.name}">`).join('');
   const lista=document.getElementById('ag-lembretes-lista');
   if(!lista) return;
-  const all=_loadLemb();
+  const all=_loadLemb().filter(x=>!x.deleted);
   if(!all.length){
     lista.innerHTML='<div style="text-align:center;padding:48px 0;color:rgba(255,255,255,.3);font-size:14px">Nenhum lembrete ainda</div>';
     return;
@@ -8894,8 +8894,7 @@ function salvarLembrete(){
 }
 function deletarLembrete(id){
   if(!confirm('Excluir este lembrete?')) return;
-  _trackDeleted('lembretes',id);
-  _saveLemb(_loadLemb().filter(x=>x.id!==id));
+  _saveLemb(_loadLemb().map(x=>x.id===id?{...x,deleted:true}:x));
   renderLembretes();
 }
 
