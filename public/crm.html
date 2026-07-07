@@ -1014,7 +1014,7 @@ body.mode-mobile .section-header{gap:12px}
       <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODOS</span>
       <select class="comp-mes-sel" id="vd-mes-a" onchange="setVdMes()">
         <option value="marco">Março</option>
-        <option value="abril" selected>Abril</option>
+        <option value="abril">Abril</option>
         <option value="maio">Maio</option>
         <option value="junho">Junho</option>
         <option value="julho">Julho</option>
@@ -1023,7 +1023,7 @@ body.mode-mobile .section-header{gap:12px}
       <select class="comp-mes-sel" id="vd-mes-b" onchange="setVdMes()">
         <option value="marco">Março</option>
         <option value="abril">Abril</option>
-        <option value="maio" selected>Maio</option>
+        <option value="maio">Maio</option>
         <option value="junho">Junho</option>
         <option value="julho">Julho</option>
       </select>
@@ -1033,7 +1033,7 @@ body.mode-mobile .section-header{gap:12px}
         <option value="abril">Abril</option>
         <option value="maio">Maio</option>
         <option value="junho">Junho</option>
-        <option value="julho" selected>Julho</option>
+        <option value="julho">Julho</option>
       </select>
     </div>
     <div class="pill-row" id="vendor-pills"></div>
@@ -7520,7 +7520,7 @@ function renderAnaliseTable(){
    POR VENDEDOR
 ───────────────────────────────────────── */
 let activeVendor='Guilherme';
-let VD_MES='junho';
+let VD_MES=CRM_MES;
 let _vdSort={col:'total',dir:'desc'};
 function _vdSortBy(col){
   if(_vdSort.col===col) _vdSort.dir=_vdSort.dir==='asc'?'desc':'asc';
@@ -7560,9 +7560,11 @@ function initVendorPills(){
   renderVendorDetail(defaultVendor);
 }
 function renderVendorDetail(name){
-  const mesA=document.getElementById('vd-mes-a')?.value||'abril';
-  const mesB=document.getElementById('vd-mes-b')?.value||'maio';
-  const mesC=document.getElementById('vd-mes-c')?.value||'junho';
+  const _mseqVD=['marco','abril','maio','junho','julho'];
+  const _ciVD=_mseqVD.indexOf(CRM_MES);
+  const mesA=document.getElementById('vd-mes-a')?.value||_mseqVD[Math.max(0,_ciVD-2)];
+  const mesB=document.getElementById('vd-mes-b')?.value||_mseqVD[Math.max(0,_ciVD-1)];
+  const mesC=document.getElementById('vd-mes-c')?.value||CRM_MES;
   const lblA=MES_LABELS[mesA]||mesA;
   const lblB=MES_LABELS[mesB]||mesB;
   const lblC=MES_LABELS[mesC]||mesC;
@@ -8582,6 +8584,15 @@ function _initApp(){
   _appInitialized=true;
   updateGreetingClock();
   setMes(CRM_MES);
+  // Inicializa selects de "Por Vendedor" com os 3 últimos meses disponíveis
+  const _mseq=['marco','abril','maio','junho','julho'];
+  const _ci=_mseq.indexOf(CRM_MES);
+  const _va=_mseq[Math.max(0,_ci-2)];
+  const _vb=_mseq[Math.max(0,_ci-1)];
+  const _vc=CRM_MES;
+  const _sa=document.getElementById('vd-mes-a');if(_sa)_sa.value=_va;
+  const _sb=document.getElementById('vd-mes-b');if(_sb)_sb.value=_vb;
+  const _sc=document.getElementById('vd-mes-c');if(_sc)_sc.value=_vc;
 }
 document.addEventListener('DOMContentLoaded',()=>{
   autoMode();
