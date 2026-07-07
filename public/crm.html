@@ -6751,7 +6751,8 @@ const FORMS_CONFIG={
     ],
     row:r=>{
       const noEA=r.length<=10||(r[8]||'').startsWith('http');
-      if(noEA) return`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,6)||r[3]||''}</td><td></td><td style="text-align:center">${r[7]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[8])}${obsCell(r[9],'Obs.','Observação')}`;
+      // Guilherme: r[2]=RAZÃO SOCIAL r[3]=END r[4]=RESP r[5]=CONT r[6]=EMPRESA r[7]=QTD r[8]=FOTO r[9]=OBS
+      if(noEA) return`<td>${fmtDate(r[1])}</td><td class="td-wrap">${r[2]||''}</td><td>${r[6]||''}</td><td style="text-align:center">${r[7]||''}</td>${obsCell(r[3],'End.','Endereço')}${obsCell(r[4],'Resp.','Responsável')}${obsCell(r[5],'Cont.','Contatos')}${fotoCell(r[8])}${obsCell(r[9],'Obs.','Observação')}`;
       return`<td>${fmtDate(r[1])}</td><td class="td-wrap">${_findRS(r,3,8)||r[3]||''}</td><td>${r[7]||''}</td><td style="text-align:center">${r[8]||''}</td>${obsCell(r[4],'End.','Endereço')}${obsCell(r[5],'Resp.','Responsável')}${obsCell(r[6],'Cont.','Contatos')}${fotoCell(r[10])}${obsCell(r[9],'Obs.','Observação')}`;
     }
   },
