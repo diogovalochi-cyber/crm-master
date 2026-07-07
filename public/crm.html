@@ -1079,6 +1079,20 @@ body.mode-mobile .section-header{gap:12px}
       </div>
     </div>
   </div>
+<!-- OBS de rota consolidado (admin only) -->
+<div id="admin-obs-panel" style="display:none;margin-top:16px">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">OBS de Rota</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="adminObsWeekOff--;renderAdminObsPanel()" style="background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:15px;line-height:1">‹</button>
+        <span id="admin-obs-week-label" style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600;min-width:96px;text-align:center"></span>
+        <button onclick="adminObsWeekOff++;renderAdminObsPanel()" style="background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:15px;line-height:1">›</button>
+      </div>
+    </div>
+    <div id="admin-obs-list" style="padding:0 4px"></div>
+  </div>
+</div>
 
   <div id="subtab-pesquisa" style="display:none">
     <div class="card">
@@ -7844,6 +7858,59 @@ function renderAdminCarteira(){
 }
 
 /* ─────────────────────────────────────────
+   OBS DE ROTA — PAINEL ADMIN
+───────────────────────────────────────── */
+let adminObsWeekOff=0;
+async function renderAdminObsPanel(){
+  const panel=document.getElementById('admin-obs-panel');
+  if(!panel||panel.style.display==='none') return;
+  const listEl=document.getElementById('admin-obs-list');
+  listEl.innerHTML='<div style="color:rgba(255,255,255,.35);font-size:12px;padding:10px 0">Carregando...</div>';
+  const today=new Date();today.setHours(0,0,0,0);
+  const dow=today.getDay();
+  const mon=new Date(today);
+  mon.setDate(today.getDate()-(dow===0?6:dow-1)+(adminObsWeekOff*7));
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  const pad=n=>String(n).padStart(2,'0');
+  const wk=`${mon.getFullYear()}-${pad(mon.getMonth()+1)}-${pad(mon.getDate())}`;
+  const fmt=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}`;
+  const lbl=document.getElementById('admin-obs-week-label');
+  if(lbl) lbl.textContent=`${fmt(mon)} – ${fmt(sun)}`;
+  const CODS=['093','094','107','115','116','117','118','119','120','121','122','123','124','125'];
+  const DIAS_PT={segunda:'Seg',terca:'Ter',quarta:'Qua',quinta:'Qui',sexta:'Sex',sabado:'Sáb'};
+  const DIA_ORDER={segunda:0,terca:1,quarta:2,quinta:3,sexta:4,sabado:5};
+  const codName={};
+  CODS.forEach(c=>{const v=VENDEDORES.find(x=>x.cod===c);codName[c]=v?v.name:c;});
+  const keys=CODS.map(c=>`rotaObs_${c}_${wk}`).join(',');
+  try{
+    const res=await fetch(`${_SB_URL}/rest/v1/crm_data?key=in.(${keys})&select=key,value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await res.json();
+    const items=[];
+    (Array.isArray(rows)?rows:[]).forEach(row=>{
+      const cod=(row.key||'').replace('rotaObs_','').replace('_'+wk,'');
+      try{
+        const data=JSON.parse(row.value||'{}');
+        Object.entries(data).forEach(([dia,arr])=>{
+          (arr||[]).forEach(txt=>{if(txt&&txt.trim())items.push({cod,name:codName[cod]||cod,dia,txt:txt.trim()});});
+        });
+      }catch(e){}
+    });
+    if(!items.length){
+      listEl.innerHTML='<div style="color:rgba(255,255,255,.3);font-size:13px;padding:20px 0;text-align:center">Nenhuma obs para esta semana</div>';
+      return;
+    }
+    items.sort((a,b)=>(DIA_ORDER[a.dia]??9)-(DIA_ORDER[b.dia]??9)||a.name.localeCompare(b.name));
+    listEl.innerHTML=items.map(it=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <span style="min-width:80px;font-size:11px;font-weight:700;color:#60A5FA;white-space:nowrap">${it.name}</span>
+      <span style="min-width:28px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);padding-top:1px">${DIAS_PT[it.dia]||it.dia}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.85);flex:1;line-height:1.4">${it.txt}</span>
+    </div>`).join('');
+  }catch(e){
+    listEl.innerHTML='<div style="color:#f87171;font-size:12px;padding:8px 0">Erro ao carregar obs</div>';
+  }
+}
+
+/* ─────────────────────────────────────────
    POR VENDEDOR
 ───────────────────────────────────────── */
 let activeVendor='Guilherme';
@@ -8281,6 +8348,8 @@ function applySession(user){
     } else {
       // Adm/Analista/Gerente: mostra filtro de equipes completo
       const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
+      const _op=document.getElementById('admin-obs-panel');if(_op)_op.style.display='';
+      renderAdminObsPanel();
     }
   }
 
