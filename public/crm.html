@@ -8072,7 +8072,7 @@ function renderVendorDashboard(user, vendorKey){
   const varPctV=vM.mar>0?((vM.abr-vM.mar)/vM.mar*100):null;
   const varHTML=varPctV!==null
     ?`<span style="background:${varPctV>=0?'rgba(34,197,94,.18)':'rgba(239,68,68,.18)'};color:${varPctV>=0?'#4ade80':'#f87171'};padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${varPctV>=0?'▲ +':'▼ '}${Math.abs(varPctV).toFixed(1)}%</span> vs ${mesAnt}`
-    :vM.ped+' pedidos';
+    :`${vM.cli} clientes`;
 
 
   const carteira=(getCarteiraForMes(CRM_MES)[user.vendId]||[]).slice().sort((a,b)=>b.valor-a.valor).slice(0,5);
@@ -8122,7 +8122,7 @@ function renderVendorDashboard(user, vendorKey){
     return `<div style="background:${isAct?'rgba(255,255,255,.16)':'rgba(255,255,255,.06)'};border:1px solid ${isAct?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)'};border-radius:14px;padding:16px 14px;min-width:0">
       <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${m.label}${isAct?' · atual':''}</div>
       <div style="font-size:22px;font-weight:800;color:${isEmpty?'rgba(255,255,255,.3)':'#fff'};line-height:1.1">${isEmpty?'—':fK(m.abr)}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:5px">${isEmpty?'sem dados':(m.cli+' cli'+(m.ped?` · ${m.ped} ped`:''))}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:5px">${isEmpty?'sem dados':(m.cli+' clientes')}</div>
       ${varS}
     </div>`;
   }).join('');
@@ -8145,35 +8145,26 @@ function renderVendorDashboard(user, vendorKey){
       </div>
     </div>
 
-    <div class="kpi-grid mb-16" style="grid-template-columns:1fr 1fr">
+    <div class="kpi-grid mb-16" style="grid-template-columns:1fr">
       <div class="kpi-card kpi-gold">
         <div class="kpi-label" style="color:rgba(255,255,255,.6)">Faturamento ${mesLabel}</div>
         <div class="kpi-value" style="color:#fff">${fK(vM.abr)}</div>
         <div class="kpi-sub" style="color:rgba(255,255,255,.7)">${fBRL(vM.abr)}</div>
         <div class="kpi-change" style="color:#fff">${varHTML}</div>
       </div>
-      <div class="kpi-card kpi-sky">
-        <div class="kpi-label" style="color:rgba(255,255,255,.6)">Pedidos ${mesLabel}</div>
-        <div class="kpi-value" style="color:#fff">${vM.ped}</div>
-        <div class="kpi-sub" style="color:rgba(255,255,255,.7)">${vM.cli} clientes ativos</div>
-        <div class="kpi-change" style="color:rgba(255,255,255,.7)">Ticket: ${vM.ped>0?fK(vM.abr/vM.ped):'—'}</div>
-      </div>
     </div>
 
-
-    <div class="dash-second-grid gap-12">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Seus Top Clientes · ${mesLabel}</span>
-          ${carteira.length?`<span style="font-size:11px;color:rgba(255,255,255,.7)">${fBRL(totalCarteira)}</span>`:''}
-        </div>
-        ${carteira.length?carteira.map((c,i)=>`
-          <div class="top5-item">
-            <div class="top5-rank">${i+1}</div>
-            <div class="top5-name">${c.nome}</div>
-            <div class="top5-val" style="color:#fff">${fBRL(c.valor)}</div>
-          </div>`).join(''):'<div style="color:rgba(255,255,255,.6);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
+    <div class="card mb-16">
+      <div class="card-header">
+        <span class="card-title">Seus Top Clientes · ${mesLabel}</span>
+        ${carteira.length?`<span style="font-size:11px;color:rgba(255,255,255,.7)">${fBRL(totalCarteira)}</span>`:''}
       </div>
+      ${carteira.length?carteira.map((c,i)=>`
+        <div class="top5-item">
+          <div class="top5-rank">${i+1}</div>
+          <div class="top5-name">${c.nome}</div>
+          <div class="top5-val" style="color:#fff">${fBRL(c.valor)}</div>
+        </div>`).join(''):'<div style="color:rgba(255,255,255,.6);font-size:13px;padding:16px 0;text-align:center">Carteira não disponível</div>'}
     </div>
 
     <div class="card mb-16">
