@@ -974,10 +974,6 @@ body.mode-mobile .section-header{gap:12px}
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Top 5 Clientes</span></div>
-    <div id="top5-list"></div>
-  </div>
 
 </div>
 
@@ -5676,7 +5672,7 @@ function refreshTab(tab){
   const btn=document.getElementById('refresh-btn-'+tab);
   if(btn){btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);}
   if(tab==='dashboard'){
-    renderKPIs();renderRanking();renderTop5();
+    renderKPIs();renderRanking();
     if(!window.CRM_VENDOR_ID) renderWeeklyKPIs();
   } else if(tab==='analise'){
     renderComparativo();
@@ -7509,28 +7505,6 @@ function renderRanking(){
 /* ─────────────────────────────────────────
    TOP 5
 ───────────────────────────────────────── */
-function renderTop5(){
-  const carteira=getCarteiraForMes(CRM_MES);
-  const vendMap={};
-  VENDEDORES_JUNHO.forEach(v=>{vendMap[v.cod]=v.name;});
-  const all=[];
-  Object.entries(carteira).forEach(([cod,clients])=>{
-    const vname=vendMap[cod]||cod;
-    clients.forEach(c=>all.push({nome:c.nome,vend:vname,val:c.valor}));
-  });
-  all.sort((a,b)=>b.val-a.val);
-  let html='';
-  all.slice(0,5).forEach((c,i)=>{
-    html+=`<div class="top5-item">
-      <div class="top5-rank">${i+1}</div>
-      <div class="top5-name">${c.nome}</div>
-      <div class="top5-seller">${c.vend}</div>
-      <div class="top5-val">${fK(c.val)}</div>
-    </div>`;
-  });
-  const t5El=document.getElementById('top5-list');
-  if(t5El) t5El.innerHTML=html||'<div style="color:rgba(255,255,255,.4);font-size:12px;padding:8px 0">Sem dados</div>';
-}
 
 /* ─────────────────────────────────────────
    SELETOR DE MÊS
@@ -7549,7 +7523,6 @@ function setMes(mes, btn){
   // Dashboard components — always visible
   renderKPIs();
   renderRanking();
-  renderTop5();
   // Analise tab — lazy: only render when the tab is open
   if(document.getElementById('tab-analise')?.classList.contains('active')){
     if(document.getElementById('subtab-comparativo')?.style.display!=='none') renderComparativo();
@@ -7572,7 +7545,7 @@ function setEquipeFilter(v){
   });
   const lbl=document.getElementById('rank-total-label');
   if(lbl) lbl.textContent=v==='lazaro'?'Total Lázaro':v==='val'?'Total Val':'Total Geral';
-  renderKPIs();renderRanking();renderTop5();
+  renderKPIs();renderRanking();
 }
 
 /* ─────────────────────────────────────────
