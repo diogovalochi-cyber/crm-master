@@ -1055,6 +1055,13 @@ body.mode-mobile .section-header{gap:12px}
     <button class="refresh-btn" id="refresh-btn-registrar" onclick="refreshTab('registrar')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
+  <!-- Filtro de equipe Forms (admin only) -->
+  <div id="forms-equipe-filter" style="display:none;margin-bottom:10px;gap:6px;justify-content:center">
+    <button class="equipe-btn active" onclick="setFormsEquipe('total')">Todos</button>
+    <button class="equipe-btn" onclick="setFormsEquipe('lazaro')">Equipe Lázaro</button>
+    <button class="equipe-btn" onclick="setFormsEquipe('val')">Equipe Val</button>
+  </div>
+
   <!-- Nível 1: Vendedor -->
   <div class="subtab-row" id="reg-seller-tabs">
     <button class="subtab active" data-seller="GUILHERME"     onclick="selectRegSeller(this)">Guilherme</button>
@@ -7508,6 +7515,32 @@ function setEquipeFilter(v){
   renderKPIs();renderRanking();
 }
 
+let _formsEquipe='total';
+function setFormsEquipe(v){
+  _formsEquipe=v;
+  document.querySelectorAll('#forms-equipe-filter .equipe-btn').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick').includes("'"+v+"'"));
+  });
+  const _nm2=n=>n.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+  if(v==='total'){
+    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.style.display='');
+  } else {
+    const cods=EQUIPES[v]||[];
+    const allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:VENDEDORES;
+    const names=new Set(cods.map(cod=>{const vv=allV.find(x=>x.cod===cod);return vv?_nm2(vv.name):null;}).filter(Boolean));
+    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>{
+      b.style.display=names.has(b.dataset.seller)?'':'none';
+    });
+  }
+  const first=[...document.querySelectorAll('#reg-seller-tabs .subtab')].find(b=>b.style.display!=='none');
+  if(first){
+    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
+    first.classList.add('active');
+    currentRegSeller=first.dataset.seller;
+    renderFormsTable();
+  }
+}
+
 /* ─────────────────────────────────────────
    ANALISE TABLE
 ───────────────────────────────────────── */
@@ -7983,6 +8016,7 @@ function applySession(user){
     } else {
       // Adm/Analista/Gerente: mostra filtro de equipes completo
       const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
+      const _fef=document.getElementById('forms-equipe-filter');if(_fef)_fef.style.display='flex';
     }
   }
 
