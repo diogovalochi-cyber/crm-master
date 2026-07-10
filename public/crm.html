@@ -867,7 +867,7 @@ body.mode-mobile .section-header{gap:12px}
     Google Forms
   </div>
   <div class="nav-item" id="nav-tecnicos" onclick="showTab('tecnicos',this)" style="display:none">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    <span style="font-size:15px;line-height:1;flex-shrink:0">🍞</span>
     Técnicos
   </div>
   <div class="nav-item" id="nav-placas" onclick="showTab('placas',this)" style="display:none">
@@ -896,7 +896,7 @@ body.mode-mobile .section-header{gap:12px}
       Forms
     </div>
     <div class="botnav-item" id="botnav-tecnicos" onclick="showTabMobile('tecnicos',this)" style="display:none">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      <span style="font-size:22px;line-height:1">🍞</span>
       Técnicos
     </div>
     <div class="botnav-item" id="botnav-placas" onclick="showTabMobile('placas',this)" style="display:none">
@@ -1209,9 +1209,31 @@ body.mode-mobile .section-header{gap:12px}
   </div><!-- /tec-sec-materiais -->
 
   <div id="tec-sec-equipamentos" class="tec-sec" style="display:none">
-    <div style="max-width:960px;margin:0 auto;padding:24px 12px">
-      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 6px">Equipamentos Técnicos</h2>
-      <p style="font-size:13px;color:rgba(255,255,255,.4);margin:0">Gestão de equipamentos em construção.</p>
+    <div style="max-width:680px;margin:0 auto;padding:20px 12px">
+      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 4px">Equipamentos Técnicos</h2>
+      <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0 0 16px">Selecione o técnico e edite as quantidades</p>
+
+      <!-- Seletor de técnico -->
+      <div id="equip-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px"></div>
+
+      <!-- Tabela de equipamentos -->
+      <div id="equip-content" style="display:none">
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px">
+          <table class="tbl" style="width:100%">
+            <thead>
+              <tr>
+                <th style="padding:10px 16px">Equipamento</th>
+                <th style="padding:10px 16px;text-align:center;width:120px">Quantidade</th>
+              </tr>
+            </thead>
+            <tbody id="equip-tbody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;justify-content:flex-end">
+          <button onclick="saveEquip()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 24px;font-size:13px;font-weight:600;cursor:pointer">Salvar</button>
+        </div>
+        <div id="equip-saved-msg" style="display:none;text-align:right;margin-top:8px;font-size:12px;color:#34D399">Salvo ✓</div>
+      </div>
     </div>
   </div><!-- /tec-sec-equipamentos -->
 </div><!-- /tab-tecnicos -->
@@ -5758,6 +5780,8 @@ function showTecnico(sec, btn){
     _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
   } else if(sec==='materiais'){
     renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
+  } else if(sec==='equipamentos'){
+    initEquipTabs();
   }
 }
 function refreshTab(tab){
@@ -8426,6 +8450,66 @@ let _agTecAtivo=_AG_TECS[3]; // Leonardo default
 let _agWeekOff=0;
 let _agSlotAtivo=null; // {d1,d2,tec} slot being edited
 let _agEditId=null;
+
+/* ─────────────────────────────────────────
+   EQUIPAMENTOS TÉCNICOS
+───────────────────────────────────────── */
+const EQUIP_TECNICOS=['Caio','Carlos','Gabriel','Juan','Leandro','Leonardo','Matheus','Rodrigo','Rogério','Hélio'];
+const EQUIP_ITENS=['Bandeja Master','Bandeja Mini','Forma de Bolo Redonda','Canudo','Faca','Bico','Caixa Organizadora','Peneira'];
+let _equipTecAtivo=null;
+
+function _loadEquip(){try{return JSON.parse(localStorage.getItem('crm_equipamentos')||'{}');}catch(e){return{};}}
+function _saveEquip(d){localStorage.setItem('crm_equipamentos',JSON.stringify(d));_dbSave('equipamentos',d);}
+
+function initEquipTabs(){
+  const wrap=document.getElementById('equip-tec-tabs');
+  if(!wrap||wrap.children.length) return;
+  EQUIP_TECNICOS.forEach(nome=>{
+    const btn=document.createElement('button');
+    btn.textContent=nome;
+    btn.className='subtab';
+    btn.onclick=()=>selectEquipTec(nome,btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function selectEquipTec(nome,btn){
+  _equipTecAtivo=nome;
+  document.querySelectorAll('#equip-tec-tabs .subtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEquipTable();
+  document.getElementById('equip-content').style.display='';
+  document.getElementById('equip-saved-msg').style.display='none';
+}
+
+function renderEquipTable(){
+  const data=_loadEquip();
+  const tecData=data[_equipTecAtivo]||{};
+  const tbody=document.getElementById('equip-tbody');
+  tbody.innerHTML=EQUIP_ITENS.map(item=>`
+    <tr>
+      <td style="padding:10px 16px;font-weight:500">${item}</td>
+      <td style="padding:6px 16px;text-align:center">
+        <input type="number" min="0" data-item="${item}"
+          value="${tecData[item]??0}"
+          style="width:72px;text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:7px;color:#fff;padding:5px 8px;font-size:14px;font-weight:700;outline:none;font-family:inherit">
+      </td>
+    </tr>`).join('');
+}
+
+function saveEquip(){
+  if(!_equipTecAtivo) return;
+  const data=_loadEquip();
+  const tecData={};
+  document.querySelectorAll('#equip-tbody input[data-item]').forEach(inp=>{
+    tecData[inp.dataset.item]=parseInt(inp.value)||0;
+  });
+  data[_equipTecAtivo]=tecData;
+  _saveEquip(data);
+  const msg=document.getElementById('equip-saved-msg');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',2000);
+}
 
 function _loadAg(){try{return JSON.parse(localStorage.getItem('crm_agenda')||'[]');}catch(e){return[];}}
 function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));_dbSave('agenda',d);}
