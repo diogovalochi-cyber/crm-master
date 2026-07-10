@@ -866,13 +866,13 @@ body.mode-mobile .section-header{gap:12px}
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     Google Forms
   </div>
-  <div class="nav-item" id="nav-agenda" onclick="showTab('agenda',this)" style="display:none">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    Agenda Técnica
+  <div class="nav-item" id="nav-tecnicos" onclick="showTab('tecnicos',this)" style="display:none">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    Técnicos
   </div>
-  <div class="nav-item" id="nav-materiais" onclick="showTab('materiais',this)" style="display:none">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-    Materiais
+  <div class="nav-item" id="nav-placas" onclick="showTab('placas',this)" style="display:none">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+    Placas
   </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
@@ -895,13 +895,13 @@ body.mode-mobile .section-header{gap:12px}
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
       Forms
     </div>
-    <div class="botnav-item" id="botnav-agenda" onclick="showTabMobile('agenda',this)" style="display:none">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      Agenda
+    <div class="botnav-item" id="botnav-tecnicos" onclick="showTabMobile('tecnicos',this)" style="display:none">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      Técnicos
     </div>
-    <div class="botnav-item" id="botnav-materiais" onclick="showTabMobile('materiais',this)" style="display:none">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-      Materiais
+    <div class="botnav-item" id="botnav-placas" onclick="showTabMobile('placas',this)" style="display:none">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+      Placas
     </div>
   </div>
 </div>
@@ -1141,7 +1141,15 @@ body.mode-mobile .section-header{gap:12px}
 <!-- ══════════════════════════════════════════ -->
 <!-- ABA 4: AGENDA TÉCNICA -->
 <!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-agenda">
+<div class="tab-content" id="tab-tecnicos">
+  <!-- Sub-nav Técnicos -->
+  <div style="padding:12px 12px 0;display:flex;gap:6px;flex-wrap:wrap">
+    <button id="tec-btn-agenda" onclick="showTecnico('agenda',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Agenda</button>
+    <button id="tec-btn-materiais" onclick="showTecnico('materiais',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Materiais</button>
+    <button id="tec-btn-equipamentos" onclick="showTecnico('equipamentos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Equipamentos</button>
+  </div>
+
+  <div id="tec-sec-agenda" class="tec-sec">
   <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
       <div>
@@ -1180,7 +1188,33 @@ body.mode-mobile .section-header{gap:12px}
       <div id="ag-lembretes-lista"></div>
     </div>
   </div>
-</div>
+  </div><!-- /tec-sec-agenda -->
+
+  <div id="tec-sec-materiais" class="tec-sec" style="display:none">
+    <div style="max-width:960px;margin:0 auto;padding:16px 12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Controle de Materiais</h2>
+          <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Cestos, bandejas e toalhas em campo</p>
+        </div>
+        <button onclick="abrirMatModal(null)" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">+ Nova Retirada</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <button id="mat-filter-todos" onclick="matSetFiltro('todos')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">Todos</button>
+        <button id="mat-filter-pendentes" onclick="matSetFiltro('pendentes')" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer">Pendentes</button>
+        <span id="mat-resumo" style="font-size:12px;color:rgba(255,255,255,.4);margin-left:8px"></span>
+      </div>
+      <div id="mat-lista"></div>
+    </div>
+  </div><!-- /tec-sec-materiais -->
+
+  <div id="tec-sec-equipamentos" class="tec-sec" style="display:none">
+    <div style="max-width:960px;margin:0 auto;padding:24px 12px">
+      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 6px">Equipamentos Técnicos</h2>
+      <p style="font-size:13px;color:rgba(255,255,255,.4);margin:0">Gestão de equipamentos em construção.</p>
+    </div>
+  </div><!-- /tec-sec-equipamentos -->
+</div><!-- /tab-tecnicos -->
 
 <!-- Modal Lembrete -->
 <div id="modal-lembrete" onclick="if(event.target===this)fecharLembreteModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
@@ -1278,24 +1312,14 @@ body.mode-mobile .section-header{gap:12px}
   </div>
 </div>
 
+
 <!-- ══════════════════════════════════════════ -->
-<!-- ABA: MATERIAIS                           -->
+<!-- ABA: PLACAS                              -->
 <!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-materiais">
-  <div style="max-width:960px;margin:0 auto;padding:16px 12px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <div>
-        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Controle de Materiais</h2>
-        <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Cestos, bandejas e toalhas em campo</p>
-      </div>
-      <button onclick="abrirMatModal(null)" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">+ Nova Retirada</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <button id="mat-filter-todos" onclick="matSetFiltro('todos')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer">Todos</button>
-      <button id="mat-filter-pendentes" onclick="matSetFiltro('pendentes')" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer">Pendentes</button>
-      <span id="mat-resumo" style="font-size:12px;color:rgba(255,255,255,.4);margin-left:8px"></span>
-    </div>
-    <div id="mat-lista"></div>
+<div class="tab-content" id="tab-placas">
+  <div style="max-width:960px;margin:0 auto;padding:24px 12px">
+    <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 6px">Placas</h2>
+    <p style="font-size:13px;color:rgba(255,255,255,.4);margin:0">Gestão de placas em construção.</p>
   </div>
 </div>
 
@@ -5671,18 +5695,39 @@ function showTab(tab, el){
     else loadFormsData();
     loadAllFormsCaches();
   }
-  if(tab==='agenda'){
-    if(_agSubnavAtivo==='lembretes') renderLembretes();
-    else renderAgenda();
-    _dbLoad('agenda').then(d=>{if(d&&_agSubnavAtivo==='agenda')renderAgenda();});
-    _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
+  if(tab==='tecnicos'){
+    const sec=document.querySelector('.tec-sec:not([style*="display:none"])')?.id||'tec-sec-agenda';
+    if(sec==='tec-sec-agenda'||sec==='tec-sec-agenda'){
+      if(_agSubnavAtivo==='lembretes') renderLembretes();
+      else renderAgenda();
+      _dbLoad('agenda').then(d=>{if(d&&_agSubnavAtivo==='agenda')renderAgenda();});
+      _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
+    } else if(sec==='tec-sec-materiais'){
+      renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
+    }
   }
-  if(tab==='materiais'){renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});}
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
   document.querySelectorAll('.botnav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
+}
+function showTecnico(sec, btn){
+  document.querySelectorAll('.tec-sec').forEach(s=>s.style.display='none');
+  document.getElementById('tec-sec-'+sec).style.display='';
+  document.querySelectorAll('#tab-tecnicos [id^="tec-btn-"]').forEach(b=>{
+    b.style.background='rgba(255,255,255,.07)';b.style.color='rgba(255,255,255,.55)';b.style.fontWeight='500';
+  });
+  const active=btn||document.getElementById('tec-btn-'+sec);
+  if(active){active.style.background='#7C3AED';active.style.color='#fff';active.style.fontWeight='700';}
+  if(sec==='agenda'){
+    if(_agSubnavAtivo==='lembretes') renderLembretes();
+    else renderAgenda();
+    _dbLoad('agenda').then(d=>{if(d&&_agSubnavAtivo==='agenda')renderAgenda();});
+    _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
+  } else if(sec==='materiais'){
+    renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
+  }
 }
 function refreshTab(tab){
   const btn=document.getElementById('refresh-btn-'+tab);
@@ -7982,12 +8027,12 @@ function applySession(user){
   // Copy protection: non-admins cannot select/copy text; admins can
   if(!user.fullAccess&&user.name!=='Marcelo') document.body.classList.add('no-copy');
   else document.body.classList.add('admin-mode');
-  // Agenda Técnica e Materiais: visível para fullAccess e para Marcelo
+  // Técnicos e Placas: visível para fullAccess e para Marcelo
   if(user.fullAccess||user.name==='Marcelo'){
-    const na=document.getElementById('nav-agenda'),ba=document.getElementById('botnav-agenda');
-    if(na)na.style.display='';if(ba)ba.style.display='';
-    const nm=document.getElementById('nav-materiais'),bm=document.getElementById('botnav-materiais');
-    if(nm)nm.style.display='';if(bm)bm.style.display='';
+    const nt=document.getElementById('nav-tecnicos'),bt=document.getElementById('botnav-tecnicos');
+    if(nt)nt.style.display='';if(bt)bt.style.display='';
+    const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
+    if(np)np.style.display='';if(bp)bp.style.display='';
   }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
@@ -8070,15 +8115,15 @@ function applyTecnicoMode(user){
     });
     // Libera aba Pesquisa (busca de cliente por código/nome com endereços)
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
-    // Abre na Agenda
+    // Abre em Técnicos → Agenda
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-    document.getElementById('tab-agenda').classList.add('active');
+    document.getElementById('tab-tecnicos').classList.add('active');
     document.querySelectorAll('#sidebar .nav-item').forEach(n=>n.classList.remove('active'));
-    const agNav=document.getElementById('nav-agenda');
-    if(agNav){agNav.style.display='';agNav.classList.add('active');}
-    const agBot=document.getElementById('botnav-agenda');
-    if(agBot){agBot.style.display='';agBot.classList.add('active');}
-    renderAgenda();
+    const tecNav=document.getElementById('nav-tecnicos');
+    if(tecNav){tecNav.style.display='';tecNav.classList.add('active');}
+    const tecBot=document.getElementById('botnav-tecnicos');
+    if(tecBot){tecBot.style.display='';tecBot.classList.add('active');}
+    showTecnico('agenda');
   }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
@@ -8319,7 +8364,7 @@ async function _syncFromServer(){
       // Migração automática: servidor vazio mas temos dados locais → envia
       _dbSave('agenda',agLoc);
     } else if(agSrv.length>0){
-      const t=document.getElementById('tab-agenda');if(t&&t.classList.contains('active'))renderAgenda();
+      const t=document.getElementById('tab-tecnicos');if(t&&t.classList.contains('active')&&document.getElementById('tec-sec-agenda')?.style.display!=='none')renderAgenda();
     }
   }
   // Materiais
@@ -8329,7 +8374,7 @@ async function _syncFromServer(){
     if(mtSrv.length===0&&mtLoc.length>0){
       _dbSave('mat',mtLoc);
     } else if(mtSrv.length>0){
-      const t=document.getElementById('tab-materiais');if(t&&t.classList.contains('active'))renderMateriais();
+      const t=document.getElementById('tab-tecnicos');if(t&&t.classList.contains('active')&&document.getElementById('tec-sec-materiais')?.style.display!=='none')renderMateriais();
     }
   }
   // Lembretes
