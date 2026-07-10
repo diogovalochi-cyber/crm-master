@@ -5782,6 +5782,7 @@ function showTecnico(sec, btn){
     renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
   } else if(sec==='equipamentos'){
     initEquipTabs();
+    _loadEquipFromServer().then(d=>{if(d&&_equipTecAtivo) renderEquipTable();});
   }
 }
 function refreshTab(tab){
@@ -8082,8 +8083,8 @@ function applySession(user){
   // Copy protection: non-admins cannot select/copy text; admins can
   if(!user.fullAccess&&user.name!=='Marcelo') document.body.classList.add('no-copy');
   else document.body.classList.add('admin-mode');
-  // Técnicos e Placas: visível para fullAccess e para Marcelo
-  if(user.fullAccess||user.name==='Marcelo'){
+  // Técnicos e Placas: apenas para ANALISTA (admin) e Marcelo
+  if((user.fullAccess && !user.team && user.role!=='GERENTE') || user.name==='Marcelo'){
     const nt=document.getElementById('nav-tecnicos'),bt=document.getElementById('botnav-tecnicos');
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
@@ -8094,7 +8095,6 @@ function applySession(user){
   else if(user.role==='VENDEDOR') applyVendorMode(user);
   else if(user.fullAccess){
     renderWeeklyKPIs();
-    const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     if(user.team){
       // Supervisor: vê somente a própria equipe (sem botões de filtro)
       const teamKey=Object.keys(EQUIPES).find(k=>EQUIPES[k].includes(user.team[0]))||'total';
@@ -8118,6 +8118,10 @@ function applySession(user){
       // Adm/Analista/Gerente: mostra filtro de equipes completo
       const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
       const _fef=document.getElementById('forms-equipe-filter');if(_fef)_fef.style.display='flex';
+      // Pesquisa: apenas para ANALISTA (não para GERENTE)
+      if(user.role!=='GERENTE'){
+        const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
+      }
     }
   }
 
@@ -8460,6 +8464,20 @@ let _equipTecAtivo=null;
 
 function _loadEquip(){try{return JSON.parse(localStorage.getItem('crm_equipamentos')||'{}');}catch(e){return{};}}
 function _saveEquip(d){localStorage.setItem('crm_equipamentos',JSON.stringify(d));_dbSave('equipamentos',d);}
+async function _loadEquipFromServer(){
+  try{
+    const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.equipamentos&select=value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await r.json();
+    if(Array.isArray(rows)&&rows.length>0){
+      const d=JSON.parse(rows[0].value||'{}');
+      if(d&&typeof d==='object'&&!Array.isArray(d)){
+        localStorage.setItem('crm_equipamentos',JSON.stringify(d));
+        return d;
+      }
+    }
+    return null;
+  }catch(e){return null;}
+}
 
 function initEquipTabs(){
   const wrap=document.getElementById('equip-tec-tabs');
