@@ -853,7 +853,7 @@ body.mode-mobile .section-header{gap:12px}
 <!-- ───────────────── SIDEBAR ───────────────── -->
 <nav id="sidebar">
   <div class="sidebar-section">Principal</div>
-  <div class="nav-item active" onclick="showTab('dashboard',this)">
+  <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard',this)">
     <span style="font-size:15px;line-height:1;flex-shrink:0">🏠</span>
     Dashboard
   </div>
@@ -862,7 +862,7 @@ body.mode-mobile .section-header{gap:12px}
     <span style="font-size:15px;line-height:1;flex-shrink:0">📈</span>
     Análise Comercial
   </div>
-  <div class="nav-item" onclick="showTab('registrar',this)">
+  <div class="nav-item" id="nav-forms" onclick="showTab('registrar',this)">
     <span style="font-size:15px;line-height:1;flex-shrink:0">📋</span>
     Google Forms
   </div>
@@ -883,7 +883,7 @@ body.mode-mobile .section-header{gap:12px}
 <!-- ───────────────── BOTTOM NAV ───────────────── -->
 <div id="botnav">
   <div class="botnav-inner">
-    <div class="botnav-item active" onclick="showTabMobile('dashboard',this)">
+    <div class="botnav-item active" id="botnav-dashboard" onclick="showTabMobile('dashboard',this)">
       <span style="font-size:22px;line-height:1">🏠</span>
       Dashboard
     </div>
@@ -891,7 +891,7 @@ body.mode-mobile .section-header{gap:12px}
       <span style="font-size:22px;line-height:1">📈</span>
       Análise
     </div>
-    <div class="botnav-item" onclick="showTabMobile('registrar',this)">
+    <div class="botnav-item" id="botnav-forms" onclick="showTabMobile('registrar',this)">
       <span style="font-size:22px;line-height:1">📋</span>
       Forms
     </div>
@@ -8207,14 +8207,8 @@ function applyTecnicoMode(user){
   if(botItems[0]) botItems[0].classList.add('active');
   // Marcelo: sem Forms nem Dashboard — abre direto na Agenda
   if(user.name==='Marcelo'){
-    document.querySelectorAll('#sidebar .nav-item').forEach(n=>{
-      const t=n.textContent.trim();
-      if(t==='Google Forms'||t==='Dashboard')n.style.display='none';
-    });
-    document.querySelectorAll('.botnav-item').forEach(n=>{
-      const t=n.textContent.trim();
-      if(t==='Forms'||t==='Dashboard')n.style.display='none';
-    });
+    ['nav-forms','nav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    ['botnav-forms','botnav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     // Libera aba Pesquisa (busca de cliente por código/nome com endereços)
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     // Abre em Técnicos → Agenda
