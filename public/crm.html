@@ -1060,6 +1060,7 @@ body.mode-mobile .section-header{gap:12px}
     <button class="equipe-btn active" onclick="setFormsEquipe('total')">Todos</button>
     <button class="equipe-btn" onclick="setFormsEquipe('lazaro')">Equipe Lázaro</button>
     <button class="equipe-btn" onclick="setFormsEquipe('val')">Equipe Val</button>
+    <button class="equipe-btn" onclick="setFormsEquipe('rj')">Equipe RJ</button>
   </div>
 
   <!-- Nível 1: Vendedor -->
@@ -1549,6 +1550,7 @@ let CRM_EQUIPE_FILTER = 'total';
 const EQUIPES = {
   lazaro: ['093','116','117','118','120','121','122'],
   val:    ['115','094','107','119','123','124','125'],
+  rj:     [],
 };
 function getVendedoresFiltered(mes){
   const src=getVendedoresForMes(mes);
