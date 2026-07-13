@@ -1055,11 +1055,6 @@ body.mode-mobile .section-header{gap:12px}
     <button class="refresh-btn" id="refresh-btn-registrar" onclick="refreshTab('registrar')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
   </div>
 
-  <!-- Seletor principal Forms (somente Diogo e Marcelo) -->
-  <div id="forms-main-switcher" style="display:none;margin-bottom:14px;gap:8px;justify-content:center">
-    <button id="fms-btn-vendedores" class="equipe-btn active" onclick="showFormsSection('vendedores')">Vendedores</button>
-    <button id="fms-btn-tecnicos" class="equipe-btn" onclick="showFormsSection('tecnicos')">🍞 Técnicos de Panificação</button>
-  </div>
 
   <div id="forms-sec-vendedores">
   <!-- Filtro de equipe Forms (admin only) -->
@@ -1144,13 +1139,6 @@ body.mode-mobile .section-header{gap:12px}
   </div>
   </div><!-- /forms-sec-vendedores -->
 
-  <!-- Seção Técnicos de Panificação no Forms -->
-  <div id="forms-sec-tecnicos" style="display:none">
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px" id="forms-tec-tabs"></div>
-    <div id="forms-tec-content">
-      <div style="color:rgba(255,255,255,.3);font-size:14px;text-align:center;padding:48px 0">Selecione um técnico acima.</div>
-    </div>
-  </div>
 
 </div>
 
@@ -1163,6 +1151,7 @@ body.mode-mobile .section-header{gap:12px}
     <button id="tec-btn-agenda" onclick="showTecnico('agenda',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Agenda</button>
     <button id="tec-btn-materiais" onclick="showTecnico('materiais',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Materiais</button>
     <button id="tec-btn-equipamentos" onclick="showTecnico('equipamentos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Equipamentos</button>
+    <button id="tec-btn-forms" onclick="showTecnico('forms',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">🍞 Forms</button>
   </div>
 
   <div id="tec-sec-agenda" class="tec-sec">
@@ -1252,6 +1241,15 @@ body.mode-mobile .section-header{gap:12px}
       </div>
     </div>
   </div><!-- /tec-sec-equipamentos -->
+
+  <div id="tec-sec-forms" class="tec-sec" style="display:none">
+    <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px" id="forms-tec-tabs"></div>
+      <div id="forms-tec-content">
+        <div style="color:rgba(255,255,255,.3);font-size:14px;text-align:center;padding:48px 0">Selecione um técnico acima.</div>
+      </div>
+    </div>
+  </div><!-- /tec-sec-forms -->
 </div><!-- /tab-tecnicos -->
 
 <!-- Modal Lembrete -->
@@ -5846,6 +5844,8 @@ function showTecnico(sec, btn){
   } else if(sec==='equipamentos'){
     initEquipTabs();
     _loadEquipFromServer().then(d=>{if(d&&_equipTecAtivo) renderEquipTable();});
+  } else if(sec==='forms'){
+    initFormsTecTabs();
   }
 }
 function refreshTab(tab){
@@ -7698,14 +7698,8 @@ function setEquipeFilter(v){
 
 let _formsEquipe='total';
 function showFormsSection(sec){
-  const isVend=sec==='vendedores';
   const sv=document.getElementById('forms-sec-vendedores');
-  const st=document.getElementById('forms-sec-tecnicos');
-  if(sv)sv.style.display=isVend?'':'none';
-  if(st)st.style.display=isVend?'none':'';
-  document.getElementById('fms-btn-vendedores')?.classList.toggle('active',isVend);
-  document.getElementById('fms-btn-tecnicos')?.classList.toggle('active',!isVend);
-  if(!isVend) initFormsTecTabs();
+  if(sv)sv.style.display='';
 }
 function _parseTecCSV(text){
   const rows=[];let row=[],field='',inQ=false;
@@ -8297,10 +8291,6 @@ function applySession(user){
       if(user.role!=='GERENTE'){
         const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
       }
-      // Seletor Vendedores/Técnicos: apenas para ANALISTA (não GERENTE)
-      if(user.role!=='GERENTE'){
-        const _ms=document.getElementById('forms-main-switcher');if(_ms)_ms.style.display='flex';
-      }
     }
   }
 
@@ -8347,11 +8337,7 @@ function applyTecnicoMode(user){
     ['botnav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     // Libera aba Pesquisa
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
-    // Forms: mostrar só seção técnicos (ocultar vendedores e botão Vendedores)
-    const _ms=document.getElementById('forms-main-switcher');if(_ms)_ms.style.display='flex';
-    const _bv=document.getElementById('fms-btn-vendedores');if(_bv)_bv.style.display='none';
-    showFormsSection('tecnicos');
-    // Abre em Técnicos → Agenda
+    // Abre em Técnicos → Forms
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-tecnicos').classList.add('active');
     document.querySelectorAll('#sidebar .nav-item').forEach(n=>n.classList.remove('active'));
@@ -8359,7 +8345,7 @@ function applyTecnicoMode(user){
     if(tecNav){tecNav.style.display='';tecNav.classList.add('active');}
     const tecBot=document.getElementById('botnav-tecnicos');
     if(tecBot){tecBot.style.display='';tecBot.classList.add('active');}
-    showTecnico('agenda');
+    showTecnico('forms');
   }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
