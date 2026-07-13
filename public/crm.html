@@ -1736,7 +1736,7 @@ function renderKPIs(){
   const liderVar=lider&&lider.mar>0?((lider.abr-lider.mar)/lider.mar*100):0;
   const altaVar=maiorAlta&&maiorAlta.mar>0?((maiorAlta.abr-maiorAlta.mar)/maiorAlta.mar*100):0;
   const quedaVar=maiorQueda&&maiorQueda.mar>0?((maiorQueda.abr-maiorQueda.mar)/maiorQueda.mar*100):0;
-  const mesLabel=CRM_MES==='junho'?'vs Maio':CRM_MES==='maio'?'vs Abril':'vs Março';
+  const mesLabel=CRM_MES==='julho'?'vs Junho':CRM_MES==='junho'?'vs Maio':CRM_MES==='maio'?'vs Abril':'vs Março';
   const mesTitle=MES_LABELS[CRM_MES]||'Abril';
 
   // Dashboard KPIs
@@ -1744,7 +1744,7 @@ function renderKPIs(){
   if($('kpi-total-val'))  $('kpi-total-val').textContent=fK(totalAbr);
   if($('kpi-total-sub'))  $('kpi-total-sub').textContent=fBRL(totalAbr);
   if($('kpi-total-change')) $('kpi-total-change').innerHTML=`<span class="${cls(varPct)}">${arrow(varPct)}${Math.abs(varPct).toFixed(1)}%</span> ${mesLabel}`;
-  const prevMesTitle=CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const prevMesTitle=CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
   const _calIco=`<svg style="vertical-align:middle;margin-right:4px;opacity:.65" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
   if($('kpi-prev-lbl')) $('kpi-prev-lbl').innerHTML=_calIco+'Total — '+prevMesTitle+' 2026';
   if($('kpi-prev-val')) $('kpi-prev-val').textContent=fK(totalMar);
@@ -8320,7 +8320,7 @@ function renderVendorDashboard(user, vendorKey){
   if(!vM) return;
 
   const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='diario'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesAnt=CRM_MES==='diario'?'Junho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
