@@ -6052,6 +6052,22 @@ const FORMS_CSV={
   cadastros2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQM8MHUnHEG9Krjo-6yLus-W4s0Xma5Pb0BpNvfmlwCer8qB00BcuvYJ68a9gXsalMhO_eFgfdBMam1/pub?gid=1717895650&single=true&output=csv' // Cezar+Moab+Ramon+Kelly (combinado)
 };
 
+// ─── TÉCNICOS DE PANIFICAÇÃO — CSVs publicados ───
+const TECNICOS_FORMS=[
+  {nome:'Caio',   url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0pxEmipFq1UUeJ8Jbq89uJbublweN_6J6jjXDersAPzBG7rJ2jhQuTp3v-A0-zyxd8vYZDe3RX_zn/pub?output=csv'},
+  {nome:'Carlos', url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHdIsiAn8uN0kHYIcWoSNGPVjrWrSJ9kyf9KDEjoqdAyfn_mexmkx1sdGH3BmPQszukiGs9SobUf7J/pub?output=csv'},
+  {nome:'Gabriel',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmwjXKDs2lARk5K1dHwjST9smyi2CxAq1LlNB19vh-FMxrKyZEZqRplIVZMeu32bQmVb_dMHDmTMlA/pub?output=csv'},
+  {nome:'Hélio',  url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv8HI8gM2eGZmjd2_cdOve7TPc3Ad8qD0Nq40MJPGxc2jVMgPCVtAKftr1o9uX_Yiam8Za5T9QJVLz/pub?output=csv'},
+  {nome:'Juan',   url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Zrm0_eb_0HE6FhnxGiOhZg6YIE7VsazFy4EAqnOkb4-YHi4-g0Yg_DIK0_MnJE2T-VSJ5v6QITWq/pub?output=csv'},
+  {nome:'Leandro',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8YtAwB4U6IcM1yllzNud6UD_vIEB6AJCi3V90mJPMle5xNOkFXKgg6CVpTFZ7u2M-gpxDn8YY1tX_/pub?output=csv'},
+  {nome:'Leonardo',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQIkmyypNY5mPD8hpXvm-9pJIuri2oiqgkDpQOG1BR50LJjYugCSO6cMv_qLvyIoaHBemnWZQc3eUAM/pub?output=csv'},
+  {nome:'Matheus',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi5VWOnOsFv3uTEYHx7arh3_MJ2jxG5sqfE2s3pPMnh4h6zVTGreGg9ZmPEB00wkx0Kcl1UQ-j1HCe/pub?output=csv'},
+  {nome:'Rodrigo',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhu_noRnNPIZnB-ot_mXbgPqec-NzZqf-sSrPhZMCyVzYFxUwo_updWPZ50pSWXG6s-hCiJWEhbLRM/pub?output=csv'},
+  {nome:'Rogério',url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR4GRM3POv9htnLSqx4EOvRnjILdWO76nIUV9WiD0-nsprxjpswYQLhscUQ_N3qFktxrxu0b5JXC2XG/pub?output=csv'}
+];
+let _tecFormsCache={};
+let _tecFormsCurrent='Todos';
+
 // Links Maps por código de cliente (independente da rota)
 const MAPS_CLIENTS={
   '4852':'https://maps.app.goo.gl/sK5qSUAqCx2zGta6A',
@@ -7691,20 +7707,91 @@ function showFormsSection(sec){
   document.getElementById('fms-btn-tecnicos')?.classList.toggle('active',!isVend);
   if(!isVend) initFormsTecTabs();
 }
-function initFormsTecTabs(){
-  const wrap=document.getElementById('forms-tec-tabs');
-  if(!wrap||wrap.children.length) return;
-  ['Caio','Carlos','Gabriel','Juan','Leandro','Leonardo','Matheus','Rodrigo','Rogério','Hélio'].forEach(nome=>{
-    const btn=document.createElement('button');
-    btn.textContent=nome; btn.className='subtab';
-    btn.onclick=()=>{
-      document.querySelectorAll('#forms-tec-tabs .subtab').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('forms-tec-content').innerHTML=
-        '<div style="color:rgba(255,255,255,.3);font-size:14px;text-align:center;padding:48px 0">Conteúdo de '+nome+' — a definir.</div>';
-    };
-    wrap.appendChild(btn);
+function _parseTecCSV(text){
+  const rows=[];let row=[],field='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(inQ){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"'){inQ=false;}else{field+=ch;}}
+    else{if(ch==='"'){inQ=true;}else if(ch===','){row.push(field.trim());field='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(field.trim());if(row.some(x=>x))rows.push(row);row=[];field='';}else{field+=ch;}}
+  }
+  if(field||row.length){row.push(field.trim());if(row.some(x=>x))rows.push(row);}
+  if(rows.length<2)return[];
+  const hdr=rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(x=>x)).map(r=>{const o={};hdr.forEach((h,i)=>o[h]=r[i]||'');return o;});
+}
+function _normTecRow(obj){
+  const keys=Object.keys(obj);
+  const g=(...ps)=>{const k=keys.find(h=>ps.every(p=>h.toUpperCase().includes(p.toUpperCase())));return k?obj[k]:'';};
+  return{
+    tecnico:g('TÉCNICO')||g('TECNICO'),
+    data:g('INÍCIO')||g('INICIO')||g('CARIMBO'),
+    tipo:g('APRESENT')||g('TREINAM'),
+    cliente:g('NOME','CLIENTE'),
+    codigo:g('CÓDIGO')||g('CODIGO'),
+    motivo:g('MOTIVO'),
+    obs:g('OBSERV'),
+    fotoLote:g('LOTE'),
+    fotoAntes:g('ESTAVA'),
+    fotoDepois:g('FINALIZADO')
+  };
+}
+async function loadTecFormsAll(){
+  const ct=document.getElementById('forms-tec-content');
+  if(ct)ct.innerHTML='<div style="color:rgba(255,255,255,.4);font-size:13px;text-align:center;padding:40px 0">Carregando...</div>';
+  await Promise.all(TECNICOS_FORMS.map(async({nome,url})=>{
+    if(_tecFormsCache[nome])return;
+    try{const r=await fetch(url);const t=await r.text();
+      _tecFormsCache[nome]=_parseTecCSV(t).map(_normTecRow).filter(x=>x.tecnico||x.cliente||x.data);
+    }catch{_tecFormsCache[nome]=[];}
+  }));
+  renderTecFormsTable();
+}
+function renderTecFormsTable(){
+  const ct=document.getElementById('forms-tec-content');if(!ct)return;
+  const sel=_tecFormsCurrent;
+  let rows=sel==='Todos'?TECNICOS_FORMS.flatMap(({nome})=>_tecFormsCache[nome]||[]):(_tecFormsCache[sel]||[]);
+  rows=[...rows].sort((a,b)=>{
+    const pD=s=>{if(!s)return 0;const p=s.split(' ')[0].split('/');return p.length===3?new Date(p[2],p[1]-1,p[0]).getTime():new Date(s).getTime();};
+    return pD(b.data)-pD(a.data);
   });
+  if(!rows.length){ct.innerHTML='<div style="color:rgba(255,255,255,.3);font-size:13px;text-align:center;padding:40px 0">Sem registros.</div>';return;}
+  let h=`<div style="overflow-x:auto"><table class="tbl" style="width:100%;min-width:680px"><thead><tr>
+    <th>Data</th><th>Técnico</th><th>Tipo</th><th>Cliente</th><th>Cód</th><th>Motivo</th><th>Observação</th><th>Fotos</th>
+  </tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const fl=r.fotoLote?`<a href="${r.fotoLote}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none;margin-right:4px">[Lote]</a>`:'';
+    const fa=r.fotoAntes?`<a href="${r.fotoAntes}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none;margin-right:4px">[Antes]</a>`:'';
+    const fd=r.fotoDepois?`<a href="${r.fotoDepois}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none">[Depois]</a>`:'';
+    h+=`<tr>
+      <td style="white-space:nowrap;font-size:12px">${r.data||''}</td>
+      <td style="font-size:12px;font-weight:600">${r.tecnico||''}</td>
+      <td style="font-size:11px">${r.tipo||''}</td>
+      <td style="font-size:12px">${r.cliente||''}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,.5)">${r.codigo||''}</td>
+      <td style="font-size:11px">${r.motivo||''}</td>
+      <td style="font-size:11px;max-width:160px;word-break:break-word">${r.obs||''}</td>
+      <td style="white-space:nowrap">${fl}${fa}${fd}</td>
+    </tr>`;
+  });
+  h+='</tbody></table></div>';
+  ct.innerHTML=h;
+}
+function initFormsTecTabs(){
+  const wrap=document.getElementById('forms-tec-tabs');if(!wrap)return;
+  if(wrap.children.length){
+    if(Object.keys(_tecFormsCache).length)renderTecFormsTable();
+    else loadTecFormsAll();
+    return;
+  }
+  const mk=(label,active)=>{
+    const b=document.createElement('button');
+    b.textContent=label;b.className='subtab'+(active?' active':'');
+    b.onclick=()=>{document.querySelectorAll('#forms-tec-tabs .subtab').forEach(x=>x.classList.remove('active'));b.classList.add('active');_tecFormsCurrent=label;renderTecFormsTable();};
+    wrap.appendChild(b);
+  };
+  mk('Todos',true);
+  TECNICOS_FORMS.forEach(({nome})=>mk(nome,false));
+  loadTecFormsAll();
 }
 function setFormsEquipe(v){
   _formsEquipe=v;
