@@ -7759,9 +7759,9 @@ function renderTecFormsTable(){
     <th>Data</th><th>Técnico</th><th>Tipo</th><th>Cliente</th><th>Cód</th><th>Motivo</th><th>Observação</th><th>Fotos</th>
   </tr></thead><tbody>`;
   rows.forEach(r=>{
-    const fl=r.fotoLote?`<a href="${r.fotoLote}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none;margin-right:4px">[Lote]</a>`:'';
-    const fa=r.fotoAntes?`<a href="${r.fotoAntes}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none;margin-right:4px">[Antes]</a>`:'';
-    const fd=r.fotoDepois?`<a href="${r.fotoDepois}" target="_blank" style="color:#7C3AED;font-size:11px;text-decoration:none">[Depois]</a>`:'';
+    const fl=r.fotoLote?`<a href="${r.fotoLote}" target="_blank" class="foto-link" title="Foto do lote">📷</a> `:'';
+    const fa=r.fotoAntes?`<a href="${r.fotoAntes}" target="_blank" class="foto-link" title="Como estava">🔍</a> `:'';
+    const fd=r.fotoDepois?`<a href="${r.fotoDepois}" target="_blank" class="foto-link" title="Como ficou">✅</a>`:'';
     h+=`<tr>
       <td style="white-space:nowrap;font-size:12px">${r.data||''}</td>
       <td style="font-size:12px;font-weight:600">${r.tecnico||''}</td>
