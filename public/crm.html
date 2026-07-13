@@ -7763,13 +7763,13 @@ function renderTecFormsTable(){
     const fa=r.fotoAntes?`<a href="${r.fotoAntes}" target="_blank" class="foto-link" title="Como estava">🔍</a> `:'';
     const fd=r.fotoDepois?`<a href="${r.fotoDepois}" target="_blank" class="foto-link" title="Como ficou">✅</a>`:'';
     h+=`<tr>
-      <td style="white-space:nowrap;font-size:12px">${r.data||''}</td>
-      <td style="font-size:12px;font-weight:600">${r.tecnico||''}</td>
-      <td style="font-size:11px">${r.tipo||''}</td>
-      <td style="font-size:12px">${r.cliente||''}</td>
-      <td style="font-size:11px;color:rgba(255,255,255,.5)">${r.codigo||''}</td>
-      <td style="font-size:11px">${r.motivo||''}</td>
-      <td style="font-size:11px;max-width:160px;word-break:break-word">${r.obs||''}</td>
+      <td style="white-space:nowrap">${r.data||''}</td>
+      <td style="font-weight:600">${r.tecnico||''}</td>
+      <td>${r.tipo||''}</td>
+      <td>${r.cliente||''}</td>
+      <td style="color:rgba(255,255,255,.5)">${r.codigo||''}</td>
+      <td>${r.motivo||''}</td>
+      <td style="max-width:160px;word-break:break-word">${r.obs||''}</td>
       <td style="white-space:nowrap">${fl}${fa}${fd}</td>
     </tr>`;
   });
