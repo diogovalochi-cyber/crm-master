@@ -1060,7 +1060,6 @@ body.mode-mobile .section-header{gap:12px}
     <button class="equipe-btn active" onclick="setFormsEquipe('total')">Todos</button>
     <button class="equipe-btn" onclick="setFormsEquipe('lazaro')">Equipe Lázaro</button>
     <button class="equipe-btn" onclick="setFormsEquipe('val')">Equipe Val</button>
-    <button class="equipe-btn" onclick="setFormsEquipe('rj')">Equipe RJ</button>
   </div>
 
   <!-- Nível 1: Vendedor -->
@@ -1681,7 +1680,6 @@ let CRM_EQUIPE_FILTER = 'total';
 const EQUIPES = {
   lazaro: ['093','116','117','118','120','121','122'],
   val:    ['115','094','107','119','123','124','125'],
-  rj:     [],
 };
 function getVendedoresFiltered(mes){
   const src=getVendedoresForMes(mes);
@@ -8451,8 +8449,8 @@ function applyTecnicoMode(user){
   if(botItems[0]) botItems[0].classList.add('active');
   // Marcelo: sem Dashboard — abre direto na Agenda; Forms mostra só Técnicos de Panificação
   if(user.name==='Marcelo'){
-    ['nav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-    ['botnav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     // Libera aba Pesquisa
     const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     // Abre em Técnicos → Forms
