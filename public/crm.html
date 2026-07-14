@@ -1241,7 +1241,10 @@ body.mode-mobile .section-header{gap:12px}
 
   <div id="tec-sec-forms" class="tec-sec" style="display:none">
     <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px" id="forms-tec-tabs"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px" id="forms-tec-tabs"></div>
+      <input id="tec-forms-search" type="text" placeholder="Buscar por código ou nome do cliente..." autocomplete="off"
+        oninput="_tecFormsSearch=this.value.trim();renderTecFormsTable()"
+        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;margin-bottom:14px;-webkit-appearance:none">
       <div id="forms-tec-content">
         <div style="color:rgba(255,255,255,.3);font-size:14px;text-align:center;padding:48px 0">Selecione um técnico acima.</div>
       </div>
@@ -6069,6 +6072,7 @@ const TECNICOS_FORMS=[
 ];
 let _tecFormsCache={};
 let _tecFormsCurrent='Todos';
+let _tecFormsSearch='';
 
 // Links Maps por código de cliente (independente da rota)
 const MAPS_CLIENTS={
@@ -7864,6 +7868,10 @@ function renderTecFormsTable(){
     const pD=s=>{if(!s)return 0;const p=s.split(' ')[0].split('/');return p.length===3?new Date(p[2],p[1]-1,p[0]).getTime():new Date(s).getTime();};
     return pD(b.data)-pD(a.data);
   });
+  if(_tecFormsSearch){
+    const q=_tecFormsSearch.toLowerCase();
+    rows=rows.filter(r=>(r.cliente||'').toLowerCase().includes(q)||(r.codigo||'').toLowerCase().includes(q));
+  }
   if(!rows.length){ct.innerHTML='<div style="color:rgba(255,255,255,.3);font-size:13px;text-align:center;padding:40px 0">Sem registros.</div>';return;}
   let h=`<div style="overflow-x:auto"><table class="tbl" style="width:100%;min-width:680px"><thead><tr>
     <th>Data</th><th>Técnico</th><th>Tipo</th><th>Cliente</th><th>Cód</th><th>Motivo</th><th>Observação</th><th>Fotos</th>
