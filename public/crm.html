@@ -9160,7 +9160,7 @@ function matSetFiltro(f){
 }
 
 function renderMateriais(){
-  const all=_loadMat().sort((a,b)=>b.dataRet.localeCompare(a.dataRet));
+  const all=_loadMat().filter(x=>!x._deleted).sort((a,b)=>b.dataRet.localeCompare(a.dataRet));
   const items=_matFiltro==='pendentes'?all.filter(x=>!x.dataEnt):all;
   const pend=all.filter(x=>!x.dataEnt).length;
   const resumo=document.getElementById('mat-resumo');
@@ -9268,7 +9268,10 @@ function matDevolver(id){
 function deletarMat(id){
   if(!confirm('Excluir este registro?')) return;
   _trackDeleted('mat',id);
-  _saveMat(_loadMat().filter(x=>x.id!==id));
+  const all=_loadMat();
+  const idx=all.findIndex(x=>x.id===id);
+  if(idx>=0){all[idx]._deleted=true;all[idx]._mts=Date.now();}
+  _saveMat(all);
   renderMateriais();
 }
 
