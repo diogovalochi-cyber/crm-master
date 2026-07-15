@@ -8681,13 +8681,21 @@ async function _dbLoad(key){
         try{
           const loc=JSON.parse(localStorage.getItem('crm_'+key)||'[]');
           if(Array.isArray(loc)){
+            const locMap=new Map(loc.filter(x=>x&&x.id).map(x=>[x.id,x]));
             const srvIds=new Set(srvFiltered.map(x=>x&&x.id).filter(Boolean));
             const unsync=loc.filter(x=>x&&x.id&&!srvIds.has(x.id)&&!deletedIds.has(x.id));
-            if(unsync.length>0){
-              const merged=[...srvFiltered,...unsync];
-              localStorage.setItem('crm_'+key,JSON.stringify(merged));
-              _dbSave(key,merged);
-              return merged;
+            // Resolve conflitos: prefere local se _mts local for mais recente
+            const resolved=srvFiltered.map(x=>{
+              const lx=x&&x.id?locMap.get(x.id):null;
+              if(lx&&(lx._mts||0)>(x._mts||0)) return lx;
+              return x;
+            });
+            const changed=resolved.some((x,i)=>x!==srvFiltered[i]);
+            if(unsync.length>0||changed){
+              const final=[...resolved,...unsync];
+              localStorage.setItem('crm_'+key,JSON.stringify(final));
+              _dbSave(key,final);
+              return final;
             }
           }
         }catch(e2){}
@@ -9239,9 +9247,9 @@ function salvarMat(){
   const all=_loadMat();
   if(_matEditId){
     const idx=all.findIndex(x=>x.id===_matEditId);
-    if(idx>=0) all[idx]={...all[idx],tecnico,dataRet,dataEnt,cesto,bandeja,toalha,obs};
+    if(idx>=0) all[idx]={...all[idx],tecnico,dataRet,dataEnt,cesto,bandeja,toalha,obs,_mts:Date.now()};
   } else {
-    all.push({id:String(Date.now()),tecnico,dataRet,dataEnt,cesto,bandeja,toalha,obs});
+    all.push({id:String(Date.now()),tecnico,dataRet,dataEnt,cesto,bandeja,toalha,obs,_mts:Date.now()});
   }
   _saveMat(all);
   fecharMatModal();
@@ -9252,13 +9260,14 @@ function matDevolver(id){
   if(!confirm('Confirmar devolução?')) return;
   const all=_loadMat();
   const idx=all.findIndex(x=>x.id===id);
-  if(idx>=0) all[idx].dataEnt=nowBRISOStr();
+  if(idx>=0){all[idx].dataEnt=nowBRISOStr();all[idx]._mts=Date.now();}
   _saveMat(all);
   renderMateriais();
 }
 
 function deletarMat(id){
   if(!confirm('Excluir este registro?')) return;
+  _trackDeleted('mat',id);
   _saveMat(_loadMat().filter(x=>x.id!==id));
   renderMateriais();
 }
