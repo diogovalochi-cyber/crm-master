@@ -239,12 +239,13 @@ body.mode-print{--mode:print}
   cursor:pointer;position:relative;
 }
 .topbar-avatar-label{
-  position:absolute;right:0;top:36px;
+  display:none;position:absolute;right:0;top:36px;
   background:#0A3D8A;border:1px solid var(--border);
   border-radius:8px;padding:6px 10px;white-space:nowrap;
   font-size:11px;pointer-events:none;
   box-shadow:0 4px 20px rgba(0,0,0,.4);
 }
+.topbar-avatar-label.show{display:block}
 
 /* ─── SIDEBAR ─── */
 #sidebar{
@@ -830,9 +831,18 @@ body.mode-mobile .section-header{gap:12px}
 <div id="topbar">
   <div class="topbar-logo"><span></span><span></span><span></span><span></span></div>
   <div class="topbar-brand"><h1>Valochi Sousa</h1><p>CRM Comercial</p></div>
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+  <div class="topbar-stats">
+    <div class="topbar-stat"><strong id="topbar-total">—</strong></div>
+    <div class="topbar-stat"><span id="topbar-var">—</span></div>
+    <div class="topbar-stat"><span id="topbar-count">—</span> cli</div>
+  </div>
+  <div class="topbar-toggles">
     <button class="btn-toggle" onclick="doPrint()" id="btn-print">🖨 Imprimir</button>
     <button class="btn-toggle" onclick="doLogout()" style="opacity:.7" title="Sair">⏻ Sair</button>
+  </div>
+  <div class="topbar-avatar" onclick="this.querySelector('.topbar-avatar-label').classList.toggle('show')">
+    <span id="topbar-av">--</span>
+    <span class="topbar-avatar-label"></span>
   </div>
 </div>
 
@@ -5822,13 +5832,15 @@ function showTab(tab, el){
   }
   if(tab==='tecnicos'){
     const sec=document.querySelector('.tec-sec:not([style*="display:none"])')?.id||'tec-sec-agenda';
-    if(sec==='tec-sec-agenda'||sec==='tec-sec-agenda'){
+    if(sec==='tec-sec-agenda'){
       if(_agSubnavAtivo==='lembretes') renderLembretes();
       else renderAgenda();
       _dbLoad('agenda').then(d=>{if(d&&_agSubnavAtivo==='agenda')renderAgenda();});
       _dbLoad('lembretes').then(d=>{if(d&&_agSubnavAtivo==='lembretes')renderLembretes();});
     } else if(sec==='tec-sec-materiais'){
       renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
+    } else if(sec==='tec-sec-equipamentos'){
+      _loadEquipFromServer().then(d=>{if(d&&_equipTecAtivo) renderEquipTable();});
     }
   }
 }
@@ -5864,7 +5876,6 @@ function refreshTab(tab){
   if(btn){btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);}
   if(tab==='dashboard'){
     renderKPIs();renderRanking();
-    if(!window.CRM_VENDOR_ID) renderWeeklyKPIs();
   } else if(tab==='analise'){
     if(activeVendor) renderVendorDetail(activeVendor);
   } else if(tab==='registrar'){
@@ -7983,7 +7994,8 @@ function renderAnaliseTable(){
     <td><span class="${vrTotal.up?'badge-up':'badge-dn'}">${vrTotal.str}</span></td>
     <td></td><td></td>
   </tr></tfoot>`;
-  document.getElementById('analise-table').innerHTML=html;
+  const tbl=document.getElementById('analise-table');
+  if(tbl) tbl.innerHTML=html;
 }
 
 /* ─────────────────────────────────────────
@@ -8305,7 +8317,7 @@ function doLogout(expired){
   const ls=document.getElementById('login-screen');
   ls.style.display='';
   setTimeout(()=>ls.classList.remove('hide'),10);
-  document.body.className='mode-desktop';
+  autoMode();
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
   const err=document.getElementById('login-error');
@@ -8394,7 +8406,6 @@ function applySession(user){
   if(user.role==='TECNICO')      applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
   else if(user.fullAccess){
-    renderWeeklyKPIs();
     if(user.team){
       // Supervisor: vê somente a própria equipe (sem botões de filtro)
       const teamKey=Object.keys(EQUIPES).find(k=>EQUIPES[k].includes(user.team[0]))||'total';
@@ -9051,7 +9062,11 @@ function salvarLembrete(){
 }
 function deletarLembrete(id){
   if(!confirm('Excluir este lembrete?')) return;
-  _saveLemb(_loadLemb().map(x=>x.id===id?{...x,deleted:true}:x));
+  _trackDeleted('lembretes',id);
+  const all=_loadLemb();
+  const idx=all.findIndex(x=>x.id===id);
+  if(idx>=0){all[idx].deleted=true;all[idx]._mts=Date.now();}
+  _saveLemb(all);
   renderLembretes();
 }
 
