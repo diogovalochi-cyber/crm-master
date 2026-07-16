@@ -9066,15 +9066,20 @@ function abrirDupAgenda(id){
   // Técnicos
   const tecSel=document.getElementById('dup-ag-tec');
   if(tecSel) tecSel.innerHTML=_AG_TECS.map(t=>`<option value="${t}"${t===e.tec?' selected':''}>${t}</option>`).join('');
-  // Slots da semana atual
+  // Slots da semana atual e próxima
   const mon=_agMonday(_agWeekOff);
   const slots=_agSlots(mon);
+  const monNext=_agMonday(_agWeekOff+1);
+  const slotsNext=_agSlots(monNext);
   const slotSel=document.getElementById('dup-ag-slot');
-  if(slotSel) slotSel.innerHTML=slots.map(sl=>{
+  const _renderSlotOpts=arr=>arr.map(sl=>{
     const a=new Date(sl.d1+'T12:00'),b=new Date(sl.d2+'T12:00');
     const lbl=`${_AG_DIAS_PT[a.getDay()]}/${_AG_DIAS_PT[b.getDay()]} · ${_agFmtDate(sl.d1)}–${_agFmtDate(sl.d2)}`;
     return`<option value="${sl.d1}|${sl.d2}">${lbl}</option>`;
   }).join('');
+  if(slotSel) slotSel.innerHTML=
+    `<optgroup label="Esta semana">${_renderSlotOpts(slots)}</optgroup>`+
+    `<optgroup label="Próxima semana">${_renderSlotOpts(slotsNext)}</optgroup>`;
   document.getElementById('modal-dup-agenda').style.display='flex';
 }
 function fecharDupAgenda(){document.getElementById('modal-dup-agenda').style.display='none';_agDupId=null;}
