@@ -5841,6 +5841,8 @@ function showTab(tab, el){
       renderMateriais();_dbLoad('mat').then(d=>{if(d)renderMateriais();});
     } else if(sec==='tec-sec-equipamentos'){
       _loadEquipFromServer().then(d=>{if(d&&_equipTecAtivo) renderEquipTable();});
+    } else if(sec==='tec-sec-forms'){
+      initFormsTecTabs();
     }
   }
 }
@@ -7109,9 +7111,9 @@ function comissaoNav(delta){
 }
 
 function getComissaoPeriodo(offset){
-  const now=new Date();now.setHours(0,0,0,0);
-  let sm=now.getMonth(),sy=now.getFullYear();
-  if(now.getDate()<22){sm--;if(sm<0){sm=11;sy--;}}
+  const br=nowBR();
+  let sm=br.month,sy=br.year;
+  if(br.day<22){sm--;if(sm<0){sm=11;sy--;}}
   sm+=offset;
   while(sm<0){sm+=12;sy--;}
   while(sm>11){sm-=12;sy++;}
@@ -7835,10 +7837,6 @@ function setEquipeFilter(v){
 }
 
 let _formsEquipe='total';
-function showFormsSection(sec){
-  const sv=document.getElementById('forms-sec-vendedores');
-  if(sv)sv.style.display='';
-}
 function _parseTecCSV(text){
   const rows=[];let row=[],field='',inQ=false;
   for(let i=0;i<text.length;i++){
@@ -7950,7 +7948,7 @@ function setFormsEquipe(v){
     document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
     first.classList.add('active');
     currentRegSeller=first.dataset.seller;
-    renderFormsTable();
+    if(currentFormsType==='rota') renderRota(); else renderFormsTable();
   }
 }
 
@@ -8848,7 +8846,8 @@ function _saveAg(d){localStorage.setItem('crm_agenda',JSON.stringify(d));_dbSave
 function _agIso(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function _agFmtDate(iso){if(!iso)return'';const[,m,d]=iso.split('-');return`${d}/${m}`;}
 function _agMonday(off=0){
-  const d=new Date();d.setHours(0,0,0,0);
+  const br=nowBR();
+  const d=new Date(br.year,br.month,br.day);
   const dow=d.getDay();
   d.setDate(d.getDate()-(dow===0?6:dow-1)+off*7);
   return d;
@@ -9047,6 +9046,7 @@ function salvarLembrete(){
   if(!cli){alert('Informe o cliente.');return;}
   const entry={
     id:_lembEditId||String(Date.now()),
+    _mts:Date.now(),
     cli,
     tipo:document.getElementById('lemb-tipo').value,
     vend:document.getElementById('lemb-vend').value.trim(),
