@@ -5830,8 +5830,9 @@ function showTab(tab, el){
       fromEl.value=fmtLocal(new Date(br.year,br.month,br.day-6));
       toEl.value=fmtLocal(new Date(br.year,br.month,br.day));
     }
-    if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
-    else loadFormsData();
+    if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length){
+      if(currentFormsType==='rota') renderRota(); else renderFormsTable();
+    } else loadFormsData();
     loadAllFormsCaches();
   }
   if(tab==='tecnicos'){
@@ -8315,7 +8316,7 @@ function _setWatermark(text){
 function doLogout(expired){
   CRM_USER=null;
   const wm=document.getElementById('crm-wm');if(wm)wm.remove();
-  document.body.classList.remove('no-copy','admin-mode');
+  document.body.classList.remove('no-copy','admin-mode','mode-print','ready-to-print');
   const ls=document.getElementById('login-screen');
   ls.style.display='';
   setTimeout(()=>ls.classList.remove('hide'),10);
@@ -9069,8 +9070,7 @@ function deletarLembrete(id){
   _trackDeleted('lembretes',id);
   const all=_loadLemb();
   const idx=all.findIndex(x=>x.id===id);
-  if(idx>=0){all[idx].deleted=true;all[idx]._mts=Date.now();}
-  _saveLemb(all);
+  if(idx>=0){all[idx].deleted=true;all[idx]._mts=Date.now();_saveLemb(all);}
   renderLembretes();
 }
 
@@ -9108,6 +9108,7 @@ function salvarDupAgenda(){
   const tec=document.getElementById('dup-ag-tec').value;
   const slotVal=document.getElementById('dup-ag-slot').value;
   const [d1,d2]=slotVal.split('|');
+  if(!d1||!d2) return;
   const list=_loadAg();
   list.push({...orig, id:String(Date.now()), tec, d1, d2});
   _saveAg(list);
