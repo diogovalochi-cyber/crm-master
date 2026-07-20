@@ -1,7 +1,5 @@
 {
-  "buildCommand": "",
-  "outputDirectory": "public",
-  "rewrites": [{ "source": "/", "destination": "/crm.html" }],
+  "redirects": [{ "source": "/", "destination": "/crm.html", "permanent": false }],
   "headers": [
     {
       "source": "/(.*)",
