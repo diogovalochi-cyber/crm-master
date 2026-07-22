@@ -5822,7 +5822,10 @@ function showTab(tab, el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
   if(tab==='analise'){
-    if(_analiseNeedsRender){
+    // Inicializa pills primeiro (sem isso, vendedor veria dados de 'Guilherme' na primeira abertura)
+    const pillsRow=document.getElementById('vendor-pills');
+    if(pillsRow&&!pillsRow.children.length){_analiseNeedsRender=false;initVendorPills();}
+    else if(_analiseNeedsRender){
       _analiseNeedsRender=false;
       renderVendorDetail(activeVendor);
     }
@@ -8505,7 +8508,11 @@ function applyTecnicoMode(user){
 function applyVendorMode(user){
   window.CRM_VENDOR_ID  =user.vendId;
   window.CRM_VENDOR_NAME=user.name;
+  activeVendor=user.name; // garante que Análise abre no vendedor correto, não em 'Guilherme'
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  // Oculta stats da topbar (total geral da empresa não deve ser visível ao vendedor)
+  const tbs=document.querySelector('.topbar-stats');
+  if(tbs) tbs.style.display='none';
 
   // Oculta botão Imprimir (não disponível para vendedores)
   const btnPrint=document.getElementById('btn-print');
