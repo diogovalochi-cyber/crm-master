@@ -7994,7 +7994,40 @@ function _vdSortBy(col){
   else{_vdSort.col=col;_vdSort.dir=col==='nome'?'asc':'desc';}
   renderVendorDetail(activeVendor);
 }
-function searchVendorClient(q){_vdFilter=q;renderVendorDetail(activeVendor);}
+function searchVendorClient(q){
+  _vdFilter=q;
+  if(!q){renderVendorDetail(activeVendor);return;}
+  const qNum=normCod(q);
+  const qNome=q.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const isCod=/^\d+$/.test(q.trim());
+  const CART_ORDER=[
+    typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{},
+    typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{},
+    typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{},
+    typeof CARTEIRA_ABRIL!=='undefined'?CARTEIRA_ABRIL:{},
+    typeof CARTEIRA_MARCO!=='undefined'?CARTEIRA_MARCO:{},
+  ];
+  const _allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:
+              (typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
+  const pillNames=[...document.querySelectorAll('#vendor-pills .pill')].map(p=>p.textContent.trim());
+  let foundVendor=null;
+  outer: for(const cart of CART_ORDER){
+    for(const [vcod,clientes] of Object.entries(cart)){
+      const vv=_allV.find(v=>v.cod===vcod);
+      if(!vv||!pillNames.includes(vv.name)) continue;
+      const match=clientes.some(c=>{
+        const cn=normCod(c.cod),nm=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        return isCod?(cn===qNum):(nm.includes(qNome)&&qNome.length>=3);
+      });
+      if(match){foundVendor=vv.name;break outer;}
+    }
+  }
+  if(foundVendor&&foundVendor!==activeVendor){
+    activeVendor=foundVendor;
+    document.querySelectorAll('#vendor-pills .pill').forEach(p=>p.classList.toggle('active',p.textContent.trim()===foundVendor));
+  }
+  renderVendorDetail(activeVendor);
+}
 function setVdMes(mes){
   if(mes) VD_MES=mes;
   renderVendorDetail(activeVendor);
