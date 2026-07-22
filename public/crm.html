@@ -6023,46 +6023,13 @@ function searchClient(q){
   el.innerHTML=results.map(([cod,info])=>{
     const vendName=getVendName(info.vendCod);
 
-    let billingRows='';
-    if(info.hcBilling){
-      // Sobrescreve Junho (índice 5) com CARTEIRA_JUNHO atualizado
-      const hcArr=[...info.hcBilling];
-      if(typeof CARTEIRA_JUNHO!=='undefined'){
-        for(const clts of Object.values(CARTEIRA_JUNHO)){
-          const c=clts.find(x=>normCod(x.cod)===cod);
-          if(c){hcArr[5]=c.valor;break;}
-        }
-      }
-billingRows=hcArr.map((val,i)=>`<tr>
-        <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:48px">${MES_LABELS[i]}</td>
-        <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${val>0?fBRL(val):'<span style="color:rgba(255,255,255,.2)">—</span>'}</td>
-      </tr>`).join('');
-    } else {
-      const MESES_F=[{key:'marco',label:'Mar'},{key:'abril',label:'Abr'},{key:'maio',label:'Mai'},{key:'junho',label:'Jun'},{key:'julho',label:'Jul'}];
-      billingRows=MESES_F.flatMap(mes=>{
-        const entries=(info.billing&&info.billing[mes.key])||[];
-        if(!entries.length) return [`<tr>
-          <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:48px">${mes.label}</td>
-          <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px"><span style="color:rgba(255,255,255,.2)">—</span></td>
-        </tr>`];
-        return entries.map((e,i)=>`<tr>
-          <td style="padding:3px 0;color:rgba(255,255,255,.55);font-size:12px;width:48px">${i===0?mes.label:''}</td>
-          <td style="padding:3px 0;text-align:right;font-weight:600;font-size:13px">${fBRL(e.valor)}</td>
-        </tr>`);
-      }).join('');
-    }
-
     return `<div style="border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 16px;margin-bottom:10px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div>
           <div style="font-size:15px;font-weight:700;margin-bottom:2px">${info.nome}</div>
           <div style="font-size:12px;color:rgba(255,255,255,.4)">Cód. ${cod}${vendName?' · '+vendName:''}</div>
         </div>
         ${info.mapsLink?`<a href="${info.mapsLink}" target="_blank" rel="noopener" style="font-size:20px;text-decoration:none;flex-shrink:0" title="Ver no Maps">📍</a>`:''}
-      </div>
-      <div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.5px;margin-bottom:4px">FATURAMENTO</div>
-        <table style="width:100%;border-collapse:collapse">${billingRows}</table>
       </div>
     </div>`;
   }).join('');
