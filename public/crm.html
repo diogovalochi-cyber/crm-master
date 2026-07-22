@@ -1092,6 +1092,7 @@ body.mode-mobile .section-header{gap:12px}
     <button class="subtab" data-seller="KELLY"          onclick="selectRegSeller(this)">Kelly</button>
     <button class="subtab" data-seller="LUIZ HENRIQUE"  onclick="selectRegSeller(this)">Luiz Henrique</button>
     <button class="subtab" data-seller="CEZAR"          onclick="selectRegSeller(this)">Cezar</button>
+    <button class="subtab" data-seller="RAUER"          onclick="selectRegSeller(this)">Rauer</button>
   </div>
 
   <!-- Nível 2: Tipo de dado -->
@@ -6059,7 +6060,11 @@ const FORMS_CSV={
   apresentacoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnA4sJPRTHJ__POvLyzGFuEWssd5xSqEYxvlL-4sLCTE8ci6vWtqjz1-E3Hd2d39jOQLdrsqYieb8D/pub?gid=1717895650&single=true&output=csv',
   apresentacoes2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgkBwxWlj55lvExCRHvferJvbjO1jND8MLdHRx6tB2-vjjzYE5Os9shPMPBdsYvbgqQc9FKNoiVUOn/pub?gid=1717895650&single=true&output=csv', // Cezar+Moab+Ramon+Kelly (combinado)
   cadastros:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgaTUDoYlm-cLfeazs9TqYBS_zgrAq5QRVy0OXS-fEbSAxuz5bLsUA1TmrCY7uX0b7vyqndt5XZed3/pub?gid=1717895650&single=true&output=csv',
-  cadastros2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQM8MHUnHEG9Krjo-6yLus-W4s0Xma5Pb0BpNvfmlwCer8qB00BcuvYJ68a9gXsalMhO_eFgfdBMam1/pub?gid=1717895650&single=true&output=csv' // Cezar+Moab+Ramon+Kelly (combinado)
+  cadastros2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQM8MHUnHEG9Krjo-6yLus-W4s0Xma5Pb0BpNvfmlwCer8qB00BcuvYJ68a9gXsalMhO_eFgfdBMam1/pub?gid=1717895650&single=true&output=csv', // Cezar+Moab+Ramon+Kelly (combinado)
+  prospeccoes3:'', // Rauer — pendente
+  visitas6:'',     // Rauer — pendente
+  apresentacoes3:'', // Rauer — pendente
+  cadastros3:''    // Rauer — pendente
 };
 
 // ─── TÉCNICOS DE PANIFICAÇÃO — CSVs publicados ───
@@ -7280,6 +7285,7 @@ function renderRota(){
       if(FORMS_CSV.visitas3) _sUrls.push(FORMS_CSV.visitas3+'&_t='+_sNow);
       if(FORMS_CSV.visitas4) _sUrls.push(FORMS_CSV.visitas4+'&_t='+_sNow);
       if(FORMS_CSV.visitas5) _sUrls.push(FORMS_CSV.visitas5+'&_t='+_sNow);
+      if(FORMS_CSV.visitas6) _sUrls.push(FORMS_CSV.visitas6+'&_t='+_sNow);
       Promise.allSettled(_sUrls.map(u=>fetch(u).then(r=>r.text())))
         .then(results=>{
           const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
@@ -7360,6 +7366,7 @@ function renderRota(){
     if(FORMS_CSV.visitas3) _vUrls.push(FORMS_CSV.visitas3+'&_t='+_rotaNow);
     if(FORMS_CSV.visitas4) _vUrls.push(FORMS_CSV.visitas4+'&_t='+_rotaNow);
     if(FORMS_CSV.visitas5) _vUrls.push(FORMS_CSV.visitas5+'&_t='+_rotaNow);
+    if(FORMS_CSV.visitas6) _vUrls.push(FORMS_CSV.visitas6+'&_t='+_rotaNow);
     Promise.allSettled(_vUrls.map(u=>fetch(u).then(r=>r.text())))
       .then(results=>{
         const texts=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
@@ -7686,9 +7693,13 @@ async function loadAllFormsCaches(){
         if(t==='visitas'&&FORMS_CSV.visitas3) urls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) urls.push(FORMS_CSV.visitas4);
         if(t==='visitas'&&FORMS_CSV.visitas5) urls.push(FORMS_CSV.visitas5);
+        if(t==='visitas'&&FORMS_CSV.visitas6) urls.push(FORMS_CSV.visitas6);
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes2) urls.push(FORMS_CSV.prospeccoes2);
+        if(t==='prospeccoes'&&FORMS_CSV.prospeccoes3) urls.push(FORMS_CSV.prospeccoes3);
         if(t==='apresentacoes'&&FORMS_CSV.apresentacoes2) urls.push(FORMS_CSV.apresentacoes2);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes3) urls.push(FORMS_CSV.apresentacoes3);
         if(t==='cadastros'&&FORMS_CSV.cadastros2) urls.push(FORMS_CSV.cadastros2);
+        if(t==='cadastros'&&FORMS_CSV.cadastros3) urls.push(FORMS_CSV.cadastros3);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
         if(!texts.length) return;
@@ -7713,9 +7724,13 @@ async function loadFormsData(){
     if(type==='visitas'&&FORMS_CSV.visitas3) _fUrls.push(FORMS_CSV.visitas3);
     if(type==='visitas'&&FORMS_CSV.visitas4) _fUrls.push(FORMS_CSV.visitas4);
     if(type==='visitas'&&FORMS_CSV.visitas5) _fUrls.push(FORMS_CSV.visitas5);
+    if(type==='visitas'&&FORMS_CSV.visitas6) _fUrls.push(FORMS_CSV.visitas6);
     if(type==='prospeccoes'&&FORMS_CSV.prospeccoes2) _fUrls.push(FORMS_CSV.prospeccoes2);
+    if(type==='prospeccoes'&&FORMS_CSV.prospeccoes3) _fUrls.push(FORMS_CSV.prospeccoes3);
     if(type==='apresentacoes'&&FORMS_CSV.apresentacoes2) _fUrls.push(FORMS_CSV.apresentacoes2);
+    if(type==='apresentacoes'&&FORMS_CSV.apresentacoes3) _fUrls.push(FORMS_CSV.apresentacoes3);
     if(type==='cadastros'&&FORMS_CSV.cadastros2) _fUrls.push(FORMS_CSV.cadastros2);
+    if(type==='cadastros'&&FORMS_CSV.cadastros3) _fUrls.push(FORMS_CSV.cadastros3);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
     if(!texts.length) throw new Error('all_failed');
@@ -8273,6 +8288,7 @@ const CREDS=[
   {user:'kelly',       pass:'kelly123',  role:'VENDEDOR', name:'Kelly',        av:'KL', vendId:'123', color:'#E879F9', newHire:true},
   {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luiz Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'1203', role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
+  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:null,  color:'#FCD34D', newHire:true},
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
   {user:'rogerio',  pass:'123', role:'TECNICO',    name:'Rogério',   av:'RO', color:'#FF6B6B'},
@@ -8475,7 +8491,9 @@ function applySession(user){
         if(t==='visitas'&&FORMS_CSV.visitas3) _pUrls.push(FORMS_CSV.visitas3);
         if(t==='visitas'&&FORMS_CSV.visitas4) _pUrls.push(FORMS_CSV.visitas4);
         if(t==='visitas'&&FORMS_CSV.visitas5) _pUrls.push(FORMS_CSV.visitas5);
+        if(t==='visitas'&&FORMS_CSV.visitas6) _pUrls.push(FORMS_CSV.visitas6);
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes2) _pUrls.push(FORMS_CSV.prospeccoes2);
+        if(t==='prospeccoes'&&FORMS_CSV.prospeccoes3) _pUrls.push(FORMS_CSV.prospeccoes3);
         const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
         const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
