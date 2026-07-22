@@ -8686,23 +8686,34 @@ const _SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJl
 const _SB_H={'apikey':_SB_KEY,'Authorization':'Bearer '+_SB_KEY,'Content-Type':'application/json'};
 
 function _loadDeletedIds(key){try{return new Set(JSON.parse(localStorage.getItem('crm_del_'+key)||'[]'));}catch(e){return new Set();}}
-function _trackDeleted(key,id){try{const s=_loadDeletedIds(key);s.add(id);const arr=[...s].slice(-500);localStorage.setItem('crm_del_'+key,JSON.stringify(arr));}catch(e){}}
+function _trackDeleted(key,id){try{const s=_loadDeletedIds(key);s.add(id);const arr=[...s].slice(-500);localStorage.setItem('crm_del_'+key,JSON.stringify(arr));_dbSave(key+'_del',arr);}catch(e){}}
 
 async function _dbLoad(key){
   try{
+    // Busca IDs deletados no servidor e mescla com local para propagar deleções entre dispositivos
+    const deletedIds=_loadDeletedIds(key);
+    try{
+      const rd=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.${key+'_del'}&select=value`,{headers:_SB_H,cache:'no-store'});
+      const rowsd=await rd.json();
+      if(Array.isArray(rowsd)&&rowsd.length>0){
+        const srvDel=JSON.parse(rowsd[0].value||'[]');
+        srvDel.forEach(id=>deletedIds.add(id));
+        localStorage.setItem('crm_del_'+key,JSON.stringify([...deletedIds].slice(-500)));
+      }
+    }catch(e2){}
     const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.${key}&select=value`,{headers:_SB_H,cache:'no-store'});
     const rows=await r.json();
     if(Array.isArray(rows)&&rows.length>0){
       const d=JSON.parse(rows[0].value||'[]');
       if(Array.isArray(d)){
-        const deletedIds=_loadDeletedIds(key);
-        // Filtra itens deletados localmente antes do merge (fix: item deletado voltava ao recarregar)
+        // Filtra itens deletados (local + servidor) antes do merge
         const srvFiltered=deletedIds.size>0?d.filter(x=>x&&x.id&&!deletedIds.has(x.id)):d;
         try{
           const loc=JSON.parse(localStorage.getItem('crm_'+key)||'[]');
           if(Array.isArray(loc)){
             const locMap=new Map(loc.filter(x=>x&&x.id).map(x=>[x.id,x]));
             const srvIds=new Set(srvFiltered.map(x=>x&&x.id).filter(Boolean));
+            // Só adiciona itens locais que não existem no servidor E não foram deletados em nenhum dispositivo
             const unsync=loc.filter(x=>x&&x.id&&!srvIds.has(x.id)&&!deletedIds.has(x.id));
             // Resolve conflitos: prefere local se _mts local for mais recente
             const resolved=srvFiltered.map(x=>{
