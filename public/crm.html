@@ -1044,6 +1044,12 @@ body.mode-mobile .section-header{gap:12px}
       </select>
     </div>
     <div class="pill-row" id="vendor-pills"></div>
+    <div style="margin:10px 0 4px">
+      <input type="text" id="vd-srch" placeholder="Filtrar cliente por nome ou código..." autocomplete="off"
+        style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;width:100%;box-sizing:border-box"
+        oninput="searchVendorClient(this.value.trim())"
+        onkeydown="if(event.key==='Escape'){this.value='';searchVendorClient('');}">
+    </div>
     <div id="vendor-detail-grid"></div>
   </div>
 
@@ -7982,11 +7988,13 @@ function renderAnaliseTable(){
 let activeVendor='Guilherme';
 let VD_MES=CRM_MES;
 let _vdSort={col:'c',dir:'desc'};
+let _vdFilter='';
 function _vdSortBy(col){
   if(_vdSort.col===col) _vdSort.dir=_vdSort.dir==='asc'?'desc':'asc';
   else{_vdSort.col=col;_vdSort.dir=col==='nome'?'asc':'desc';}
   renderVendorDetail(activeVendor);
 }
+function searchVendorClient(q){_vdFilter=q;renderVendorDetail(activeVendor);}
 function setVdMes(mes){
   if(mes) VD_MES=mes;
   renderVendorDetail(activeVendor);
@@ -8011,6 +8019,7 @@ function initVendorPills(){
         document.querySelectorAll('#vendor-pills .pill').forEach(p=>p.classList.remove('active'));
         pill.classList.add('active');
         activeVendor=v.name;
+        _vdFilter='';const si=document.getElementById('vd-srch');if(si)si.value='';
         renderVendorDetail(v.name);
       };
     }
@@ -8091,6 +8100,10 @@ function renderVendorDetail(name){
     if(typeof vx==='string') return _vdSort.dir==='asc'?vx.localeCompare(vy):vy.localeCompare(vx);
     return _vdSort.dir==='asc'?vx-vy:vy-vx;
   });
+  const _norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const displayClients=_vdFilter
+    ? allClients.filter(c=>_norm(c.nome).includes(_norm(_vdFilter))||normCod(c.cod)===normCod(_vdFilter))
+    : allClients;
 
   // Mapa cod → maps link (para botão ver dos clientes)
   const _mapsMap={};
@@ -8131,17 +8144,17 @@ function renderVendorDetail(name){
   if(allClients.length){
     let rows,thead,tfoot;
     if(singleMonth){
-      rows=allClients.map((c,i)=>`<tr>
+      rows=displayClients.map((c,i)=>`<tr>
         <td style="color:rgba(255,255,255,.5)">${i+1}</td>
         <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
         ${_clientCell(c)}
         <td style="font-weight:700;color:#fff">${_fVal(c.a||c.b||c.c)}</td>
       </tr>`).join('');
-      const totS=allClients.reduce((s,c)=>s+(c.a||c.b||c.c),0);
+      const totS=displayClients.reduce((s,c)=>s+(c.a||c.b||c.c),0);
       thead=`<tr><th>#</th><th>Cód.</th><th>Cliente</th><th>${lblA}</th></tr>`;
-      tfoot=`<tr class="total-row"><td colspan="3">Total</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
+      tfoot=`<tr class="total-row"><td colspan="3">Total${_vdFilter?' (filtrado)':''}</td><td style="font-weight:800">${fBRL(totS)}</td></tr>`;
     } else {
-      rows=allClients.map((c,i)=>`<tr>
+      rows=displayClients.map((c,i)=>`<tr>
           <td style="color:rgba(255,255,255,.5)">${i+1}</td>
           <td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td>
           ${_clientCell(c)}
@@ -8149,9 +8162,9 @@ function renderVendorDetail(name){
           <td style="color:rgba(255,255,255,.7)">${_fVal(c.b)}</td>
           <td style="font-weight:700;color:#fff">${_fVal(c.c)}</td>
         </tr>`).join('');
-      const totA=allClients.reduce((s,c)=>s+c.a,0);
-      const totB=allClients.reduce((s,c)=>s+c.b,0);
-      const totC=allClients.reduce((s,c)=>s+c.c,0);
+      const totA=displayClients.reduce((s,c)=>s+c.a,0);
+      const totB=displayClients.reduce((s,c)=>s+c.b,0);
+      const totC=displayClients.reduce((s,c)=>s+c.c,0);
       thead=`<tr>
         <th>#</th>
         <th>Cód.</th>
@@ -8161,13 +8174,16 @@ function renderVendorDetail(name){
         <th style="${_thS}" onclick="_vdSortBy('c')">${lblC}${_ico('c')}</th>
       </tr>`;
       tfoot=`<tr class="total-row">
-        <td colspan="3">Total</td>
+        <td colspan="3">Total${_vdFilter?' (filtrado)':''}</td>
         <td>${fBRL(totA)}</td>
         <td>${fBRL(totB)}</td>
         <td style="font-weight:800">${fBRL(totC)}</td>
       </tr>`;
     }
-    tblHtml=`<table class="tbl"><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table>`;
+    const noMatch=_vdFilter&&!displayClients.length;
+    tblHtml=noMatch
+      ?`<div style="color:rgba(255,255,255,.4);font-size:13px;padding:20px 0;text-align:center">Nenhum cliente encontrado para "<b>${_vdFilter}</b>".</div>`
+      :`<table class="tbl"><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table>`;
   } else {
     tblHtml=`<div style="color:rgba(255,255,255,.4);font-size:13px;padding:20px 0;text-align:center">Sem dados de carteira para o período selecionado</div>`;
   }
@@ -8188,7 +8204,7 @@ function renderVendorDetail(name){
     <div class="card">
       <div class="card-header">
         <span class="card-title">${singleMonth?`Carteira de Clientes · ${lblA.toUpperCase()}`:`Carteira de Clientes · ${lblA.toUpperCase()} VS ${lblB.toUpperCase()} VS ${lblC.toUpperCase()}`}</span>
-        ${allClients.length?`<span style="font-size:11px;color:rgba(255,255,255,.6)">${allClients.length} clientes</span>`:''}
+        ${allClients.length?`<span style="font-size:11px;color:rgba(255,255,255,.6)">${_vdFilter?`${displayClients.length} de ${allClients.length} clientes`:allClients.length+' clientes'}</span>`:''}
       </div>
       <div style="overflow-x:auto;overflow-y:auto;max-height:520px">${tblHtml}</div>
     </div>
