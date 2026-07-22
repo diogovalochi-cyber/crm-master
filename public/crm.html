@@ -1702,7 +1702,7 @@ const EQUIPES = {
 };
 // Vendedores sem código ERP ainda, agrupados por equipe (data-seller)
 const EQUIPES_EXTRA = {
-  lazaro: ['RAUER'],
+  lazaro: [],
   val:    [],
 };
 function getVendedoresFiltered(mes){
@@ -1722,7 +1722,7 @@ const VENDEDORES = [
   { name:'Natália',   av:'NA', color:'#F472B6', abr: 82931.21, mar: 70689.47, cli:28, ped: 24, cod:'116' },
   { name:'Keller',    av:'KE', color:'#22D3EE', abr: 73275.56, mar: 61898.09, cli:32, ped: 35, cod:'117' },
   { name:'Althieres', av:'AL', color:'#FBBF24', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'119', newHire:true },
-  { name:'Jorge',     av:'JO', color:'#94A3B8', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'118', newHire:true },
+  { name:'Rauer',     av:'RA', color:'#FCD34D', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'118', newHire:true },
   { name:'João',      av:'JO2',color:'#2DD4BF', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'120', newHire:true },
   { name:'Moab',      av:'MB', color:'#FB923C', abr: 446945.31, mar: 433544.64, cli:53, ped:381, cod:'121', newHire:true },
   { name:'Ramon',     av:'RM', color:'#A3E635', abr: 290066.71, mar: 201776.26, cli:36, ped:190, cod:'122', newHire:true },
@@ -1849,8 +1849,8 @@ const VENDOR_TOP5 = {
   Althieres:[
     {cli:'Ingresso em Mai/2026',        abr:     0.00, mar:    0.00},
   ],
-  Jorge:[
-    {cli:'Ingresso em Mai/2026',        abr:     0.00, mar:    0.00},
+  Rauer:[
+    {cli:'Carteira transferida de Jorge em Jul/2026', abr: 0.00, mar: 0.00},
   ],
 };
 
@@ -1867,7 +1867,7 @@ const VENDEDORES_MAIO = [
   {name:'Keller',    av:'KE', color:'#22D3EE', total:137934.62, cli:30, ped: 40, cod:'117'},
   {name:'Everaldo',  av:'EV', color:'#F59E0B', total:107273.97, cli:20, ped: 22, cod:'107'},
   {name:'Althieres', av:'AL', color:'#FBBF24', total:101446.13, cli:28, ped: 38, cod:'119'},
-  {name:'Jorge',     av:'JO', color:'#94A3B8', total: 57857.08, cli:12, ped: 17, cod:'118'},
+  {name:'Rauer',     av:'RA', color:'#FCD34D', total: 57857.08, cli:12, ped: 17, cod:'118'},
   {name:'João',     av:'JO2',color:'#2DD4BF', total:  5177.07, cli: 5, ped:  5, cod:'120', newHire:true},
   {name:'Moab',     av:'MB', color:'#FB923C', total:468575.66, cli:56, ped:388, cod:'121', newHire:true},
   {name:'Ramon',    av:'RM', color:'#A3E635', total:292050.08, cli:36, ped:189, cod:'122', newHire:true},
@@ -2859,7 +2859,7 @@ const VENDEDORES_JULHO = [
   {name:'Althieres',av:'AL',color:'#FBBF24',total:113870.49,cli:29,ped:0,cod:'119',newHire:true},
   {name:'Keller',av:'KE',color:'#22D3EE',total:105418.76,cli:31,ped:0,cod:'117'},
   {name:'Everaldo',av:'EV',color:'#F59E0B',total:79340.66,cli:18,ped:0,cod:'107'},
-  {name:'Jorge',av:'JO',color:'#94A3B8',total:59431.45,cli:10,ped:0,cod:'118',newHire:true},
+  {name:'Rauer',av:'RA',color:'#FCD34D',total:59431.45,cli:10,ped:0,cod:'118',newHire:true},
   {name:'João',av:'JO2',color:'#2DD4BF',total:49176.00,cli:9,ped:0,cod:'120',newHire:true},
   {name:'Moab',av:'MB',color:'#FB923C',total:336358.63,cli:51,ped:0,cod:'121',newHire:true},
   {name:'Ramon',av:'RM',color:'#A3E635',total:236679.35,cli:34,ped:0,cod:'122',newHire:true},
@@ -2875,7 +2875,7 @@ const VENDEDORES_JUNHO = [
   {name:'Althieres', av:'AL', color:'#FBBF24', total:164170.9, cli:28, ped:68, cod:'119', newHire:true},
   {name:'Keller', av:'KE', color:'#22D3EE', total:159376.31, cli:32, ped:61, cod:'117'},
   {name:'Everaldo', av:'EV', color:'#F59E0B', total:115682.24, cli:22, ped:53, cod:'107'},
-  {name:'Jorge', av:'JO', color:'#94A3B8', total:92799.35, cli:12, ped:34, cod:'118', newHire:true},
+  {name:'Rauer', av:'RA', color:'#FCD34D', total:92799.35, cli:12, ped:34, cod:'118', newHire:true},
   {name:'João', av:'JO2', color:'#2DD4BF', total:68434.04, cli:10, ped:24, cod:'120', newHire:true},
   {name:'Moab', av:'MB', color:'#FB923C', total:492628.76, cli:53, ped:126, cod:'121', newHire:true},
   {name:'Ramon', av:'RM', color:'#A3E635', total:341216.9, cli:36, ped:82, cod:'122', newHire:true},
@@ -3864,7 +3864,7 @@ const COMISSAO_BASE = {
     '115':  89184.79, // Israel
     '116':  70186.20, // Natália
     '117':  65506.50, // Keller
-    '118':  87868.51, // carteira Alexsandro Gomes (transferida para Jorge em mai/26)
+    '118':  87868.51, // carteira Alexsandro Gomes → Jorge (mai/26) → Rauer (jul/26)
     '119':      0.00, // Althieres (sem vendas no período)
     '120':      0.00, // João (sem vendas no período)
     '121': 446685.54, // Moab
@@ -3881,7 +3881,7 @@ const COMISSAO_BASE = {
     '115': 202054.45, // Israel
     '116': 198285.09, // Natália
     '117': 131580.04, // Keller
-    '118':  39800.59, // Jorge
+    '118':  39800.59, // Rauer
     '119':  66710.21, // Althieres
     '120':      0.00, // João (sem vendas no período)
     '121': 507731.49, // Moab
@@ -3898,7 +3898,7 @@ const COMISSAO_BASE = {
     '115': 0, // Israel
     '116': 0, // Natália
     '117': 0, // Keller
-    '118': 0, // Jorge
+    '118': 0, // Rauer
     '119': 0, // Althieres
     '120': 0, // João
     '121': 0, // Moab
@@ -8288,14 +8288,13 @@ const CREDS=[
   {user:'natalia',  pass:'#Naty1992', role:'VENDEDOR',   name:'Natália',   av:'NA', vendId:'116', color:'#F472B6'},
   {user:'keller',   pass:'3324', role:'VENDEDOR',   name:'Keller',    av:'KE', vendId:'117', color:'#22D3EE'},
   {user:'althieres',pass:'260903', role:'VENDEDOR',   name:'Althieres', av:'AL', vendId:'119', color:'#FBBF24'},
-  {user:'jorge',    pass:'2718', role:'VENDEDOR',   name:'Jorge',     av:'JO', vendId:'118', color:'#94A3B8'},
   {user:'joao',        pass:'1234', role:'VENDEDOR', name:'João',         av:'JO2',vendId:'120', color:'#2DD4BF', newHire:true},
   {user:'moab',        pass:'123',  role:'VENDEDOR', name:'Moab',         av:'MB', vendId:'121', color:'#FB923C', newHire:true},
   {user:'ramon',       pass:'4959', role:'VENDEDOR', name:'Ramon',        av:'RM', vendId:'122', color:'#A3E635', newHire:true},
   {user:'kelly',       pass:'kelly123',  role:'VENDEDOR', name:'Kelly',        av:'KL', vendId:'123', color:'#E879F9', newHire:true},
   {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luiz Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'1203', role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
-  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:null,  color:'#FCD34D', newHire:true},
+  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'118', color:'#FCD34D', newHire:true},
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
   {user:'rogerio',  pass:'123', role:'TECNICO',    name:'Rogério',   av:'RO', color:'#FF6B6B'},
