@@ -2875,7 +2875,7 @@ const VENDEDORES_JUNHO = [
   {name:'Althieres', av:'AL', color:'#FBBF24', total:164170.9, cli:28, ped:68, cod:'119', newHire:true},
   {name:'Keller', av:'KE', color:'#22D3EE', total:159376.31, cli:32, ped:61, cod:'117'},
   {name:'Everaldo', av:'EV', color:'#F59E0B', total:115682.24, cli:22, ped:53, cod:'107'},
-  {name:'Rauer', av:'RA', color:'#FCD34D', total:92799.35, cli:12, ped:34, cod:'118', newHire:true},
+  {name:'Jorge', av:'JO', color:'#94A3B8', total:92799.35, cli:12, ped:34, cod:'118', newHire:true},
   {name:'João', av:'JO2', color:'#2DD4BF', total:68434.04, cli:10, ped:24, cod:'120', newHire:true},
   {name:'Moab', av:'MB', color:'#FB923C', total:492628.76, cli:53, ped:126, cod:'121', newHire:true},
   {name:'Ramon', av:'RM', color:'#A3E635', total:341216.9, cli:36, ped:82, cod:'122', newHire:true},
@@ -8059,17 +8059,21 @@ function initVendorPills(){
   if(row.children.length) return;
   const _allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const vendorsToShow=window.CRM_VENDOR_NAME
-    ? _allV.filter(v=>v.name===window.CRM_VENDOR_NAME)
+    ? (_allV.filter(v=>v.cod===window.CRM_VENDOR_ID).length
+        ? _allV.filter(v=>v.cod===window.CRM_VENDOR_ID)
+        : _allV.filter(v=>v.name===window.CRM_VENDOR_NAME))
     : CRM_USER?.team
       ? _allV.filter(v=>CRM_USER.team.includes(v.cod))
       : _allV;
-  const defaultVendor=window.CRM_VENDOR_NAME||(vendorsToShow[0]?.name)||activeVendor;
+  const defaultVendorName=vendorsToShow[0]?.name||activeVendor;
+  const defaultVendor=window.CRM_VENDOR_NAME||defaultVendorName;
   vendorsToShow.forEach(v=>{
+    const displayName=window.CRM_VENDOR_NAME||v.name;
     const pill=document.createElement('div');
-    pill.className='pill'+(v.name===defaultVendor?' active':'');
-    pill.textContent=v.name;
-    // Bloquear mudança de vendedor para perfil VENDEDOR
+    pill.className='pill active';
+    pill.textContent=displayName;
     if(!window.CRM_VENDOR_NAME){
+      pill.className='pill'+(v.name===defaultVendorName?' active':'');
       pill.onclick=()=>{
         document.querySelectorAll('#vendor-pills .pill').forEach(p=>p.classList.remove('active'));
         pill.classList.add('active');
@@ -8080,8 +8084,8 @@ function initVendorPills(){
     }
     row.appendChild(pill);
   });
-  activeVendor=defaultVendor;
-  renderVendorDetail(defaultVendor);
+  activeVendor=defaultVendorName;
+  renderVendorDetail(defaultVendorName);
 }
 function renderVendorDetail(name){
   const _mseqVD=['marco','abril','maio','junho','julho'];
