@@ -1722,7 +1722,7 @@ const VENDEDORES = [
   { name:'Natália',   av:'NA', color:'#F472B6', abr: 82931.21, mar: 70689.47, cli:28, ped: 24, cod:'116' },
   { name:'Keller',    av:'KE', color:'#22D3EE', abr: 73275.56, mar: 61898.09, cli:32, ped: 35, cod:'117' },
   { name:'Althieres', av:'AL', color:'#FBBF24', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'119', newHire:true },
-  { name:'Rauer',     av:'RA', color:'#FCD34D', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'118', newHire:true },
+  { name:'Jorge',     av:'JO', color:'#94A3B8', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'118', newHire:true },
   { name:'João',      av:'JO2',color:'#2DD4BF', abr:      0.00, mar:      0.00, cli: 0, ped:  0, cod:'120', newHire:true },
   { name:'Moab',      av:'MB', color:'#FB923C', abr: 446945.31, mar: 433544.64, cli:53, ped:381, cod:'121', newHire:true },
   { name:'Ramon',     av:'RM', color:'#A3E635', abr: 290066.71, mar: 201776.26, cli:36, ped:190, cod:'122', newHire:true },
@@ -1849,8 +1849,8 @@ const VENDOR_TOP5 = {
   Althieres:[
     {cli:'Ingresso em Mai/2026',        abr:     0.00, mar:    0.00},
   ],
-  Rauer:[
-    {cli:'Carteira transferida de Jorge em Jul/2026', abr: 0.00, mar: 0.00},
+  Jorge:[
+    {cli:'Ingresso em Mai/2026',        abr:     0.00, mar:    0.00},
   ],
 };
 
@@ -1867,7 +1867,7 @@ const VENDEDORES_MAIO = [
   {name:'Keller',    av:'KE', color:'#22D3EE', total:137934.62, cli:30, ped: 40, cod:'117'},
   {name:'Everaldo',  av:'EV', color:'#F59E0B', total:107273.97, cli:20, ped: 22, cod:'107'},
   {name:'Althieres', av:'AL', color:'#FBBF24', total:101446.13, cli:28, ped: 38, cod:'119'},
-  {name:'Rauer',     av:'RA', color:'#FCD34D', total: 57857.08, cli:12, ped: 17, cod:'118'},
+  {name:'Jorge',     av:'JO', color:'#94A3B8', total: 57857.08, cli:12, ped: 17, cod:'118'},
   {name:'João',     av:'JO2',color:'#2DD4BF', total:  5177.07, cli: 5, ped:  5, cod:'120', newHire:true},
   {name:'Moab',     av:'MB', color:'#FB923C', total:468575.66, cli:56, ped:388, cod:'121', newHire:true},
   {name:'Ramon',    av:'RM', color:'#A3E635', total:292050.08, cli:36, ped:189, cod:'122', newHire:true},
@@ -2859,7 +2859,7 @@ const VENDEDORES_JULHO = [
   {name:'Althieres',av:'AL',color:'#FBBF24',total:113870.49,cli:29,ped:0,cod:'119',newHire:true},
   {name:'Keller',av:'KE',color:'#22D3EE',total:105418.76,cli:31,ped:0,cod:'117'},
   {name:'Everaldo',av:'EV',color:'#F59E0B',total:79340.66,cli:18,ped:0,cod:'107'},
-  {name:'Rauer',av:'RA',color:'#FCD34D',total:59431.45,cli:10,ped:0,cod:'118',newHire:true},
+  {name:'Jorge',av:'JO',color:'#94A3B8',total:59431.45,cli:10,ped:0,cod:'118',newHire:true},
   {name:'João',av:'JO2',color:'#2DD4BF',total:49176.00,cli:9,ped:0,cod:'120',newHire:true},
   {name:'Moab',av:'MB',color:'#FB923C',total:336358.63,cli:51,ped:0,cod:'121',newHire:true},
   {name:'Ramon',av:'RM',color:'#A3E635',total:236679.35,cli:34,ped:0,cod:'122',newHire:true},
@@ -8057,7 +8057,7 @@ function setVdMes(mes){
 function initVendorPills(){
   const row=document.getElementById('vendor-pills');
   if(row.children.length) return;
-  const _allV=(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
+  const _allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const vendorsToShow=window.CRM_VENDOR_NAME
     ? _allV.filter(v=>v.name===window.CRM_VENDOR_NAME)
     : CRM_USER?.team
