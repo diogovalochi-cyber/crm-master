@@ -1000,20 +1000,19 @@ body.mode-mobile .section-header{gap:12px}
 
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
-    <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)" style="display:none">Pesquisa</button>
+    <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)">Pesquisa</button>
   </div>
 
   <div id="subtab-pesquisa" style="display:none">
     <div class="card">
       <div class="card-header"><span class="card-title">Pesquisa de Cliente</span></div>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px">
-        <input type="text" id="srch-cod" placeholder="Código do cliente..." autocomplete="off"
-          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:6px;font-size:14px;outline:none;width:200px"
+      <div style="margin-bottom:16px">
+        <input type="text" id="srch-cod" placeholder="Nome ou código do cliente..." autocomplete="off"
+          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;width:100%;box-sizing:border-box"
           oninput="searchClient(this.value.trim())"
           onkeydown="if(event.key==='Enter')searchClient(this.value.trim())">
-        <span style="font-size:12px;color:rgba(255,255,255,.3)">ou nome parcial</span>
       </div>
-      <div id="srch-result"><div style="color:rgba(255,255,255,.25);font-size:13px">Digite um código ou nome para pesquisar.</div></div>
+      <div id="srch-result"><div style="color:rgba(255,255,255,.25);font-size:13px">Digite um nome (mín. 3 letras) ou código para pesquisar.</div></div>
     </div>
   </div>
 
@@ -5919,7 +5918,7 @@ function showSubtab(id,el){
   document.querySelectorAll('#tab-analise .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
-  if(id==='pesquisa'){const inp=document.getElementById('srch-cod');if(inp) inp.focus();}
+  if(id==='pesquisa'){const inp=document.getElementById('srch-cod');if(inp){inp.value='';inp.focus();searchClient('');}}
   if(id==='comissao'){comissaoOffset=0;renderComissao();}
 }
 /* ─────────────────────────────────────────
@@ -8408,10 +8407,7 @@ function applySession(user){
       // Adm/Analista/Gerente: mostra filtro de equipes completo
       const _ef=document.getElementById('admin-equipe-filter');if(_ef)_ef.style.display='flex';
       const _fef=document.getElementById('forms-equipe-filter');if(_fef)_fef.style.display='flex';
-      // Pesquisa: apenas para ANALISTA (não para GERENTE)
-      if(user.role!=='GERENTE'){
-        const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
-      }
+      // Pesquisa: visível para todos os fullAccess (ANALISTA, GERENTE, SUPERVISOR)
     }
   }
 
@@ -8456,8 +8452,6 @@ function applyTecnicoMode(user){
   if(user.name==='Marcelo'){
     ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-    // Libera aba Pesquisa
-    const _bp=document.getElementById('subtab-btn-pesquisa');if(_bp)_bp.style.display='';
     // Abre em Técnicos → Forms
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-tecnicos').classList.add('active');
@@ -8487,6 +8481,9 @@ function applyVendorMode(user){
   // Oculta cards semanais (exclusivo admin)
   const weeklyGrid=document.getElementById('kpi-weekly-grid');
   if(weeklyGrid) weeklyGrid.style.display='none';
+  // Oculta aba Pesquisa da Análise (vendedor só vê a própria carteira)
+  const bpVend=document.getElementById('subtab-btn-pesquisa');
+  if(bpVend) bpVend.style.display='none';
 
   // Forms: oculta row de seleção de vendedor (vendedor só vê os próprios dados)
   currentRegSeller=vendorKey;
