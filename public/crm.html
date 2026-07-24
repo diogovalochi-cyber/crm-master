@@ -10962,10 +10962,13 @@ function renderTabelas(){
     typeof VENDEDORES_MAIO!=='undefined'?VENDEDORES_MAIO:[],
     VENDEDORES||[]
   ];
-  let cod='';
-  for(const src of allVendSrcs){const v=src.find(x=>x.name===vName);if(v&&v.cod){cod=v.cod;break;}}
+  // For vendor logins, always use their own ID (security: prevents seeing other vendors' clients)
+  let cod=window.CRM_VENDOR_ID||'';
+  if(!cod){
+    for(const src of allVendSrcs){const v=src.find(x=>x.name===vName);if(v&&v.cod){cod=v.cod;break;}}
+  }
   // Name-based fallback for vendors without ERP code (e.g., RAUER)
-  const nameKey=vName.toUpperCase();
+  const nameKey=(window.CRM_VENDOR_NAME||vName).toUpperCase();
 
   function getCart(mes){
     const cart=getCarteiraForMes(mes);
