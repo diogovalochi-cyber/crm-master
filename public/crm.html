@@ -1713,7 +1713,8 @@ function getVendedoresFiltered(mes){
   const src=getVendedoresForMes(mes);
   if(!CRM_EQUIPE_FILTER||CRM_EQUIPE_FILTER==='total') return src;
   const cods=EQUIPES[CRM_EQUIPE_FILTER]||[];
-  return src.filter(v=>cods.includes(v.cod));
+  const extra=(EQUIPES_EXTRA[CRM_EQUIPE_FILTER]||[]).map(n=>n.toUpperCase());
+  return src.filter(v=>cods.includes(v.cod)||extra.includes((v.name||'').toUpperCase()));
 }
 /* ─────────────────────────────────────────
    DATA
