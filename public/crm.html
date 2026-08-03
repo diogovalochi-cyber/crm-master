@@ -8133,9 +8133,14 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-    const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO}[mes]||{};
-  if(!CRM_USER?.team) return _raw;
-  const _f={};CRM_USER.team.forEach(cod=>{if(_raw[cod])_f[cod]=_raw[cod];});return _f;
+  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO}[mes]||{};
+  // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em CARTEIRA_JUNHO)
+  const _nameMap=new Map();
+  Object.values(CARTEIRA_JUNHO).forEach(arr=>arr.forEach(c=>{if(!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
+  const _norm=raw=>{const r={};for(const k in raw){r[k]=raw[k].map(c=>c.valor!==undefined?c:{...c,valor:c.v??0,nome:_nameMap.get(c.cod)||c.cod});}return r;};
+  const _normalized=_norm(_raw);
+  if(!CRM_USER?.team) return _normalized;
+  const _f={};CRM_USER.team.forEach(cod=>{if(_normalized[cod])_f[cod]=_normalized[cod];});return _f;
 }
 function navDia(dir){
   const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();
