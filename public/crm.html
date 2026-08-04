@@ -969,6 +969,7 @@ body.mode-mobile .section-header{gap:12px}
           <option value="maio">Maio</option>
           <option value="junho">Junho</option>
           <option value="julho">Julho</option>
+          <option value="agosto">Agosto</option>
         </select>
         <div class="dia-nav-wrap" style="display:none;align-items:center;gap:6px">
           <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
@@ -1699,7 +1700,7 @@ function updateGreetingClock(userName, roleEmoji){
   if(sub) sub.textContent=dateStr+' · '+timeStr+' (Brasília)';
 }
 
-let CRM_MES = (()=>{const b=nowBR();return b.month>=6?'julho':b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
+let CRM_MES = (()=>{const b=nowBR();return b.month>=7?'agosto':b.month>=6?'julho':b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
 let CRM_EQUIPE_FILTER = 'total';
 const EQUIPES = {
   lazaro: ['093','116','117','118','120','121','122'],
@@ -2856,6 +2857,25 @@ const TOP_CLIENTES_JUNHO = [
   {r:10,nome:'BLACK BOI JD RECORD',                  vend:'Israel',    val: 2761.95},
 ];
 
+// Agosto 2026 — atualizado 04/08/2026 (PDF ag, Grand Total R$ 148.463,44)
+const VENDEDORES_AGOSTO = [
+  {name:'Guilherme',av:'GU',color:'#10B981',total:24966.56,cli:14,ped:0,cod:'093'},
+  {name:'Relson',av:'RE',color:'#60A5FA',total:45738.66,cli:27,ped:0,cod:'094'},
+  {name:'Israel',av:'IS',color:'#8B5CF6',total:0,cli:0,ped:0,cod:'115'},
+  {name:'Natália',av:'NA',color:'#F472B6',total:10285.94,cli:9,ped:0,cod:'116'},
+  {name:'Althieres',av:'AL',color:'#FBBF24',total:9196.58,cli:9,ped:0,cod:'119',newHire:true},
+  {name:'Keller',av:'KE',color:'#22D3EE',total:998.51,cli:2,ped:0,cod:'117'},
+  {name:'Everaldo',av:'EV',color:'#F59E0B',total:11765.39,cli:12,ped:0,cod:'107'},
+  {name:'Jorge',av:'JO',color:'#94A3B8',total:0,cli:0,ped:0,cod:'118',newHire:true},
+  {name:'João',av:'JO2',color:'#2DD4BF',total:339.90,cli:1,ped:0,cod:'120',newHire:true},
+  {name:'Moab',av:'MB',color:'#FB923C',total:9432.91,cli:6,ped:0,cod:'121',newHire:true},
+  {name:'Ramon',av:'RM',color:'#A3E635',total:18953.39,cli:10,ped:0,cod:'122',newHire:true},
+  {name:'Kelly',av:'KL',color:'#E879F9',total:8134.28,cli:6,ped:0,cod:'123',newHire:true},
+  {name:'Luiz Henrique',av:'LH',color:'#38BDF8',total:0,cli:0,ped:0,cod:'124',newHire:true},
+  {name:'Cezar',av:'CZ',color:'#F43F5E',total:5631.56,cli:4,ped:0,cod:'125',newHire:true},
+  {name:'Rauer',av:'RA',color:'#FCD34D',total:3019.76,cli:1,ped:0,cod:'',newHire:true}
+];
+
 // Julho 2026 — atualizado 31/07/2026 (PDF ppppp, Grand Total R$ 4.257.566,75)
 const VENDEDORES_JULHO = [
   {name:'Guilherme',av:'GU',color:'#10B981',total:635221.36,cli:40,ped:0,cod:'093'},
@@ -2892,6 +2912,72 @@ const VENDEDORES_JUNHO = [
   {name:'Cezar', av:'CZ', color:'#F43F5E', total:523493.38, cli:48, ped:134, cod:'125', newHire:true},
 ];
 
+const CARTEIRA_AGOSTO = {
+  '093': [
+    {cod:'258',v:2429.38},{cod:'4136',v:2318.08},{cod:'4164',v:2611.75},
+    {cod:'4310',v:3668.72},{cod:'4311',v:925.20},{cod:'4313',v:3113.04},
+    {cod:'4314',v:2192.44},{cod:'4315',v:771.53},{cod:'4316',v:1901.80},
+    {cod:'4534',v:1316.20},{cod:'4633',v:940.23},{cod:'4701',v:1082.15},
+    {cod:'4849',v:904.20},{cod:'781',v:791.84}
+  ],
+  '094': [
+    {cod:'1105',v:741.60},{cod:'1240',v:618.60},{cod:'1904',v:993.40},
+    {cod:'2475',v:1426.18},{cod:'2662',v:5516.28},{cod:'3106',v:2481.40},
+    {cod:'3311',v:828.86},{cod:'3411',v:984.87},{cod:'3576',v:2000.72},
+    {cod:'3623',v:1291.09},{cod:'3663',v:1671.92},{cod:'3698',v:822.67},
+    {cod:'3911',v:1381.79},{cod:'3924',v:1019.97},{cod:'4131',v:753.98},
+    {cod:'4249',v:1623.62},{cod:'4301',v:510.00},{cod:'4331',v:1983.13},
+    {cod:'4407',v:703.27},{cod:'4471',v:4215.56},{cod:'4583',v:753.20},
+    {cod:'4597',v:1287.00},{cod:'4768',v:1053.68},{cod:'4984',v:791.69},
+    {cod:'5014',v:6049.14},{cod:'5035',v:1644.18},{cod:'914',v:2590.86}
+  ],
+  '115': [],
+  '116': [
+    {cod:'1982',v:818.68},{cod:'1996',v:1210.55},{cod:'2726',v:1307.82},
+    {cod:'2750',v:1585.21},{cod:'3024',v:745.36},{cod:'3402',v:2000.06},
+    {cod:'4824',v:394.00},{cod:'4967',v:1166.53},{cod:'92',v:1057.73}
+  ],
+  '119': [
+    {cod:'2062',v:479.02},{cod:'2289',v:694.60},{cod:'2813',v:1977.59},
+    {cod:'2867',v:608.00},{cod:'3077',v:834.39},{cod:'3159',v:1450.62},
+    {cod:'4680',v:1029.46},{cod:'4820',v:449.30},{cod:'4927',v:1673.60}
+  ],
+  '117': [
+    {cod:'4147',v:521.19},{cod:'4792',v:477.32}
+  ],
+  '107': [
+    {cod:'4639',v:825.26},{cod:'4654',v:1539.65},{cod:'4660',v:959.00},
+    {cod:'4665',v:1428.06},{cod:'4721',v:584.82},{cod:'4756',v:590.41},
+    {cod:'4775',v:714.88},{cod:'4822',v:537.03},{cod:'4827',v:1350.10},
+    {cod:'4862',v:1457.24},{cod:'4940',v:624.00},{cod:'4956',v:1154.94}
+  ],
+  '118': [],
+  '120': [
+    {cod:'4242',v:339.90}
+  ],
+  '121': [
+    {cod:'3385',v:1470.90},{cod:'3960',v:734.92},{cod:'4075',v:1451.20},
+    {cod:'4714',v:805.70},{cod:'4717',v:1210.02},{cod:'5005',v:3760.17}
+  ],
+  '122': [
+    {cod:'2075',v:938.70},{cod:'2305',v:1894.77},{cod:'2465',v:896.22},
+    {cod:'2748',v:2711.62},{cod:'2899',v:2223.76},{cod:'3704',v:1904.86},
+    {cod:'4098',v:1281.15},{cod:'4462',v:3119.17},{cod:'473',v:563.94},
+    {cod:'4837',v:3419.20}
+  ],
+  '123': [
+    {cod:'1197',v:747.95},{cod:'1230',v:885.00},{cod:'3126',v:2027.35},
+    {cod:'3298',v:861.15},{cod:'3995',v:503.87},{cod:'4005',v:3108.96}
+  ],
+  '124': [],
+  '125': [
+    {cod:'2523',v:2807.14},{cod:'3451',v:479.71},{cod:'3635',v:493.88},
+    {cod:'3892',v:1850.83}
+  ],
+  '': [
+    {cod:'5055',v:3019.76}
+  ]
+};
 const CARTEIRA_JULHO = {
   '093': [
     {cod:'119',v:39086.87},{cod:'258',v:9951.49},{cod:'3382',v:15939.71},
@@ -8108,7 +8194,7 @@ const FATURAMENTO_DIARIO = {
 /* ─────────────────────────────────────────
    MÊS HELPER
 ───────────────────────────────────────── */
-const MES_LABELS={marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho',julho:'Julho',diario:'Por Dia'};
+const MES_LABELS={marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho',julho:'Julho',agosto:'Agosto',diario:'Por Dia'};
 let CRM_DIA=(()=>{const days=Object.keys(FATURAMENTO_DIARIO||{}).sort();return days[days.length-1]||'';})();
 function getDiaLabel(d){
   if(!d) return '—';
@@ -8125,6 +8211,7 @@ function getVendedoresForMes(mes){
       return {...v,abr:r?r.total:0,mar:0,cli:r?r.cli:0,ped:r?r.ped:0};
     }).sort((a,b)=>b.abr-a.abr);
   }
+  if(mes==='agosto') return VENDEDORES_AGOSTO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JULHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='julho') return VENDEDORES_JULHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JUNHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='junho') return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='maio')  return VENDEDORES_MAIO.filter(_tf).map(v=>({...v, abr:v.total, mar:VENDEDORES.find(x=>x.cod===v.cod)?.abr||0}));
@@ -8133,7 +8220,7 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO}[mes]||{};
+  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO,agosto:CARTEIRA_AGOSTO}[mes]||{};
   // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em CARTEIRA_JUNHO)
   const _nameMap=new Map();
   Object.values(CARTEIRA_JUNHO).forEach(arr=>arr.forEach(c=>{if(!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
@@ -8336,6 +8423,7 @@ function searchClient(q){
   // Fallback: search carteiras (for clients not yet in HC)
   if(!Object.keys(found).length){
     const MESES=[
+      {key:'agosto',cart:typeof CARTEIRA_AGOSTO!=='undefined'?CARTEIRA_AGOSTO:{}},
       {key:'julho',cart:typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{}},
       {key:'junho',cart:typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{}},
       {key:'maio', cart:typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{}},
@@ -8382,6 +8470,7 @@ function searchClient(q){
 
   // Find current vendor from carteiras (most recent month first)
   const CART_ORDER=[
+    {cart:typeof CARTEIRA_AGOSTO!=='undefined'?CARTEIRA_AGOSTO:{}},
     {cart:typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{}},
     {cart:typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{}},
     {cart:typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{}},
@@ -10318,7 +10407,7 @@ function setFormsEquipe(v){
     document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.style.display='');
   } else {
     const cods=EQUIPES[v]||[];
-    const allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:VENDEDORES;
+    const allV=(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:VENDEDORES;
     const names=new Set(cods.map(cod=>{const vv=allV.find(x=>x.cod===cod);return vv?_nm2(vv.name):null;}).filter(Boolean));
     (EQUIPES_EXTRA[v]||[]).forEach(n=>names.add(n));
     document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>{
@@ -10397,13 +10486,14 @@ function searchVendorClient(q){
   const qNome=q.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   const isCod=/^\d+$/.test(q.trim());
   const CART_ORDER=[
+    typeof CARTEIRA_AGOSTO!=='undefined'?CARTEIRA_AGOSTO:{},
     typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{},
     typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{},
     typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{},
     typeof CARTEIRA_ABRIL!=='undefined'?CARTEIRA_ABRIL:{},
     typeof CARTEIRA_MARCO!=='undefined'?CARTEIRA_MARCO:{},
   ];
-  const _allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:
+  const _allV=(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:
               (typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const pillNames=[...document.querySelectorAll('#vendor-pills .pill')].map(p=>p.textContent.trim());
   let foundVendor=null;
@@ -10431,7 +10521,7 @@ function setVdMes(mes){
 function initVendorPills(){
   const row=document.getElementById('vendor-pills');
   if(row.children.length) return;
-  const _allV=(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
+  const _allV=(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const vendorsToShow=window.CRM_VENDOR_NAME
     ? (_allV.filter(v=>v.cod===window.CRM_VENDOR_ID).length
         ? _allV.filter(v=>v.cod===window.CRM_VENDOR_ID)
@@ -10479,7 +10569,7 @@ function _toggleInactive(){
   else renderVendorDetail(activeVendor);
 }
 function renderVendorDetail(name){
-  const _mseqVD=['marco','abril','maio','junho','julho'];
+  const _mseqVD=['marco','abril','maio','junho','julho','agosto'];
   const _ciVD=_mseqVD.indexOf(CRM_MES);
   const mesA=document.getElementById('vd-mes-a')?.value||_mseqVD[Math.max(0,_ciVD-2)];
   const mesB=document.getElementById('vd-mes-b')?.value||_mseqVD[Math.max(0,_ciVD-1)];
@@ -10492,7 +10582,8 @@ function renderVendorDetail(name){
   const vRawMaio =VENDEDORES_MAIO.find(x=>x.name===name);
   const vRawJunho=VENDEDORES_JUNHO.find(x=>x.name===name);
   const vRawJulho=VENDEDORES_JULHO.find(x=>x.name===name);
-  const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod||vRawJulho?.cod;
+  const vRawAgostoD=VENDEDORES_AGOSTO.find(x=>x.name===name);
+  const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod||vRawJulho?.cod||vRawAgostoD?.cod;
 
   const _vdDia=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===cod);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
   const _D={
@@ -10501,6 +10592,7 @@ function renderVendorDetail(name){
     maio:  {label:'Maio',              total:vRawMaio?.total||0, ped:vRawMaio?.ped||0,cli:vRawMaio?.cli||0},
     junho: {label:'Junho',             total:vRawJunho?.total||0,ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0},
     julho: {label:'Julho',             total:vRawJulho?.total||0,ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0},
+    agosto:{label:'Agosto',            total:vRawAgostoD?.total||0,ped:vRawAgostoD?.ped||0,cli:vRawAgostoD?.cli||0},
     diario:{label:getDiaLabel(CRM_DIA),total:_vdDia.total,       ped:_vdDia.ped,      cli:_vdDia.cli},
   };
 
@@ -10675,6 +10767,7 @@ function renderVendorDetail(name){
 function renderTabelas(){
   const vName=activeVendor;
   const allVendSrcs=[
+    typeof VENDEDORES_AGOSTO!=='undefined'?VENDEDORES_AGOSTO:[],
     typeof VENDEDORES_JULHO!=='undefined'?VENDEDORES_JULHO:[],
     typeof VENDEDORES_JUNHO!=='undefined'?VENDEDORES_JUNHO:[],
     typeof VENDEDORES_MAIO!=='undefined'?VENDEDORES_MAIO:[],
@@ -11068,7 +11161,9 @@ function applyVendorMode(user){
   const vRawM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
   const vRawJ=VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
   const vRawJul=VENDEDORES_JULHO.find(v=>v.cod===user.vendId);
-  if(vRawJul&&(vRawJul.total||0)>0) CRM_MES='julho';
+  const vRawAgo=VENDEDORES_AGOSTO.find(v=>v.cod===user.vendId);
+  if(vRawAgo&&(vRawAgo.total||0)>0) CRM_MES='agosto';
+  else if(vRawJul&&(vRawJul.total||0)>0) CRM_MES='julho';
   else if(vRawJ&&(vRawJ.total||0)>0) CRM_MES='junho';
   else if(vRawM&&(vRawM.total||0)>0) CRM_MES='maio';
   else CRM_MES='abril';
@@ -11083,13 +11178,14 @@ function renderVendorDashboard(user, vendorKey){
   const vRawMaio  = VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
   const vRawJunho = VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
   const vRawJulho = VENDEDORES_JULHO.find(v=>v.cod===user.vendId);
+  const vRawAgosto = VENDEDORES_AGOSTO.find(v=>v.cod===user.vendId);
 
   const mesData=getVendedoresForMes(CRM_MES);
   const vM=mesData.find(v=>v.cod===user.vendId);
   if(!vM) return;
 
   const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='diario'?'Junho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesAnt=CRM_MES==='diario'?'Julho':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -11129,14 +11225,16 @@ function renderVendorDashboard(user, vendorKey){
   const _diaRaw=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===user.vendId);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
   const _junhoTotal=vRawJunho?.total||0;
   const _julhoTotal=vRawJulho?.total||0;
-  const _MES_SEQ=['marco','abril','maio','junho','julho'];
+  const _agostoTotal=vRawAgosto?.total||0;
+  const _MES_SEQ=['marco','abril','maio','junho','julho','agosto'];
   const _MES_DATA={
     marco:  {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
     abril:  {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
     maio:   {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
     junho:  {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
     julho:  {label:'Julho',             abr:_julhoTotal,        ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0,prev:_junhoTotal,      prevLabel:'Junho'},
-    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_julhoTotal,      prevLabel:'Julho'},
+    agosto: {label:'Agosto',            abr:_agostoTotal,       ped:vRawAgosto?.ped||0,cli:vRawAgosto?.cli||0,prev:_julhoTotal,    prevLabel:'Julho'},
+    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_agostoTotal,    prevLabel:'Agosto'},
   };
   const _mesIdx=_MES_SEQ.indexOf(CRM_MES);
   const _hist3=_MES_SEQ.slice(Math.max(0,_mesIdx-2),_mesIdx+1);
@@ -11162,7 +11260,7 @@ function renderVendorDashboard(user, vendorKey){
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <select class="mes-select" onchange="setMes(this.value)">
-          ${['marco','abril','maio','junho','julho'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
+          ${['marco','abril','maio','junho','julho','agosto'].map(m=>`<option value="${m}"${m===CRM_MES?' selected':''}>${MES_LABELS[m]}</option>`).join('')}
         </select>
         <div class="dia-nav-wrap" style="display:${CRM_MES==='diario'?'flex':'none'};align-items:center;gap:6px">
           <button id="dia-nav-prev" onclick="navDia(-1)" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;padding:0 4px;opacity:0.3">‹</button>
@@ -11714,7 +11812,7 @@ function _initApp(){
   updateGreetingClock();
   setMes(CRM_MES);
   // Inicializa selects de "Por Vendedor" com os 3 últimos meses disponíveis
-  const _mseq=['marco','abril','maio','junho','julho'];
+  const _mseq=['marco','abril','maio','junho','julho','agosto'];
   const _ci=_mseq.indexOf(CRM_MES);
   const _va=_mseq[Math.max(0,_ci-2)];
   const _vb=_mseq[Math.max(0,_ci-1)];
