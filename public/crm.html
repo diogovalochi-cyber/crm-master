@@ -1198,6 +1198,7 @@ body.mode-mobile .section-header{gap:12px}
         <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
         <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">Próxima →</button>
         <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+        <button onclick="abrirSwapAgenda()" title="Trocar agendas da semana entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;margin-left:8px">⇄ Trocar</button>
       </div>
       <!-- Grade de slots -->
       <div id="ag-slots"></div>
@@ -1473,6 +1474,30 @@ body.mode-mobile .section-header{gap:12px}
     <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
       <button onclick="fecharDupAgenda()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
       <button onclick="salvarDupAgenda()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Duplicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Trocar Agenda -->
+<div id="modal-swap-agenda" onclick="if(event.target===this)fecharSwapAgenda()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:380px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px">Trocar Agendas da Semana</h3>
+    <p id="swap-ag-semana" style="font-size:12px;color:rgba(255,255,255,.4);margin:0 0 20px"></p>
+    <div style="display:grid;gap:8px">
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TÉCNICO A</label>
+        <select id="swap-ag-tec-a" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none"></select>
+      </div>
+      <div style="text-align:center;font-size:24px;color:rgba(255,255,255,.25);line-height:1.2;padding:4px 0">⇄</div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TÉCNICO B</label>
+        <select id="swap-ag-tec-b" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none"></select>
+      </div>
+    </div>
+    <p style="font-size:11px;color:rgba(255,255,255,.28);margin:14px 0 0;text-align:center">As visitas da semana entre os dois técnicos serão trocadas de lugar</p>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+      <button onclick="fecharSwapAgenda()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarSwapAgenda()" style="background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Trocar</button>
     </div>
   </div>
 </div>
@@ -11823,6 +11848,37 @@ function salvarDupAgenda(){
   _saveAg(list);
   fecharDupAgenda();
   _agTecAtivo=tec;
+  renderAgenda();
+}
+
+function abrirSwapAgenda(){
+  const mon=_agMonday(_agWeekOff);
+  const sat=new Date(mon);sat.setDate(mon.getDate()+5);
+  const sl=document.getElementById('swap-ag-semana');
+  if(sl) sl.textContent=`${_agFmtDate(_agIso(mon))} – ${_agFmtDate(_agIso(sat))}`;
+  const sa=document.getElementById('swap-ag-tec-a');
+  const sb=document.getElementById('swap-ag-tec-b');
+  if(sa) sa.innerHTML=_AG_TECS.map(t=>`<option value="${t}"${t===_agTecAtivo?' selected':''}>${t}</option>`).join('');
+  if(sb){
+    const outro=_AG_TECS.find(t=>t!==_agTecAtivo)||_AG_TECS[0];
+    sb.innerHTML=_AG_TECS.map(t=>`<option value="${t}"${t===outro?' selected':''}>${t}</option>`).join('');
+  }
+  document.getElementById('modal-swap-agenda').style.display='flex';
+}
+function fecharSwapAgenda(){document.getElementById('modal-swap-agenda').style.display='none';}
+function salvarSwapAgenda(){
+  const tecA=document.getElementById('swap-ag-tec-a').value;
+  const tecB=document.getElementById('swap-ag-tec-b').value;
+  if(tecA===tecB){alert('Selecione dois técnicos diferentes.');return;}
+  const weekDates=new Set(_agSlots(_agMonday(_agWeekOff)).map(s=>s.d1));
+  const list=_loadAg();
+  list.forEach(e=>{
+    if(!weekDates.has(e.d1)) return;
+    if(e.tec===tecA) e.tec=tecB;
+    else if(e.tec===tecB) e.tec=tecA;
+  });
+  _saveAg(list);
+  fecharSwapAgenda();
   renderAgenda();
 }
 
