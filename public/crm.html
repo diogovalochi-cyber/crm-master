@@ -645,11 +645,14 @@ body.mode-mobile .section-header{gap:12px}
 /* ─── AGENDA MOBILE ─── */
 body.mode-mobile #ag-tec-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
 body.mode-mobile #ag-tec-tabs::-webkit-scrollbar{display:none}
-body.mode-mobile #ag-nav-semana{flex-direction:column;gap:6px}
-body.mode-mobile #ag-nav-semana .ag-nav-row{justify-content:center;flex:unset}
+body.mode-mobile #ag-nav-semana{flex-wrap:wrap;gap:6px}
+body.mode-mobile #ag-nav-semana>.ag-nav-row:first-child{width:100%;flex:none!important;justify-content:center}
+body.mode-mobile #ag-nav-semana>.ag-nav-row:last-child{width:100%;flex-shrink:1!important;justify-content:center;gap:8px}
 body.mode-mobile #ag-semana-lbl{min-width:0;flex:1;text-align:center;font-size:12px}
-body.mode-mobile .ag-act{padding:9px 12px!important;font-size:14px!important;min-width:36px;text-align:center}
+body.mode-mobile .ag-act{padding:6px 8px!important;font-size:11px!important;min-width:unset!important}
 body.mode-mobile #ag-tipo-vend-grid{grid-template-columns:1fr!important}
+body.mode-mobile #ag-slots .ag-card-content{flex-wrap:wrap}
+body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 
 /* ─── ROTA DE VISITAS ─── */
 .rota-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
@@ -1011,22 +1014,9 @@ body.mode-mobile #ag-tipo-vend-grid{grid-template-columns:1fr!important}
 
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
-    <button class="subtab" id="subtab-btn-pesquisa" onclick="showSubtab('pesquisa',this)">Pesquisa</button>
     <button class="subtab" id="subtab-btn-tabelas" onclick="showSubtab('tabelas',this)">Tabelas</button>
   </div>
 
-  <div id="subtab-pesquisa" style="display:none">
-    <div class="card">
-      <div class="card-header"><span class="card-title">Pesquisa de Cliente</span></div>
-      <div style="margin-bottom:16px">
-        <input type="text" id="srch-cod" placeholder="Nome ou código do cliente..." autocomplete="off"
-          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;width:100%;box-sizing:border-box"
-          oninput="searchClient(this.value.trim())"
-          onkeydown="if(event.key==='Enter')searchClient(this.value.trim())">
-      </div>
-      <div id="srch-result"><div style="color:rgba(255,255,255,.25);font-size:13px">Digite um nome (mín. 3 letras) ou código para pesquisar.</div></div>
-    </div>
-  </div>
 
   <div id="subtab-porvendedor">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
@@ -8499,131 +8489,15 @@ function refreshTab(tab){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  ['porvendedor','pesquisa','comissao','tabelas'].forEach(s=>{
+  ['porvendedor','comissao','tabelas'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
   document.querySelectorAll('#tab-analise .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
-  if(id==='pesquisa'){const inp=document.getElementById('srch-cod');if(inp){inp.value='';inp.focus();searchClient('');}}
   if(id==='comissao'){comissaoOffset=0;renderComissao();}
   if(id==='tabelas') renderTabelas();
-}
-/* ─────────────────────────────────────────
-   PESQUISA DE CLIENTE (admin only)
-───────────────────────────────────────── */
-function searchClient(q){
-  const el=document.getElementById('srch-result');
-  if(!el) return;
-  if(!q){el.innerHTML='<div style="color:rgba(255,255,255,.25);font-size:13px">Digite um código ou nome para pesquisar.</div>';return;}
-
-  const qNum=normCod(q);
-  const qNome=q.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-  const isCodSearch=/^\d+$/.test(q.trim());
-
-  const found={};
-
-  // Primary: HC — all ERP clients with monthly totals (Jan–Jun)
-  if(typeof HC!=='undefined'){
-    for(const [cod,data] of Object.entries(HC)){
-      const cNorm=normCod(cod);
-      const cNome=(data.n||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-      const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
-      if(!match) continue;
-      found[cNorm]={nome:data.n,hcBilling:data.v,mapsLink:null,vendCod:''};
-    }
-  }
-
-  // Fallback: search carteiras (for clients not yet in HC)
-  if(!Object.keys(found).length){
-    const MESES=[
-      {key:'agosto',cart:typeof CARTEIRA_AGOSTO!=='undefined'?CARTEIRA_AGOSTO:{}},
-      {key:'julho',cart:typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{}},
-      {key:'junho',cart:typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{}},
-      {key:'maio', cart:typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{}},
-      {key:'abril',cart:typeof CARTEIRA_ABRIL!=='undefined'?CARTEIRA_ABRIL:{}},
-      {key:'marco',cart:typeof CARTEIRA_MARCO!=='undefined'?CARTEIRA_MARCO:{}},
-    ];
-    for(const mes of MESES){
-      for(const [vcod,clientes] of Object.entries(mes.cart)){
-        for(const c of clientes){
-          const cNorm=normCod(c.cod);
-          const cNome=(c.nome||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-          const match=isCodSearch?(cNorm===qNum):(cNome.includes(qNome)&&qNome.length>=3);
-          if(!match) continue;
-          if(!found[cNorm]) found[cNorm]={nome:c.nome,hcBilling:null,billing:{},mapsLink:null,vendCod:''};
-          if(!found[cNorm].billing[mes.key]) found[cNorm].billing[mes.key]=[];
-          found[cNorm].billing[mes.key].push({valor:c.valor,vendCod:vcod});
-        }
-      }
-    }
-    // Enriquecer com HC pelo código — nomes variam entre meses, HC tem histórico completo
-    if(typeof HC!=='undefined'){
-      for(const [cod,info] of Object.entries(found)){
-        if(!info.hcBilling&&HC[cod]) info.hcBilling=HC[cod].v;
-      }
-    }
-  }
-
-  // Enrich with ROTAS (maps link only)
-  for(const [vcod,dias] of Object.entries(ROTAS)){
-    for(const clientes of Object.values(dias)){
-      for(const c of clientes){
-        const cNorm=normCod(c.cod);
-        if(found[cNorm]&&c.maps) found[cNorm].mapsLink=c.maps;
-      }
-    }
-  }
-
-  // Enrich mapsLink from MAPS_CLIENTS (override ROTAS when present)
-  if(typeof MAPS_CLIENTS!=='undefined'){
-    for(const [cod,info] of Object.entries(found)){
-      if(MAPS_CLIENTS[cod]) info.mapsLink=MAPS_CLIENTS[cod];
-    }
-  }
-
-  // Find current vendor from carteiras (most recent month first)
-  const CART_ORDER=[
-    {cart:typeof CARTEIRA_AGOSTO!=='undefined'?CARTEIRA_AGOSTO:{}},
-    {cart:typeof CARTEIRA_JULHO!=='undefined'?CARTEIRA_JULHO:{}},
-    {cart:typeof CARTEIRA_JUNHO!=='undefined'?CARTEIRA_JUNHO:{}},
-    {cart:typeof CARTEIRA_MAIO!=='undefined'?CARTEIRA_MAIO:{}},
-    {cart:typeof CARTEIRA_ABRIL!=='undefined'?CARTEIRA_ABRIL:{}},
-    {cart:typeof CARTEIRA_MARCO!=='undefined'?CARTEIRA_MARCO:{}},
-  ];
-  for(const [cod,info] of Object.entries(found)){
-    if(info.vendCod) continue;
-    outer: for(const {cart} of CART_ORDER){
-      for(const [vcod,clientes] of Object.entries(cart)){
-        if(clientes.some(c=>normCod(c.cod)===cod)){info.vendCod=vcod;break outer;}
-      }
-    }
-  }
-
-  const results=Object.entries(found);
-  if(!results.length){
-    el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">Nenhum cliente encontrado para "<b>${q}</b>".</div>`;
-    return;
-  }
-
-  const allVend=typeof VENDEDORES_JUNHO!=='undefined'?VENDEDORES_JUNHO:[];
-  const getVendName=cod=>(allVend.find(v=>v.cod===cod)?.name)||cod;
-  const MES_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun'];
-
-  el.innerHTML=results.map(([cod,info])=>{
-    const vendName=getVendName(info.vendCod);
-
-    return `<div style="border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 16px;margin-bottom:10px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:2px">${info.nome}</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.4)">Cód. ${cod}${vendName?' · '+vendName:''}</div>
-        </div>
-        ${info.mapsLink?`<a href="${info.mapsLink}" target="_blank" rel="noopener" style="font-size:20px;text-decoration:none;flex-shrink:0" title="Ver no Maps">📍</a>`:''}
-      </div>
-    </div>`;
-  }).join('');
 }
 
 let currentRegSeller='GUILHERME';
@@ -11262,9 +11136,6 @@ function applyVendorMode(user){
   // Oculta cards semanais (exclusivo admin)
   const weeklyGrid=document.getElementById('kpi-weekly-grid');
   if(weeklyGrid) weeklyGrid.style.display='none';
-  // Oculta aba Pesquisa da Análise (vendedor só vê a própria carteira)
-  const bpVend=document.getElementById('subtab-btn-pesquisa');
-  if(bpVend) bpVend.style.display='none';
 
   // Forms: oculta row de seleção de vendedor (vendedor só vê os próprios dados)
   currentRegSeller=vendorKey;
@@ -11666,7 +11537,7 @@ function renderAgenda(){
     let content;
     if(entry){
       const cor=_AG_TIPO_COR[entry.tipo]||'#6B7280';
-      content=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+      content=`<div class="ag-card-content" style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${entry.cli}</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
@@ -11676,7 +11547,7 @@ function renderAgenda(){
           </div>
           ${entry.nota?`<div style="font-size:11px;color:#888;margin-top:4px;font-style:italic">${entry.nota}</div>`:''}
         </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
+        <div class="ag-act-row" style="display:flex;gap:4px;flex-shrink:0">
           <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar" class="ag-act"
             style="background:#f0f0f0;border:none;border-radius:5px;color:#555;padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
           <button onclick="abrirDupAgenda('${entry.id}')" title="Duplicar" class="ag-act"
