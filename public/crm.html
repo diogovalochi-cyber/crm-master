@@ -642,6 +642,14 @@ body.mode-mobile .rank-bar-wrap{display:none}
 body.mode-mobile .rank-item{gap:8px;padding:8px 0}
 /* Section header on mobile */
 body.mode-mobile .section-header{gap:12px}
+/* ─── AGENDA MOBILE ─── */
+body.mode-mobile #ag-tec-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+body.mode-mobile #ag-tec-tabs::-webkit-scrollbar{display:none}
+body.mode-mobile #ag-nav-semana{flex-direction:column;gap:6px}
+body.mode-mobile #ag-nav-semana .ag-nav-row{justify-content:center;flex:unset}
+body.mode-mobile #ag-semana-lbl{min-width:0;flex:1;text-align:center;font-size:12px}
+body.mode-mobile .ag-act{padding:9px 12px!important;font-size:14px!important;min-width:36px;text-align:center}
+body.mode-mobile #ag-tipo-vend-grid{grid-template-columns:1fr!important}
 
 /* ─── ROTA DE VISITAS ─── */
 .rota-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
@@ -1193,12 +1201,16 @@ body.mode-mobile .section-header{gap:12px}
       <!-- Tabs por técnico -->
       <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
       <!-- Navegação de semana -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-        <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">← Anterior</button>
-        <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
-        <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">Próxima →</button>
-        <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
-        <button onclick="abrirSwapAgenda()" title="Trocar agendas da semana entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;margin-left:8px">⇄ Trocar</button>
+      <div id="ag-nav-semana" style="display:flex;flex-direction:row;align-items:center;gap:8px;margin-bottom:16px">
+        <div class="ag-nav-row" style="display:flex;align-items:center;gap:8px;flex:1">
+          <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">← Ant</button>
+          <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
+          <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">Próx →</button>
+        </div>
+        <div class="ag-nav-row" style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+          <button onclick="abrirSwapAgenda()" title="Trocar agendas entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">⇄ Trocar</button>
+        </div>
       </div>
       <!-- Grade de slots -->
       <div id="ag-slots"></div>
@@ -1333,7 +1345,7 @@ body.mode-mobile .section-header{gap:12px}
         <input id="ag-cli" type="text" placeholder="Nome do cliente" autocomplete="off"
           style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div id="ag-tipo-vend-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
           <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">TIPO *</label>
           <select id="ag-tipo" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
@@ -11637,11 +11649,11 @@ function renderAgenda(){
           ${entry.nota?`<div style="font-size:11px;color:#888;margin-top:4px;font-style:italic">${entry.nota}</div>`:''}
         </div>
         <div style="display:flex;gap:4px;flex-shrink:0">
-          <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar"
+          <button onclick="abrirAgenda(null,'${sl.d1}','${sl.d2}','${entry.id}')" title="Editar" class="ag-act"
             style="background:#f0f0f0;border:none;border-radius:5px;color:#555;padding:4px 8px;font-size:11px;cursor:pointer">✏</button>
-          <button onclick="abrirDupAgenda('${entry.id}')" title="Duplicar"
+          <button onclick="abrirDupAgenda('${entry.id}')" title="Duplicar" class="ag-act"
             style="background:#e8f4fd;border:none;border-radius:5px;color:#2980b9;padding:4px 8px;font-size:11px;cursor:pointer">⊕</button>
-          <button onclick="excluirAgenda('${entry.id}')"
+          <button onclick="excluirAgenda('${entry.id}')" class="ag-act"
             style="background:#fde8e8;border:none;border-radius:5px;color:#c0392b;padding:4px 8px;font-size:11px;cursor:pointer">×</button>
         </div>
       </div>`;
