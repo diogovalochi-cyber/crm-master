@@ -10756,7 +10756,7 @@ const CREDS=[
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
   {user:'rogerio',  pass:'123', role:'TECNICO',    name:'Rogério',   av:'RO', color:'#FF6B6B'},
-  {user:'marcelo',  pass:'TDF-4D28', role:'TECNICO',    name:'Marcelo',   av:'MC', color:'#C77DFF'},
+  {user:'marcelo',  pass:'140995', role:'TECNICO',    name:'Marcelo',   av:'MC', color:'#C77DFF'},
   {user:'leonardo', pass:'123', role:'TECNICO',    name:'Leonardo',  av:'LE', color:'#FF9A56'},
   {user:'juan',     pass:'123', role:'TECNICO',    name:'Juan',      av:'JU', color:'#80DEEA'},
   {user:'caio',     pass:'123', role:'TECNICO',    name:'Caio',      av:'CA2',color:'#FFD93D', spec:'Panificação'},
@@ -10980,6 +10980,16 @@ function applySession(user){
 }
 
 function applyTecnicoMode(user){
+  // Sincroniza Agenda e Materiais do servidor em background
+  _syncFromServer();
+  if(!window._syncPollTimer){
+    window._syncPollTimer=setInterval(_syncFromServer,30000);
+  }
+  if(!window._syncVisListener){
+    window._syncVisListener=true;
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')_syncFromServer();});
+    window.addEventListener('focus',_syncFromServer);
+  }
   // Técnicos veem apenas o Dashboard
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-dashboard').classList.add('active');
