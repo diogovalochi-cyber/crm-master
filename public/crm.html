@@ -10967,6 +10967,16 @@ function applySession(user){
   }
   // Sincroniza Agenda e Materiais do servidor em background
   _syncFromServer();
+  // Polling a cada 30s para cross-device sync
+  if(!window._syncPollTimer){
+    window._syncPollTimer=setInterval(_syncFromServer,30000);
+  }
+  // Re-sync imediato ao voltar para o app/aba (essencial no celular)
+  if(!window._syncVisListener){
+    window._syncVisListener=true;
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')_syncFromServer();});
+    window.addEventListener('focus',_syncFromServer);
+  }
 }
 
 function applyTecnicoMode(user){
@@ -11248,7 +11258,8 @@ function _dbSave(key,data){
       method:'POST',
       headers:{..._SB_H,'Prefer':'resolution=merge-duplicates'},
       body:JSON.stringify({key,value:JSON.stringify(data)})
-    });
+    }).then(r=>{if(!r.ok)r.text().then(t=>console.warn('[CRM sync] save error',key,r.status,t));})
+      .catch(e=>console.warn('[CRM sync] save fail',key,e));
   }catch(e){}
 }
 async function _syncFromServer(){
