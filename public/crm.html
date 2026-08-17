@@ -1014,7 +1014,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 
   <div class="subtab-row" id="analise-subtab-row">
     <button class="subtab active" onclick="showSubtab('porvendedor',this)">Por Vendedor</button>
-    <button class="subtab" id="subtab-btn-tabelas" onclick="showSubtab('tabelas',this)">Tabelas</button>
   </div>
 
 
@@ -1058,7 +1057,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div id="vendor-detail-grid"></div>
   </div>
 
-  <div id="subtab-tabelas" style="display:none"><div id="tabelas-content"></div></div>
 <!-- SUB: Comissão 22→22 -->
 </div>
 
@@ -8362,7 +8360,7 @@ function refreshTab(tab){
    SUBTABS
 ───────────────────────────────────────── */
 function showSubtab(id,el){
-  ['porvendedor','comissao','tabelas'].forEach(s=>{
+  ['porvendedor','comissao'].forEach(s=>{
     const el2=document.getElementById('subtab-'+s);
     if(el2) el2.style.display=s===id?'block':'none';
   });
@@ -8370,7 +8368,6 @@ function showSubtab(id,el){
   el.classList.add('active');
   if(id==='porvendedor') initVendorPills();
   if(id==='comissao'){comissaoOffset=0;renderComissao();}
-  if(id==='tabelas') renderTabelas();
 }
 
 let currentRegSeller='GUILHERME';
@@ -10428,9 +10425,7 @@ function initVendorPills(){
         pill.classList.add('active');
         activeVendor=v.name;
         _vdFilter='';const si=document.getElementById('vd-srch');if(si)si.value='';
-        const _tb=document.getElementById('subtab-tabelas');
-        if(_tb&&_tb.style.display!=='none') renderTabelas();
-        else renderVendorDetail(v.name);
+        renderVendorDetail(v.name);
       };
     }
     row.appendChild(pill);
@@ -10449,9 +10444,7 @@ function tabFamily(tab){
 }
 function _toggleInactive(){
   _showInactive=!_showInactive;
-  const tb=document.getElementById('subtab-tabelas');
-  if(tb&&tb.style.display!=='none') renderTabelas();
-  else renderVendorDetail(activeVendor);
+  renderVendorDetail(activeVendor);
 }
 function renderVendorDetail(name){
   const _mseqVD=['marco','abril','maio','junho','julho','agosto'];
