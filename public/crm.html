@@ -1077,28 +1077,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 
   <div id="forms-sec-vendedores">
   <!-- Filtro de equipe Forms (admin only) -->
-  <div id="forms-equipe-filter" style="display:none;margin-bottom:10px;gap:6px;justify-content:center">
+  <div id="forms-equipe-filter" style="display:flex;margin-bottom:10px;gap:6px;justify-content:center">
     <button class="equipe-btn active" onclick="setFormsEquipe('total')">Todos</button>
     <button class="equipe-btn" onclick="setFormsEquipe('lazaro')">Equipe Lázaro</button>
     <button class="equipe-btn" onclick="setFormsEquipe('val')">Equipe Val</button>
-  </div>
-
-  <!-- Nível 1: Vendedor -->
-  <div class="subtab-row" id="reg-seller-tabs">
-    <button class="subtab active" data-seller="GUILHERME"     onclick="selectRegSeller(this)">Guilherme</button>
-    <button class="subtab" data-seller="RELSON"         onclick="selectRegSeller(this)">Relson</button>
-    <button class="subtab" data-seller="EVERALDO"       onclick="selectRegSeller(this)">Everaldo</button>
-    <button class="subtab" data-seller="ISRAEL"         onclick="selectRegSeller(this)">Israel</button>
-    <button class="subtab" data-seller="NATALIA"        onclick="selectRegSeller(this)">Natália</button>
-    <button class="subtab" data-seller="KELLER"         onclick="selectRegSeller(this)">Keller</button>
-    <button class="subtab" data-seller="ALTHIERES"      onclick="selectRegSeller(this)">Althieres</button>
-    <button class="subtab" data-seller="JOAO"           onclick="selectRegSeller(this)">João</button>
-    <button class="subtab" data-seller="MOAB"           onclick="selectRegSeller(this)">Moab</button>
-    <button class="subtab" data-seller="RAMON"          onclick="selectRegSeller(this)">Ramon</button>
-    <button class="subtab" data-seller="KELLY"          onclick="selectRegSeller(this)">Kelly</button>
-    <button class="subtab" data-seller="LUIZ HENRIQUE"  onclick="selectRegSeller(this)">Luiz Henrique</button>
-    <button class="subtab" data-seller="CEZAR"          onclick="selectRegSeller(this)">Cezar</button>
-    <button class="subtab" data-seller="RAUER"          onclick="selectRegSeller(this)">Rauer</button>
   </div>
 
   <!-- Nível 2: Tipo de dado -->
@@ -8375,7 +8357,7 @@ function showSubtab(id,el){
   if(id==='tabelas') renderTabelas();
 }
 
-let currentRegSeller='GUILHERME';
+let currentRegSeller='';
 let currentFormsType='prospeccoes';
 let formsSearchFilter='';
 let rotaWeekOffset=0;
@@ -9305,12 +9287,24 @@ function _findRS(r,iStart,iEnd){
 /* Compara nome de vendedor: lida com nomes completos, espaços extras, variações */
 function _vendMatch(rv,sv){
   if(!rv||rv==='#N/A'||rv.length<2) return false;
+  if(!sv) return true;
   if(rv===sv) return true;
   if(rv.startsWith(sv+' ')||rv.startsWith(sv+'-')) return true;
   if(sv.startsWith(rv+' ')||sv.startsWith(rv+'-')) return true;
   const fw=s=>s.split(/[\s\-,]+/)[0];
   const f1=fw(rv),f2=fw(sv);
   return f1.length>=3&&f1===f2;
+}
+function _teamMatch(rv){
+  if(!_formsTeamNames) return true;
+  const fw=s=>s.split(/[\s\-,]+/)[0];
+  for(const n of _formsTeamNames){
+    if(!n||n.length<2) continue;
+    if(rv===n||rv.startsWith(n+' ')||rv.startsWith(n+'-')) return true;
+    if(n.startsWith(rv+' ')||n.startsWith(rv+'-')) return true;
+    if(fw(rv).length>=3&&fw(rv)===fw(n)) return true;
+  }
+  return false;
 }
 // Normaliza COD para comparação: "172.0" → "172", "172" → "172"
 function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!isNaN(n)&&n===Math.floor(n)&&t!=='')?String(Math.floor(n)):t;}
@@ -9936,8 +9930,7 @@ function renderFormsTable(){
   const dc=cfg.dateCol??1;
   const sv=_nm(currentRegSeller);
   const sellerRows=cache.filter(r=>{
-    // tenta vendCol configurado; se vazio, tenta col 0 e 1 como fallback
-    const tryCol=ci=>_vendMatch(_nm(r[ci]||''),sv);
+    const tryCol=ci=>{const rv=_nm(r[ci]||'');return _teamMatch(rv)&&_vendMatch(rv,sv);};
     return tryCol(vc)||(vc!==0&&tryCol(0))||(vc!==1&&tryCol(1));
   });
   let rows=sellerRows.filter(r=>{
@@ -9983,7 +9976,7 @@ function renderFormsSummary(){
     const cfg=FORMS_CONFIG[type];
     const vc=cfg.vendCol??0, dc=cfg.dateCol??1;
     return c.filter(r=>{
-      const tryCol=ci=>_vendMatch(_nm(r[ci]||''),sv);
+      const tryCol=ci=>{const rv=_nm(r[ci]||'');return _teamMatch(rv)&&_vendMatch(rv,sv);};
       if(!tryCol(vc)&&!((vc!==0)&&tryCol(0))&&!((vc!==1)&&tryCol(1))) return false;
       if(!dtFrom&&!dtTo) return true;
       const d=toDate(r[dc]);
@@ -10199,6 +10192,7 @@ function setEquipeFilter(v){
 }
 
 let _formsEquipe='total';
+let _formsTeamNames=null;
 function _parseTecCSV(text){
   const rows=[];let row=[],field='',inQ=false;
   for(let i=0;i<text.length;i++){
@@ -10296,23 +10290,17 @@ function setFormsEquipe(v){
   });
   const _nm2=n=>n.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   if(v==='total'){
-    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.style.display='');
+    _formsTeamNames=null;
   } else {
     const cods=EQUIPES[v]||[];
     const allV=(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:VENDEDORES;
-    const names=new Set(cods.map(cod=>{const vv=allV.find(x=>x.cod===cod);return vv?_nm2(vv.name):null;}).filter(Boolean));
-    (EQUIPES_EXTRA[v]||[]).forEach(n=>names.add(n));
-    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>{
-      b.style.display=names.has(b.dataset.seller)?'':'none';
-    });
+    _formsTeamNames=new Set(cods.map(cod=>{const vv=allV.find(x=>x.cod===cod);return vv?_nm2(vv.name):null;}).filter(Boolean));
+    (EQUIPES_EXTRA[v]||[]).forEach(n=>_formsTeamNames.add(_nm2(n)));
   }
-  const first=[...document.querySelectorAll('#reg-seller-tabs .subtab')].find(b=>b.style.display!=='none');
-  if(first){
-    document.querySelectorAll('#reg-seller-tabs .subtab').forEach(b=>b.classList.remove('active'));
-    first.classList.add('active');
-    currentRegSeller=first.dataset.seller;
-    if(currentFormsType==='rota') renderRota(); else renderFormsTable();
-  }
+  currentRegSeller='';
+  if(currentFormsType==='rota') renderRota();
+  else if(formsCaches[currentFormsType]&&formsCaches[currentFormsType].length) renderFormsTable();
+  else loadFormsData();
 }
 
 /* ─────────────────────────────────────────
