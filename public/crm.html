@@ -1166,7 +1166,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <button id="tec-btn-agenda" onclick="showTecnico('agenda',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Agenda</button>
     <button id="tec-btn-materiais" onclick="showTecnico('materiais',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Materiais</button>
     <button id="tec-btn-equipamentos" onclick="showTecnico('equipamentos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Equipamentos</button>
-    <button id="tec-btn-forms" onclick="showTecnico('forms',this)" style="display:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">🍞 Forms</button>
   </div>
 
   <div id="tec-sec-agenda" class="tec-sec">
@@ -1270,18 +1269,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       </div>
     </div>
   </div><!-- /tec-sec-equipamentos -->
-
-  <div id="tec-sec-forms" class="tec-sec" style="display:none">
-    <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px" id="forms-tec-tabs"></div>
-      <input id="tec-forms-search" type="text" placeholder="Buscar por código ou nome do cliente..." autocomplete="off"
-        oninput="_tecFormsSearch=this.value.trim();renderTecFormsTable()"
-        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;margin-bottom:14px;-webkit-appearance:none">
-      <div id="forms-tec-content">
-        <div style="color:rgba(255,255,255,.3);font-size:14px;text-align:center;padding:48px 0">Selecione um técnico acima.</div>
-      </div>
-    </div>
-  </div><!-- /tec-sec-forms -->
 </div><!-- /tab-tecnicos -->
 
 <!-- Modal Lembrete -->
@@ -10931,8 +10918,6 @@ function applySession(user){
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
     if(np)np.style.display='';if(bp)bp.style.display='';
-    // Forms de panificação: visível para admin e Marcelo, mas não para técnicos de panificação
-    if(user.fullAccess){const fBtn=document.getElementById('tec-btn-forms');if(fBtn)fBtn.style.display='';}
   }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
@@ -11029,13 +11014,10 @@ function applyTecnicoMode(user){
   const botItems=document.querySelectorAll('.botnav-item');
   botItems.forEach(item=>item.classList.remove('active'));
   if(botItems[0]) botItems[0].classList.add('active');
-  // Marcelo: sem Dashboard — abre direto na Agenda; Forms mostra só Técnicos de Panificação
+  // Marcelo: sem Dashboard — abre direto na aba Técnicos → Agenda
   if(user.name==='Marcelo'){
     ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-    // Exibe o botão Forms (escondido por padrão — não aparece para técnicos de panificação)
-    const fBtn=document.getElementById('tec-btn-forms');if(fBtn)fBtn.style.display='';
-    // Abre em Técnicos → Forms
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-tecnicos').classList.add('active');
     document.querySelectorAll('#sidebar .nav-item').forEach(n=>n.classList.remove('active'));
@@ -11043,7 +11025,7 @@ function applyTecnicoMode(user){
     if(tecNav){tecNav.style.display='';tecNav.classList.add('active');}
     const tecBot=document.getElementById('botnav-tecnicos');
     if(tecBot){tecBot.style.display='';tecBot.classList.add('active');}
-    showTecnico('forms');
+    showTecnico('agenda');
   }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
