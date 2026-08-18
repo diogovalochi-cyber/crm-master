@@ -11047,10 +11047,12 @@ function applyVendorMode(user){
   const weeklyGrid=document.getElementById('kpi-weekly-grid');
   if(weeklyGrid) weeklyGrid.style.display='none';
 
-  // Forms: oculta row de seleção de vendedor (vendedor só vê os próprios dados)
+  // Forms: oculta filtros de equipe e seleção de vendedor (vendedor só vê os próprios dados)
   currentRegSeller=vendorKey;
   const regSellerTabs=document.getElementById('reg-seller-tabs');
   if(regSellerTabs) regSellerTabs.style.display='none';
+  const formsEquipeFilter=document.getElementById('forms-equipe-filter');
+  if(formsEquipeFilter) formsEquipeFilter.style.display='none';
 
   // Detecta mês efetivo (último com dados reais) e seta CRM_MES
   const vRawM=VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
