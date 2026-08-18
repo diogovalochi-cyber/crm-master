@@ -1166,7 +1166,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <button id="tec-btn-agenda" onclick="showTecnico('agenda',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Agenda</button>
     <button id="tec-btn-materiais" onclick="showTecnico('materiais',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Materiais</button>
     <button id="tec-btn-equipamentos" onclick="showTecnico('equipamentos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Equipamentos</button>
-    <button id="tec-btn-forms" onclick="showTecnico('forms',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">🍞 Forms</button>
+    <button id="tec-btn-forms" onclick="showTecnico('forms',this)" style="display:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">🍞 Forms</button>
   </div>
 
   <div id="tec-sec-agenda" class="tec-sec">
@@ -10931,6 +10931,8 @@ function applySession(user){
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
     if(np)np.style.display='';if(bp)bp.style.display='';
+    // Forms de panificação: visível para admin e Marcelo, mas não para técnicos de panificação
+    if(user.fullAccess){const fBtn=document.getElementById('tec-btn-forms');if(fBtn)fBtn.style.display='';}
   }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
@@ -11031,6 +11033,8 @@ function applyTecnicoMode(user){
   if(user.name==='Marcelo'){
     ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    // Exibe o botão Forms (escondido por padrão — não aparece para técnicos de panificação)
+    const fBtn=document.getElementById('tec-btn-forms');if(fBtn)fBtn.style.display='';
     // Abre em Técnicos → Forms
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-tecnicos').classList.add('active');
