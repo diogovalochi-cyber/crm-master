@@ -1187,22 +1187,31 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 
     <!-- SEÇÃO AGENDA -->
     <div id="ag-section-agenda">
-      <!-- Tabs por técnico -->
-      <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
-      <!-- Navegação de semana -->
-      <div id="ag-nav-semana" style="display:flex;flex-direction:row;align-items:center;gap:8px;margin-bottom:16px">
-        <div class="ag-nav-row" style="display:flex;align-items:center;gap:8px;flex:1">
-          <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">← Ant</button>
-          <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
-          <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">Próx →</button>
+      <!-- Busca -->
+      <input id="ag-busca" type="text" placeholder="Buscar por cliente, cód ou vendedor…" autocomplete="off"
+        oninput="agBusca(this.value)"
+        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;margin-bottom:14px;-webkit-appearance:none">
+      <!-- Resultados de busca -->
+      <div id="ag-search-results" style="display:none"></div>
+      <!-- Vista normal -->
+      <div id="ag-normal-view">
+        <!-- Tabs por técnico -->
+        <div id="ag-tec-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+        <!-- Navegação de semana -->
+        <div id="ag-nav-semana" style="display:flex;flex-direction:row;align-items:center;gap:8px;margin-bottom:16px">
+          <div class="ag-nav-row" style="display:flex;align-items:center;gap:8px;flex:1">
+            <button onclick="agNavSemana(-1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">← Ant</button>
+            <span id="ag-semana-lbl" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);min-width:180px;text-align:center"></span>
+            <button onclick="agNavSemana(1)" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">Próx →</button>
+          </div>
+          <div class="ag-nav-row" style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
+            <button onclick="abrirSwapAgenda()" title="Trocar agendas entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">⇄ Trocar</button>
+          </div>
         </div>
-        <div class="ag-nav-row" style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-          <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
-          <button onclick="abrirSwapAgenda()" title="Trocar agendas entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">⇄ Trocar</button>
-        </div>
+        <!-- Grade de slots -->
+        <div id="ag-slots"></div>
       </div>
-      <!-- Grade de slots -->
-      <div id="ag-slots"></div>
     </div>
 
     <!-- SEÇÃO LEMBRETES -->
@@ -11491,6 +11500,52 @@ function renderAgenda(){
 
 function agSetTec(tec){_agTecAtivo=tec;renderAgenda();}
 function agNavSemana(dir,reset){if(reset)_agWeekOff=0;else _agWeekOff+=dir;renderAgenda();}
+
+let _agSearchQ='';
+function agBusca(v){
+  _agSearchQ=(v||'').trim();
+  const nr=document.getElementById('ag-normal-view');
+  const sr=document.getElementById('ag-search-results');
+  if(!_agSearchQ){
+    if(nr)nr.style.display='';
+    if(sr)sr.style.display='none';
+    return;
+  }
+  if(nr)nr.style.display='none';
+  if(sr)sr.style.display='';
+  _renderAgBusca();
+}
+function _renderAgBusca(){
+  const sr=document.getElementById('ag-search-results');
+  if(!sr)return;
+  const q=_agSearchQ.toLowerCase();
+  const list=_loadAg().filter(e=>(e.cli&&e.cli.toLowerCase().includes(q))||(e.vend&&e.vend.toLowerCase().includes(q)));
+  if(!list.length){
+    sr.innerHTML='<div style="color:rgba(255,255,255,.35);text-align:center;padding:40px 0;font-size:14px">Nenhum resultado encontrado</div>';
+    return;
+  }
+  list.sort((a,b)=>a.d1.localeCompare(b.d1));
+  sr.innerHTML=list.map(e=>{
+    const cor=_AG_TIPO_COR[e.tipo]||'#6B7280';
+    const dayA=new Date(e.d1+'T12:00'),dayB=new Date(e.d2+'T12:00');
+    return`<div style="display:grid;grid-template-columns:110px 1fr;gap:0;margin-bottom:4px;border-radius:9px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+      <div style="background:#f5f5f5;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #e0e0e0">
+        <div style="font-size:11px;font-weight:700;color:#7C3AED;margin-bottom:4px">${e.tec||''}</div>
+        <div style="font-size:11px;font-weight:700;color:#333;margin-bottom:2px">${_AG_DIAS_PT[dayA.getDay()]}/${_AG_DIAS_PT[dayB.getDay()]}</div>
+        <div style="font-size:10px;color:#888">${_agFmtDate(e.d1)}</div>
+      </div>
+      <div style="padding:10px 12px;background:#fff">
+        <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.cli||''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+          <span style="background:${cor};color:#fff;border-radius:4px;padding:2px 10px;font-size:11px;font-weight:700">${e.tipo||''}</span>
+          ${e.vend?`<span style="font-size:12px;color:#444;font-weight:500">${e.vend}</span>`:''}
+          ${e.loc?`<span style="font-size:12px;color:#666">📍 ${e.loc}</span>`:''}
+        </div>
+        ${e.nota?`<div style="font-size:11px;color:#888;margin-top:4px;font-style:italic">${e.nota}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
 
 function abrirAgenda(legacy,d1,d2,editId){
   _agSlotAtivo={d1,d2};_agEditId=editId||null;
