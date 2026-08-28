@@ -11014,6 +11014,14 @@ function applySession(user){
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes3) _pUrls.push(FORMS_CSV.prospeccoes3);
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes4) _pUrls.push(FORMS_CSV.prospeccoes4);
         if(t==='prospeccoes'&&FORMS_CSV.prospeccoes5) _pUrls.push(FORMS_CSV.prospeccoes5);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes2) _pUrls.push(FORMS_CSV.apresentacoes2);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes3) _pUrls.push(FORMS_CSV.apresentacoes3);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes4) _pUrls.push(FORMS_CSV.apresentacoes4);
+        if(t==='apresentacoes'&&FORMS_CSV.apresentacoes5) _pUrls.push(FORMS_CSV.apresentacoes5);
+        if(t==='cadastros'&&FORMS_CSV.cadastros2) _pUrls.push(FORMS_CSV.cadastros2);
+        if(t==='cadastros'&&FORMS_CSV.cadastros3) _pUrls.push(FORMS_CSV.cadastros3);
+        if(t==='cadastros'&&FORMS_CSV.cadastros4) _pUrls.push(FORMS_CSV.cadastros4);
+        if(t==='cadastros'&&FORMS_CSV.cadastros5) _pUrls.push(FORMS_CSV.cadastros5);
         const _pRes=await Promise.allSettled(_pUrls.map(u=>fetch(u,{signal:ctrl.signal}).then(r=>r.text())));
         clearTimeout(timer);
         const texts=_pRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
