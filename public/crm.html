@@ -1503,12 +1503,12 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     </div>
     <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
     <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #FBBF24;border-radius:10px;padding:12px 14px">
+      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #ef4444;border-radius:10px;padding:12px 14px">
         <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2025 Jan–Ago</div>
         <div id="hm-k25v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
         <div id="hm-k25s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
       </div>
-      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #60A5FA;border-radius:10px;padding:12px 14px">
+      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #22c55e;border-radius:10px;padding:12px 14px">
         <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2026 Jan–Ago</div>
         <div id="hm-k26v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
         <div id="hm-k26s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
@@ -8507,8 +8507,8 @@ function _hmUpdateTable(id){
     const p=(v25&&v26)?((v26-v25)/v25*100):null,pos=p!==null?p>=0:null;
     const ds=p===null?'color:rgba(255,255,255,.3)':(pos?'color:#22c55e;font-weight:600':'color:#ef4444;font-weight:600');
     return`<tr><td style="font-weight:500">${m}</td>
-      <td style="${v25?'color:#FBBF24;font-weight:500':'color:rgba(255,255,255,.3)'}">${v25?_hmFmt(v25):'—'}</td>
-      <td style="${v26?'color:#60A5FA;font-weight:500':'color:rgba(255,255,255,.3)'}">${v26?_hmFmt(v26):'—'}</td>
+      <td style="${v25?'color:#ef4444;font-weight:500':'color:rgba(255,255,255,.3)'}">${v25?_hmFmt(v25):'—'}</td>
+      <td style="${v26?'color:#22c55e;font-weight:500':'color:rgba(255,255,255,.3)'}">${v26?_hmFmt(v26):'—'}</td>
       <td style="${ds}">${p===null?'—':(pos?'+':'')+p.toFixed(1)+'%'}</td></tr>`;
   }).join('');
 }
@@ -8520,8 +8520,8 @@ function _hmUpdateChart(id){
   const a26=isLine?_hmAcum(raw26):raw26.map((x,i)=>(i<_HM_MES26&&x)?x:null);
   const grid='rgba(255,255,255,.06)',tick='rgba(255,255,255,.35)';
   const datasets=[];
-  if(v.has25)datasets.push({label:'2025',data:a25,backgroundColor:'rgba(251,191,36,.55)',borderColor:'#FBBF24',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#FBBF24',spanGaps:false,order:2});
-  datasets.push({label:'2026',data:a26,backgroundColor:'rgba(96,165,250,.65)',borderColor:'#60A5FA',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#60A5FA',spanGaps:false,order:1});
+  if(v.has25)datasets.push({label:'2025',data:a25,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#ef4444',spanGaps:false,order:2});
+  datasets.push({label:'2026',data:a26,backgroundColor:'rgba(34,197,94,.65)',borderColor:'#22c55e',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#22c55e',spanGaps:false,order:1});
   if(_hmChart){_hmChart.destroy();_hmChart=null;}
   const cv=document.getElementById('hm-chart');
   if(!cv||typeof Chart==='undefined')return;
