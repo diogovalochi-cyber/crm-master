@@ -895,6 +895,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <span style="font-size:15px;line-height:1;flex-shrink:0">🚗</span>
     Placas
   </div>
+  <div class="nav-item" id="nav-enderecos" onclick="showTab('enderecos',this)" style="display:none">
+    <span style="font-size:15px;line-height:1;flex-shrink:0">📍</span>
+    Endereços
+  </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
     <span>Abril 2026</span>
@@ -923,6 +927,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div class="botnav-item" id="botnav-placas" onclick="showTabMobile('placas',this)" style="display:none">
       <span style="font-size:22px;line-height:1">🚗</span>
       Placas
+    </div>
+    <div class="botnav-item" id="botnav-enderecos" onclick="showTabMobile('enderecos',this)" style="display:none">
+      <span style="font-size:22px;line-height:1">📍</span>
+      Endereços
     </div>
   </div>
 </div>
@@ -1473,6 +1481,52 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
           <tr><td style="padding:10px 14px;font-weight:600">Relson</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Consultor de Vendas</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">DVL-2D41</span></td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- ABA: ENDEREÇOS                           -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-enderecos">
+  <div style="max-width:900px;margin:0 auto;padding:20px 12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 3px">Endereços de Clientes</h2>
+        <p id="end-subtitle" style="font-size:12px;color:rgba(255,255,255,.38);margin:0"></p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="end-filtro-vend" onchange="renderEnderecos()" style="background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:6px 10px;font-size:12px;outline:none">
+          <option value="">Todos vendedores</option>
+          <option value="sem">Só sem endereço</option>
+        </select>
+        <input id="end-busca" oninput="renderEnderecos()" placeholder="Buscar COD ou nome…" style="background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:6px 10px;font-size:12px;outline:none;width:190px">
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="end-table">
+        <thead><tr>
+          <th style="width:65px">COD</th>
+          <th>Nome</th>
+          <th style="width:100px">Vendedor</th>
+          <th>Endereço</th>
+          <th style="width:60px"></th>
+        </tr></thead>
+        <tbody id="end-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar endereço -->
+<div id="modal-end" onclick="if(event.target===this)fecharModalEnd()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:420px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <h3 id="modal-end-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 16px"></h3>
+    <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">ENDEREÇO</label>
+    <input id="modal-end-input" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;padding:9px 11px;font-size:13px;outline:none;box-sizing:border-box" placeholder="Rua, número, bairro, cidade">
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
+      <button onclick="fecharModalEnd()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarEndereco()" style="background:#10B981;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Salvar</button>
     </div>
   </div>
 </div>
@@ -7304,6 +7358,10 @@ const HC={
 '5025':{n:'LAURITA PEREIRA DA SILVA OLIVEIRA',v:[0,0,0,0,0,2518.88]},
 '5028':{n:'MERCADO VISTA LINDA LTDA',v:[0,0,0,0,0,672.29]}
 };
+// Endereços por COD — preencher conforme coleta
+const HC_END = {
+};
+
 const FATURAMENTO_DIARIO = {
   '2026-06-08': {
     resumo: [
@@ -8341,6 +8399,69 @@ function showTab(tab, el){
       initFormsTecTabs();
     }
   }
+  if(tab==='enderecos') renderEnderecos();
+}
+
+/* ─── ENDEREÇOS ───────────────────────────────────────── */
+let _endCodAtual=null;
+const _END_VEND_MAP=(()=>{
+  const m={};
+  const vn={'107':'Everaldo','115':'Israel','116':'Natália','117':'Keller','119':'Althieres','120':'João','121':'Moab','122':'Ramon','123':'Kelly','124':'Luiz Henrique','125':'Cezar','093':'Guilherme','094':'Relson','':'Rauer'};
+  for(const[vcod,vname] of Object.entries(vn)){
+    const arr=(typeof CARTEIRA_AGOSTO!=='undefined'&&CARTEIRA_AGOSTO[vcod])||[];
+    for(const e of arr) m[e.cod]=vname;
+  }
+  return m;
+})();
+
+function renderEnderecos(){
+  const tbody=document.getElementById('end-tbody');
+  if(!tbody) return;
+  const filtro=document.getElementById('end-filtro-vend')?.value||'';
+  const busca=(document.getElementById('end-busca')?.value||'').toLowerCase();
+  const cods=Object.keys(_END_VEND_MAP).sort((a,b)=>Number(a)-Number(b));
+  let rows='', comEnd=0, semEnd=0;
+  for(const cod of cods){
+    const vend=_END_VEND_MAP[cod];
+    const end=HC_END[cod]||'';
+    const nome=(typeof HC!=='undefined'&&HC[cod])?HC[cod].n:'';
+    if(filtro==='sem'&&end) continue;
+    if(busca&&!cod.includes(busca)&&!nome.toLowerCase().includes(busca)&&!vend.toLowerCase().includes(busca)) continue;
+    if(end) comEnd++; else semEnd++;
+    const endStyle=end?'color:rgba(255,255,255,.7)':'color:rgba(255,100,100,.7);font-style:italic';
+    rows+=`<tr>
+      <td style="font-weight:700;font-size:13px">${cod}</td>
+      <td class="td-wrap" style="font-size:12px">${nome}</td>
+      <td style="font-size:12px;color:rgba(255,255,255,.5)">${vend}</td>
+      <td style="font-size:12px;${endStyle}">${end||'— sem endereço'}</td>
+      <td><button onclick="abrirModalEnd('${cod}')" style="background:rgba(255,255,255,.08);border:none;border-radius:6px;color:rgba(255,255,255,.65);padding:4px 10px;font-size:11px;cursor:pointer">${end?'✎':'+ Add'}</button></td>
+    </tr>`;
+  }
+  tbody.innerHTML=rows||'<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.3);padding:30px">Nenhum cliente encontrado</td></tr>';
+  const sub=document.getElementById('end-subtitle');
+  if(sub) sub.textContent=`${comEnd} com endereço · ${semEnd} sem endereço · ${cods.length} total`;
+}
+
+function abrirModalEnd(cod){
+  _endCodAtual=cod;
+  const nome=(typeof HC!=='undefined'&&HC[cod])?HC[cod].n:cod;
+  document.getElementById('modal-end-title').textContent=cod+' — '+nome;
+  document.getElementById('modal-end-input').value=HC_END[cod]||'';
+  const m=document.getElementById('modal-end');
+  m.style.display='flex';
+  setTimeout(()=>document.getElementById('modal-end-input').focus(),50);
+}
+function fecharModalEnd(){
+  document.getElementById('modal-end').style.display='none';
+  _endCodAtual=null;
+}
+function salvarEndereco(){
+  if(!_endCodAtual) return;
+  const val=document.getElementById('modal-end-input').value.trim();
+  if(val) HC_END[_endCodAtual]=val;
+  else delete HC_END[_endCodAtual];
+  fecharModalEnd();
+  renderEnderecos();
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
@@ -10958,6 +11079,8 @@ function applySession(user){
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
     if(np)np.style.display='';if(bp)bp.style.display='';
+    const ne=document.getElementById('nav-enderecos'),be=document.getElementById('botnav-enderecos');
+    if(ne)ne.style.display='';if(be)be.style.display='';
   }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
