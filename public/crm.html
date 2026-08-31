@@ -8545,7 +8545,10 @@ function _hmUpdateChart(id){
       plugins:{
         legend:{display:v.has25,position:'top',align:'end',labels:{color:tick,boxWidth:10,boxHeight:10,borderRadius:3,useBorderRadius:true,padding:12,font:{size:12}}},
         tooltip:{backgroundColor:'#1e2a3a',borderColor:'rgba(255,255,255,.12)',borderWidth:1,titleColor:'#fff',bodyColor:tick,padding:10,titleFont:{size:12,weight:'600'},bodyFont:{size:12},
-          callbacks:{label(ctx){if(!ctx.raw)return null;return ctx.dataset.label+': R$ '+_hmFmtBR(ctx.raw);}}}
+          callbacks:{
+            title(items){return isLine?('Acumulado Jan–'+(items[0]?.label||'')):(items[0]?.label||'');},
+            label(ctx){if(!ctx.raw)return null;return ctx.dataset.label+': R$ '+_hmFmtBR(ctx.raw);}
+          }}
       },
       scales:{
         x:{grid:{color:grid},ticks:{color:tick,font:{size:11}},border:{display:false}},
