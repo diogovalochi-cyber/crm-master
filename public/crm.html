@@ -10,6 +10,7 @@
 <script>
 (function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap';document.head.appendChild(l);})();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ─── PROTECTION ─── */
 body{-webkit-user-select:none;-moz-user-select:none;user-select:none}
@@ -895,9 +896,9 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <span style="font-size:15px;line-height:1;flex-shrink:0">🚗</span>
     Placas
   </div>
-  <div class="nav-item" id="nav-enderecos" onclick="showTab('enderecos',this)" style="display:none">
-    <span style="font-size:15px;line-height:1;flex-shrink:0">📍</span>
-    Endereços
+  <div class="nav-item" id="nav-comparativo" onclick="showTab('comparativo',this)" style="display:none">
+    <span style="font-size:15px;line-height:1;flex-shrink:0">📊</span>
+    Comparativo
   </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
@@ -928,9 +929,9 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <span style="font-size:22px;line-height:1">🚗</span>
       Placas
     </div>
-    <div class="botnav-item" id="botnav-enderecos" onclick="showTabMobile('enderecos',this)" style="display:none">
-      <span style="font-size:22px;line-height:1">📍</span>
-      Endereços
+    <div class="botnav-item" id="botnav-comparativo" onclick="showTabMobile('comparativo',this)" style="display:none">
+      <span style="font-size:22px;line-height:1">📊</span>
+      Comparativo
     </div>
   </div>
 </div>
@@ -1486,47 +1487,46 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 </div>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- ABA: ENDEREÇOS                           -->
+<!-- ABA: COMPARATIVO                         -->
 <!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-enderecos">
-  <div style="max-width:900px;margin:0 auto;padding:20px 12px">
+<div class="tab-content" id="tab-comparativo">
+  <div style="max-width:980px;margin:0 auto;padding:20px 12px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div>
-        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 3px">Endereços de Clientes</h2>
-        <p id="end-subtitle" style="font-size:12px;color:rgba(255,255,255,.38);margin:0"></p>
+        <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 3px">Comparativo de Vendas</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0">Faturamento mensal por vendedor · 2025 vs 2026</p>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select id="end-filtro-vend" onchange="renderEnderecos()" style="background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:6px 10px;font-size:12px;outline:none">
-          <option value="">Todos vendedores</option>
-          <option value="sem">Só sem endereço</option>
-        </select>
-        <input id="end-busca" oninput="renderEnderecos()" placeholder="Buscar COD ou nome…" style="background:#0f1923;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:6px 10px;font-size:12px;outline:none;width:190px">
+      <div style="display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;overflow:hidden">
+        <button id="hm-btn-mensal" onclick="hmSetMode('mensal',this)" style="padding:5px 13px;font-size:12px;font-weight:500;border:none;background:#fff;color:#0c1220;cursor:pointer">Mensal</button>
+        <button id="hm-btn-acum" onclick="hmSetMode('acum',this)" style="padding:5px 13px;font-size:12px;font-weight:500;border:none;background:none;color:rgba(255,255,255,.5);cursor:pointer">Acumulado</button>
       </div>
     </div>
-    <div style="overflow-x:auto">
-      <table class="tbl" id="end-table">
-        <thead><tr>
-          <th style="width:65px">COD</th>
-          <th>Nome</th>
-          <th style="width:100px">Vendedor</th>
-          <th>Endereço</th>
-          <th style="width:60px"></th>
-        </tr></thead>
-        <tbody id="end-tbody"></tbody>
+    <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #FBBF24;border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2025 Jan–Ago</div>
+        <div id="hm-k25v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
+        <div id="hm-k25s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
+      </div>
+      <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #60A5FA;border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2026 Jan–Ago</div>
+        <div id="hm-k26v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
+        <div id="hm-k26s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
+      </div>
+      <div id="hm-kd" style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid rgba(255,255,255,.2);border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">Variação</div>
+        <div id="hm-kdv" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:rgba(255,255,255,.4)">—</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px">vs mesmo período 2025</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 16px 8px;margin-bottom:16px">
+      <div style="position:relative;height:300px"><canvas id="hm-chart"></canvas></div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Mês</th><th>2025</th><th>2026</th><th>Var. %</th></tr></thead>
+        <tbody id="hm-tbody"></tbody>
       </table>
-    </div>
-  </div>
-</div>
-
-<!-- Modal editar endereço -->
-<div id="modal-end" onclick="if(event.target===this)fecharModalEnd()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:420px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
-    <h3 id="modal-end-title" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 16px"></h3>
-    <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">ENDEREÇO</label>
-    <input id="modal-end-input" style="width:100%;background:#0f1923;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;padding:9px 11px;font-size:13px;outline:none;box-sizing:border-box" placeholder="Rua, número, bairro, cidade">
-    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end">
-      <button onclick="fecharModalEnd()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer">Cancelar</button>
-      <button onclick="salvarEndereco()" style="background:#10B981;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Salvar</button>
     </div>
   </div>
 </div>
@@ -7358,8 +7358,29 @@ const HC={
 '5025':{n:'LAURITA PEREIRA DA SILVA OLIVEIRA',v:[0,0,0,0,0,2518.88]},
 '5028':{n:'MERCADO VISTA LINDA LTDA',v:[0,0,0,0,0,672.29]}
 };
-// Endereços por COD — preencher conforme coleta
-const HC_END = {
+// Histórico mensal de faturamento por vendedor (cod) — [jan,fev,mar,abr,mai,jun,jul,ago,set,out,nov,dez]
+const HISTORICO_MENSAL = {
+  '2025': {
+    // a preencher — apenas os 8 vendedores que existiam em 2025
+    // '093':[jan,fev,mar,abr,mai,jun,jul,ago,set,out,nov,dez],
+  },
+  '2026': {
+    '093':[0,0,0,0,532155.91,603239.19,635221.36,496293.00,0,0,0,0],
+    '094':[0,0,0,0,282673.01,340055.82,330742.96,301005.12,0,0,0,0],
+    '115':[0,0,0,0,219817.64,248386.60,310541.33,238106.42,0,0,0,0],
+    '116':[0,0,0,0,230373.09,281447.94,323724.21,243444.31,0,0,0,0],
+    '119':[0,0,0,0,101446.13,164170.90,167044.32,165091.32,0,0,0,0],
+    '117':[0,0,0,0,137934.62,159376.31,157000.45,139170.52,0,0,0,0],
+    '107':[0,0,0,0,107273.97,115682.24,113870.84, 98750.10,0,0,0,0],
+    '118':[0,0,0,0, 57857.08, 92799.35, 67013.84,       0,0,0,0,0],
+    '120':[0,0,0,0,  5177.07, 68434.04, 76437.52, 71848.48,0,0,0,0],
+    '121':[0,0,0,0,468575.66,492628.76,540849.81,456001.69,0,0,0,0],
+    '122':[0,0,0,0,292050.08,341216.90,353390.65,313115.05,0,0,0,0],
+    '123':[0,0,0,0,481321.11,454736.02,510416.72,414636.90,0,0,0,0],
+    '124':[0,0,0,0, 60306.27, 72568.31, 67876.94, 58327.68,0,0,0,0],
+    '125':[0,0,0,0,518111.38,523493.38,574778.65,491880.14,0,0,0,0],
+    'RA': [0,0,0,0,       0,        0, 28657.15, 81917.52,0,0,0,0],
+  }
 };
 
 const FATURAMENTO_DIARIO = {
@@ -8399,70 +8420,141 @@ function showTab(tab, el){
       initFormsTecTabs();
     }
   }
-  if(tab==='enderecos') renderEnderecos();
+  if(tab==='comparativo') renderComparativo();
 }
 
-/* ─── ENDEREÇOS ───────────────────────────────────────── */
-let _endCodAtual=null;
-const _END_VEND_MAP=(()=>{
-  const m={};
-  const vn={'107':'Everaldo','115':'Israel','116':'Natália','117':'Keller','119':'Althieres','120':'João','121':'Moab','122':'Ramon','123':'Kelly','124':'Luiz Henrique','125':'Cezar','093':'Guilherme','094':'Relson','':'Rauer'};
-  for(const[vcod,vname] of Object.entries(vn)){
-    const arr=(typeof CARTEIRA_AGOSTO!=='undefined'&&CARTEIRA_AGOSTO[vcod])||[];
-    for(const e of arr) m[e.cod]=vname;
+/* ─── COMPARATIVO HISTÓRICO ──────────────────────────────── */
+const _HM_MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const _HM_MES26=8;
+const _HM_VENDS=[
+  {id:'total',label:'Total',        av:'Σ',  has25:false},
+  {id:'093',  label:'Guilherme',    av:'GU', has25:false},
+  {id:'094',  label:'Relson',       av:'RE', has25:false},
+  {id:'115',  label:'Israel',       av:'IS', has25:false},
+  {id:'116',  label:'Natália',      av:'NA', has25:false},
+  {id:'119',  label:'Althieres',    av:'AL', has25:false},
+  {id:'117',  label:'Keller',       av:'KE', has25:false},
+  {id:'107',  label:'Everaldo',     av:'EV', has25:false},
+  {id:'118',  label:'Jorge',        av:'JO', has25:false},
+  {id:'120',  label:'João',         av:'JO2',has25:false},
+  {id:'121',  label:'Moab',         av:'MB', has25:false},
+  {id:'122',  label:'Ramon',        av:'RM', has25:false},
+  {id:'123',  label:'Kelly',        av:'KL', has25:false},
+  {id:'124',  label:'Luiz Henrique',av:'LH', has25:false},
+  {id:'125',  label:'Cezar',        av:'CZ', has25:false},
+  {id:'RA',   label:'Rauer',        av:'RA', has25:false},
+];
+let _hmSel='total',_hmMode='mensal',_hmChart=null;
+
+function _hmFmtBR(v){return v?v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}):'0';}
+function _hmFmt(v){return v?'R$ '+_hmFmtBR(v):'—';}
+function _hmShort(v){
+  if(!v)return'—';
+  if(v>=1e6)return'R$ '+(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M';
+  if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+' k';
+  return _hmFmt(v);
+}
+function _hmGetArr(id,yr){
+  if(id==='total'){
+    const keys=Object.keys(HISTORICO_MENSAL[yr]||{});
+    return Array.from({length:12},(_,i)=>keys.reduce((s,k)=>s+((HISTORICO_MENSAL[yr][k]&&HISTORICO_MENSAL[yr][k][i])||0),0));
   }
-  return m;
-})();
+  return (HISTORICO_MENSAL[yr]||{})[id]||Array(12).fill(0);
+}
+function _hmAcum(arr){let a=0;return arr.map(v=>v?(a+=v):null);}
 
-function renderEnderecos(){
-  const tbody=document.getElementById('end-tbody');
-  if(!tbody) return;
-  const filtro=document.getElementById('end-filtro-vend')?.value||'';
-  const busca=(document.getElementById('end-busca')?.value||'').toLowerCase();
-  const cods=Object.keys(_END_VEND_MAP).sort((a,b)=>Number(a)-Number(b));
-  let rows='', comEnd=0, semEnd=0;
-  for(const cod of cods){
-    const vend=_END_VEND_MAP[cod];
-    const end=HC_END[cod]||'';
-    const nome=(typeof HC!=='undefined'&&HC[cod])?HC[cod].n:'';
-    if(filtro==='sem'&&end) continue;
-    if(busca&&!cod.includes(busca)&&!nome.toLowerCase().includes(busca)&&!vend.toLowerCase().includes(busca)) continue;
-    if(end) comEnd++; else semEnd++;
-    const endStyle=end?'color:rgba(255,255,255,.7)':'color:rgba(255,100,100,.7);font-style:italic';
-    rows+=`<tr>
-      <td style="font-weight:700;font-size:13px">${cod}</td>
-      <td class="td-wrap" style="font-size:12px">${nome}</td>
-      <td style="font-size:12px;color:rgba(255,255,255,.5)">${vend}</td>
-      <td style="font-size:12px;${endStyle}">${end||'— sem endereço'}</td>
-      <td><button onclick="abrirModalEnd('${cod}')" style="background:rgba(255,255,255,.08);border:none;border-radius:6px;color:rgba(255,255,255,.65);padding:4px 10px;font-size:11px;cursor:pointer">${end?'✎':'+ Add'}</button></td>
-    </tr>`;
-  }
-  tbody.innerHTML=rows||'<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.3);padding:30px">Nenhum cliente encontrado</td></tr>';
-  const sub=document.getElementById('end-subtitle');
-  if(sub) sub.textContent=`${comEnd} com endereço · ${semEnd} sem endereço · ${cods.length} total`;
+function _hmBuildStrip(){
+  const el=document.getElementById('hm-vstrip');if(!el)return;
+  el.innerHTML=_HM_VENDS.map(v=>{
+    const sel=v.id===_hmSel;
+    const bg=sel?'rgba(255,255,255,.9)':'rgba(255,255,255,.05)';
+    const col=sel?'#0c1220':'rgba(255,255,255,.55)';
+    const bdr=sel?'rgba(255,255,255,.9)':'rgba(255,255,255,.1)';
+    const avBg=sel?'rgba(0,0,0,.15)':'rgba(255,255,255,.08)';
+    const badge=!v.has25?`<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:6px;background:rgba(96,165,250,.15);color:#60A5FA">2026</span>`:'';
+    return`<div onclick="hmPickVend('${v.id}')" style="display:flex;align-items:center;gap:7px;padding:6px 12px 6px 7px;border-radius:20px;border:1.5px solid ${bdr};background:${bg};cursor:pointer;white-space:nowrap;flex-shrink:0;font-size:12px;font-weight:500;color:${col};-webkit-tap-highlight-color:transparent">
+      <span style="width:24px;height:24px;border-radius:50%;background:${avBg};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${v.av}</span>
+      <span>${v.label}</span>${badge}
+    </div>`;
+  }).join('');
 }
 
-function abrirModalEnd(cod){
-  _endCodAtual=cod;
-  const nome=(typeof HC!=='undefined'&&HC[cod])?HC[cod].n:cod;
-  document.getElementById('modal-end-title').textContent=cod+' — '+nome;
-  document.getElementById('modal-end-input').value=HC_END[cod]||'';
-  const m=document.getElementById('modal-end');
-  m.style.display='flex';
-  setTimeout(()=>document.getElementById('modal-end-input').focus(),50);
+function _hmUpdateKPIs(id){
+  const v=_HM_VENDS.find(x=>x.id===id);
+  const d25=_hmGetArr(id,'2025'),d26=_hmGetArr(id,'2026');
+  const ytd25=d25.slice(0,_HM_MES26).reduce((s,x)=>s+x,0);
+  const ytd26=d26.slice(0,_HM_MES26).reduce((s,x)=>s+x,0);
+  document.getElementById('hm-k25v').textContent=v.has25?_hmShort(ytd25):'—';
+  document.getElementById('hm-k25s').textContent=v.has25?'Jan–Ago 2025':'Sem dados 2025';
+  document.getElementById('hm-k26v').textContent=_hmShort(ytd26);
+  document.getElementById('hm-k26s').textContent='Jan–Ago 2026';
+  const kd=document.getElementById('hm-kd'),kdv=document.getElementById('hm-kdv');
+  if(v.has25&&ytd25){
+    const p=(ytd26-ytd25)/ytd25*100,pos=p>=0;
+    kdv.textContent=(pos?'+':'')+p.toFixed(1)+'%';
+    kdv.style.color=pos?'#22c55e':'#ef4444';
+    kd.style.borderTopColor=pos?'#22c55e':'#ef4444';
+  }else{kdv.textContent='—';kdv.style.color='rgba(255,255,255,.4)';kd.style.borderTopColor='rgba(255,255,255,.2)';}
 }
-function fecharModalEnd(){
-  document.getElementById('modal-end').style.display='none';
-  _endCodAtual=null;
+
+function _hmUpdateTable(id){
+  const v=_HM_VENDS.find(x=>x.id===id);
+  const d25=_hmGetArr(id,'2025'),d26=_hmGetArr(id,'2026');
+  const tbody=document.getElementById('hm-tbody');if(!tbody)return;
+  tbody.innerHTML=_HM_MESES.map((m,i)=>{
+    const v25=v.has25?d25[i]:null,v26=i<_HM_MES26?d26[i]:null;
+    if(!v25&&!v26)return'';
+    const p=(v25&&v26)?((v26-v25)/v25*100):null,pos=p!==null?p>=0:null;
+    const ds=p===null?'color:rgba(255,255,255,.3)':(pos?'color:#22c55e;font-weight:600':'color:#ef4444;font-weight:600');
+    return`<tr><td style="font-weight:500">${m}</td>
+      <td style="${v25?'color:#FBBF24;font-weight:500':'color:rgba(255,255,255,.3)'}">${v25?_hmFmt(v25):'—'}</td>
+      <td style="${v26?'color:#60A5FA;font-weight:500':'color:rgba(255,255,255,.3)'}">${v26?_hmFmt(v26):'—'}</td>
+      <td style="${ds}">${p===null?'—':(pos?'+':'')+p.toFixed(1)+'%'}</td></tr>`;
+  }).join('');
 }
-function salvarEndereco(){
-  if(!_endCodAtual) return;
-  const val=document.getElementById('modal-end-input').value.trim();
-  if(val) HC_END[_endCodAtual]=val;
-  else delete HC_END[_endCodAtual];
-  fecharModalEnd();
-  renderEnderecos();
+
+function _hmUpdateChart(id){
+  const v=_HM_VENDS.find(x=>x.id===id),isLine=_hmMode==='acum';
+  const raw25=_hmGetArr(id,'2025'),raw26=_hmGetArr(id,'2026');
+  const a25=isLine?_hmAcum(raw25):raw25.map((x,i)=>v.has25?(x||null):null);
+  const a26=isLine?_hmAcum(raw26):raw26.map((x,i)=>(i<_HM_MES26&&x)?x:null);
+  const grid='rgba(255,255,255,.06)',tick='rgba(255,255,255,.35)';
+  const datasets=[];
+  if(v.has25)datasets.push({label:'2025',data:a25,backgroundColor:'rgba(251,191,36,.55)',borderColor:'#FBBF24',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#FBBF24',spanGaps:false,order:2});
+  datasets.push({label:'2026',data:a26,backgroundColor:'rgba(96,165,250,.65)',borderColor:'#60A5FA',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#60A5FA',spanGaps:false,order:1});
+  if(_hmChart){_hmChart.destroy();_hmChart=null;}
+  const cv=document.getElementById('hm-chart');
+  if(!cv||typeof Chart==='undefined')return;
+  _hmChart=new Chart(cv,{
+    type:isLine?'line':'bar',
+    data:{labels:_HM_MESES,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:200},
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:v.has25,position:'top',align:'end',labels:{color:tick,boxWidth:10,boxHeight:10,borderRadius:3,useBorderRadius:true,padding:12,font:{size:12}}},
+        tooltip:{backgroundColor:'#1e2a3a',borderColor:'rgba(255,255,255,.12)',borderWidth:1,titleColor:'#fff',bodyColor:tick,padding:10,titleFont:{size:12,weight:'600'},bodyFont:{size:12},
+          callbacks:{label(ctx){if(!ctx.raw)return null;return ctx.dataset.label+': R$ '+_hmFmtBR(ctx.raw);}}}
+      },
+      scales:{
+        x:{grid:{color:grid},ticks:{color:tick,font:{size:11}},border:{display:false}},
+        y:{grid:{color:grid},border:{display:false},ticks:{color:tick,font:{size:11},callback(v){if(!v)return'R$ 0';if(v>=1e6)return'R$ '+(v/1e6).toFixed(1)+'M';return'R$ '+(v/1e3).toFixed(0)+'k';}}}
+      }
+    }
+  });
 }
+
+function hmPickVend(id){_hmSel=id;_hmBuildStrip();_hmUpdateKPIs(id);_hmUpdateChart(id);_hmUpdateTable(id);}
+
+function hmSetMode(m,btn){
+  _hmMode=m;
+  const b1=document.getElementById('hm-btn-mensal'),b2=document.getElementById('hm-btn-acum');
+  if(b1){b1.style.background=m==='mensal'?'#fff':'none';b1.style.color=m==='mensal'?'#0c1220':'rgba(255,255,255,.5)';}
+  if(b2){b2.style.background=m==='acum'?'#fff':'none';b2.style.color=m==='acum'?'#0c1220':'rgba(255,255,255,.5)';}
+  _hmUpdateChart(_hmSel);
+}
+
+function renderComparativo(){_hmBuildStrip();_hmUpdateKPIs(_hmSel);_hmUpdateChart(_hmSel);_hmUpdateTable(_hmSel);}
 function showTabMobile(tab, el){
   showTab(tab, null);
   document.querySelectorAll('.botnav-item').forEach(n=>n.classList.remove('active'));
@@ -11078,7 +11170,7 @@ function applySession(user){
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
     if(np)np.style.display='';if(bp)bp.style.display='';
-    const ne=document.getElementById('nav-enderecos'),be=document.getElementById('botnav-enderecos');
+    const ne=document.getElementById('nav-comparativo'),be=document.getElementById('botnav-comparativo');
     if(ne)ne.style.display='';if(be)be.style.display='';
   }
   // RBAC
