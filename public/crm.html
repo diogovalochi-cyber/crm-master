@@ -1496,6 +1496,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 3px">Comparativo de Vendas</h2>
         <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0">Faturamento mensal por vendedor · 2025 vs 2026</p>
       </div>
+      <div style="display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;overflow:hidden">
+        <button id="hm-btn-col" onclick="hmSetMode('col',this)" style="padding:5px 13px;font-size:12px;font-weight:500;border:none;background:#fff;color:#0c1220;cursor:pointer">Colunas</button>
+        <button id="hm-btn-lin" onclick="hmSetMode('lin',this)" style="padding:5px 13px;font-size:12px;font-weight:500;border:none;background:none;color:rgba(255,255,255,.5);cursor:pointer">Linha</button>
+      </div>
     </div>
     <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
     <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
@@ -8447,7 +8451,7 @@ const _HM_VENDS=[
   {id:'125',  label:'Cezar',        av:'CZ', has25:true},
   {id:'RA',   label:'Rauer',        av:'RA', has25:false},
 ];
-let _hmSel='total',_hmMode='mensal',_hmChart=null;
+let _hmSel='total',_hmMode='col',_hmChart=null;
 
 function _hmFmtBR(v){return v?v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}):'0';}
 function _hmFmt(v){return v?'R$ '+_hmFmtBR(v):'—';}
@@ -8521,19 +8525,19 @@ function _hmUpdateTable(id){
 }
 
 function _hmUpdateChart(id){
-  const v=_HM_VENDS.find(x=>x.id===id);
+  const v=_HM_VENDS.find(x=>x.id===id),isLine=_hmMode==='lin';
   const raw25=_hmGetArr(id,'2025'),raw26=_hmGetArr(id,'2026');
   const a25=raw25.map((x,i)=>v.has25?(x||null):null);
   const a26=raw26.map((x,i)=>(i<_HM_MES26&&x)?x:null);
   const grid='rgba(255,255,255,.06)',tick='rgba(255,255,255,.35)';
   const datasets=[];
-  if(v.has25)datasets.push({label:'2025',data:a25,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:1.5,borderRadius:4,borderSkipped:'bottom',order:2});
-  datasets.push({label:'2026',data:a26,backgroundColor:'rgba(34,197,94,.65)',borderColor:'#22c55e',borderWidth:1.5,borderRadius:4,borderSkipped:'bottom',order:1});
+  if(v.has25)datasets.push({label:'2025',data:a25,backgroundColor:'rgba(239,68,68,.55)',borderColor:'#ef4444',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#ef4444',spanGaps:false,order:2});
+  datasets.push({label:'2026',data:a26,backgroundColor:'rgba(34,197,94,.65)',borderColor:'#22c55e',borderWidth:isLine?2.5:1.5,borderRadius:isLine?0:4,borderSkipped:'bottom',fill:false,tension:0.35,pointRadius:isLine?4:0,pointHoverRadius:6,pointBackgroundColor:'#22c55e',spanGaps:false,order:1});
   if(_hmChart){_hmChart.destroy();_hmChart=null;}
   const cv=document.getElementById('hm-chart');
   if(!cv||typeof Chart==='undefined')return;
   _hmChart=new Chart(cv,{
-    type:'bar',
+    type:isLine?'line':'bar',
     data:{labels:_HM_MESES,datasets},
     options:{
       responsive:true,maintainAspectRatio:false,animation:{duration:200},
@@ -8552,6 +8556,14 @@ function _hmUpdateChart(id){
 }
 
 function hmPickVend(id){_hmSel=id;_hmBuildStrip();_hmUpdateKPIs(id);_hmUpdateChart(id);_hmUpdateTable(id);}
+
+function hmSetMode(m,btn){
+  _hmMode=m;
+  const b1=document.getElementById('hm-btn-col'),b2=document.getElementById('hm-btn-lin');
+  if(b1){b1.style.background=m==='col'?'#fff':'none';b1.style.color=m==='col'?'#0c1220':'rgba(255,255,255,.5)';}
+  if(b2){b2.style.background=m==='lin'?'#fff':'none';b2.style.color=m==='lin'?'#0c1220':'rgba(255,255,255,.5)';}
+  _hmUpdateChart(_hmSel);
+}
 
 function renderComparativo(){
   const _isVend=typeof CRM_USER!=='undefined'&&CRM_USER?.role==='VENDEDOR';
