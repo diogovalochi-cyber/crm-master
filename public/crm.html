@@ -900,6 +900,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <span style="font-size:15px;line-height:1;flex-shrink:0">📊</span>
     Comparativo
   </div>
+  <div class="nav-item" id="nav-manutencao" onclick="showTab('manutencao',this)" style="display:none">
+    <span style="font-size:15px;line-height:1;flex-shrink:0">🔧</span>
+    Manutenção
+  </div>
   <div class="sidebar-footer">
     <strong>Diogo · Analista</strong>
     <span>Abril 2026</span>
@@ -932,6 +936,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div class="botnav-item" id="botnav-comparativo" onclick="showTabMobile('comparativo',this)" style="display:none">
       <span style="font-size:22px;line-height:1">📊</span>
       Comparativo
+    </div>
+    <div class="botnav-item" id="botnav-manutencao" onclick="showTabMobile('manutencao',this)" style="display:none">
+      <span style="font-size:22px;line-height:1">🔧</span>
+      Manutenção
     </div>
   </div>
 </div>
@@ -1304,6 +1312,51 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
   </div><!-- /tec-sec-equipamentos -->
 </div><!-- /tab-tecnicos -->
 
+<!-- ABA: MANUTENÇÃO -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-manutencao">
+  <!-- Sub-nav -->
+  <div style="padding:12px 12px 0;display:flex;gap:6px;flex-wrap:wrap">
+    <button id="mn-btn-enderecos" onclick="showMn('enderecos',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Endereços</button>
+    <button id="mn-btn-reportes" onclick="showMn('reportes',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Reportes</button>
+  </div>
+
+  <!-- SEÇÃO ENDEREÇOS -->
+  <div id="mn-sec-enderecos" class="mn-sec">
+    <div style="max-width:1100px;margin:0 auto;padding:16px 12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Endereços · Manutenção</h2>
+          <p id="mn-stats" style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">—</p>
+        </div>
+      </div>
+      <input id="mn-busca" type="text" placeholder="Buscar por nome, cód ou endereço…" autocomplete="off"
+        oninput="mnBusca(this.value)"
+        style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;margin-bottom:10px;-webkit-appearance:none">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        <button id="mn-fil-" class="mn-fil-btn" onclick="mnSetFiltro('')" style="background:#7C3AED;color:#fff;border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:700;cursor:pointer">Todos</button>
+        <button id="mn-fil-com_end" class="mn-fil-btn" onclick="mnSetFiltro('com_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Com endereço</button>
+        <button id="mn-fil-sem_end" class="mn-fil-btn" onclick="mnSetFiltro('sem_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Sem endereço</button>
+      </div>
+      <div id="mn-lista"></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO REPORTES (admin) -->
+  <div id="mn-sec-reportes" class="mn-sec" style="display:none">
+    <div style="max-width:900px;margin:0 auto;padding:16px 12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div>
+          <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0">Reportes de Endereço</h2>
+          <p style="font-size:12px;color:rgba(255,255,255,.38);margin:3px 0 0">Problemas reportados pelo campo</p>
+        </div>
+        <button onclick="mnRenderReportes()" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 14px;font-size:12px;cursor:pointer">↻ Atualizar</button>
+      </div>
+      <div id="mn-reportes-lista"></div>
+    </div>
+  </div>
+</div><!-- /tab-manutencao -->
+
 <!-- Modal Lembrete -->
 <div id="modal-lembrete" onclick="if(event.target===this)fecharLembreteModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#1e2a3a;border-radius:14px;padding:28px;width:460px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
@@ -1589,6 +1642,56 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end">
       <button onclick="fecharEspelhoModal()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer">Fechar</button>
       <button id="espelho-copy-btn" onclick="copiarEspelho()" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">📋 Copiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Botão Global Reporte Endereço -->
+<button id="btn-rep-global" onclick="abrirReporteModal('','')" title="Reportar endereço ausente ou incorreto"
+  style="position:fixed;bottom:76px;right:14px;z-index:8500;background:#dc2626;color:#fff;border:none;border-radius:50%;width:42px;height:42px;font-size:18px;cursor:pointer;box-shadow:0 3px 14px rgba(220,38,38,.5);display:flex;align-items:center;justify-content:center;padding:0">🚩</button>
+
+<!-- Modal Reporte Endereço -->
+<div id="modal-reporte" onclick="if(event.target===this)fecharReporteModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e2a3a;border-radius:14px;padding:24px;width:420px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0">🚩 Reportar Endereço</h3>
+      <button onclick="fecharReporteModal()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:22px;cursor:pointer;line-height:1;padding:0">×</button>
+    </div>
+    <div style="display:grid;gap:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.4px">CÓD CLIENTE</label>
+          <input id="rep-cod" type="text" placeholder="ex: 123" autocomplete="off"
+            style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none;font-family:inherit">
+        </div>
+        <div>
+          <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.4px">TIPO</label>
+          <select id="rep-tipo" style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+            <option value="sem">Sem endereço</option>
+            <option value="errado">Endereço errado</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.4px">NOME DO CLIENTE *</label>
+        <input id="rep-nome" type="text" placeholder="Nome do cliente" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none;font-family:inherit">
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.4px">DETALHES / ENDEREÇO CORRETO</label>
+        <textarea id="rep-detalhe" placeholder="Descreva o problema ou informe o endereço correto…"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none;font-family:inherit;resize:vertical;min-height:70px"></textarea>
+      </div>
+      <div>
+        <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.4px">SEU NOME</label>
+        <input id="rep-reporter" type="text" placeholder="Quem está reportando" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none;font-family:inherit">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+      <button onclick="fecharReporteModal()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="salvarReporte()" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Enviar Reporte</button>
     </div>
   </div>
 </div>
@@ -8467,6 +8570,7 @@ function showTab(tab, el){
     }
   }
   if(tab==='comparativo') renderComparativo();
+  if(tab==='manutencao') mnRenderLista();
 }
 
 /* ─── COMPARATIVO HISTÓRICO ──────────────────────────────── */
@@ -11245,6 +11349,8 @@ function applySession(user){
     if(np)np.style.display='';if(bp)bp.style.display='';
     const ne=document.getElementById('nav-comparativo'),be=document.getElementById('botnav-comparativo');
     if(ne)ne.style.display='';if(be)be.style.display='';
+    const nm=document.getElementById('nav-manutencao'),bm=document.getElementById('botnav-manutencao');
+    if(nm)nm.style.display='';if(bm)bm.style.display='';
   }
   // RBAC
   if(user.role==='TECNICO')      applyTecnicoMode(user);
@@ -12411,6 +12517,165 @@ document.addEventListener('keydown',e=>{
   if(ctrl&&['c','a','p','s','u'].includes(k)){e.preventDefault();return;}
   if(k==='printscreen'){e.preventDefault();navigator.clipboard&&navigator.clipboard.writeText('');return;}
   if(k==='f12'&&!window.DEV_MODE){e.preventDefault();return;}
+});
+
+/* ─────────────────────────────────────────
+   ABA MANUTENÇÃO — ENDEREÇOS & REPORTES
+───────────────────────────────────────── */
+const CLIENTES_MANU=[
+  // Estrutura: {cod:'123',nome:'Nome do Cliente',end:'Rua X, 123, Bairro, Cidade',maps:'https://maps.app.goo.gl/...',obs:''}
+  // Preencher com dados da planilha
+];
+
+let _mnBusca='',_mnFiltro='';
+
+function showMn(sec,el){
+  document.querySelectorAll('.mn-sec').forEach(s=>s.style.display='none');
+  const tgt=document.getElementById('mn-sec-'+sec);
+  if(tgt)tgt.style.display='';
+  document.querySelectorAll('[id^="mn-btn-"]').forEach(b=>{
+    b.style.background='rgba(255,255,255,.07)';b.style.color='rgba(255,255,255,.55)';b.style.fontWeight='500';
+  });
+  if(el){el.style.background='#7C3AED';el.style.color='#fff';el.style.fontWeight='700';}
+  if(sec==='enderecos') mnRenderLista();
+  if(sec==='reportes') mnRenderReportes();
+}
+
+function mnBusca(v){_mnBusca=v.toLowerCase();mnRenderLista();}
+
+function mnSetFiltro(v){
+  _mnFiltro=v;
+  document.querySelectorAll('.mn-fil-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,.08)';b.style.color='rgba(255,255,255,.6)';b.style.fontWeight='600';
+  });
+  const btn=document.getElementById('mn-fil-'+v);
+  if(btn){btn.style.background='#7C3AED';btn.style.color='#fff';btn.style.fontWeight='700';}
+  mnRenderLista();
+}
+
+function mnRenderLista(){
+  const el=document.getElementById('mn-lista');
+  if(!el)return;
+  let items=CLIENTES_MANU.filter(c=>{
+    if(_mnFiltro==='sem_end'&&c.end)return false;
+    if(_mnFiltro==='com_end'&&!c.end)return false;
+    if(_mnBusca){
+      const q=_mnBusca;
+      return (c.cod&&c.cod.toLowerCase().includes(q))||(c.nome&&c.nome.toLowerCase().includes(q))||(c.end&&c.end.toLowerCase().includes(q));
+    }
+    return true;
+  });
+  const total=CLIENTES_MANU.length;
+  const semEnd=CLIENTES_MANU.filter(c=>!c.end).length;
+  const st=document.getElementById('mn-stats');
+  if(st)st.textContent=total?`${total} clientes · ${semEnd} sem endereço`:'Aguardando planilha de endereços';
+  if(!items.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px 16px;color:rgba(255,255,255,.3);font-size:13px">${!total?'Aguardando planilha de endereços — dados serão carregados em breve':'Nenhum resultado encontrado'}</div>`;
+    return;
+  }
+  el.innerHTML=items.map(c=>{
+    const safeNome=c.nome.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeCod=(c.cod||'').replace(/'/g,"\\'");
+    return `<div class="card" style="padding:12px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px">
+      <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'—'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome}</div>
+        ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
+        ${c.obs?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px;font-style:italic">${c.obs}</div>`:''}
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
+        ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
+        <button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>
+        <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function mnEspelho(cod){
+  const c=CLIENTES_MANU.find(x=>x.cod===cod);
+  if(!c)return;
+  const hoje=typeof nowBRDateStr==='function'?nowBRDateStr():new Date().toLocaleDateString('pt-BR');
+  const L=['📋 VISITA MANUTENÇÃO',''];
+  L.push('Cliente: '+c.nome+(c.cod?' (Cód '+c.cod+')':''));
+  if(c.end) L.push('Endereço: '+c.end);
+  if(c.maps) L.push('📍 Maps: '+c.maps);
+  L.push('');L.push('Data: '+hoje);
+  if(c.obs) L.push('Obs: '+c.obs);
+  const ta=document.getElementById('espelho-texto');
+  if(ta) ta.value=L.join('\n');
+  document.getElementById('modal-espelho').style.display='flex';
+}
+
+function abrirReporteModal(cod,nome){
+  const el=document.getElementById('modal-reporte');if(!el)return;
+  document.getElementById('rep-cod').value=cod||'';
+  document.getElementById('rep-nome').value=nome||'';
+  document.getElementById('rep-tipo').value='sem';
+  document.getElementById('rep-detalhe').value='';
+  document.getElementById('rep-reporter').value='';
+  el.style.display='flex';
+}
+function fecharReporteModal(){
+  const el=document.getElementById('modal-reporte');if(el)el.style.display='none';
+}
+function salvarReporte(){
+  const cod=(document.getElementById('rep-cod').value||'').trim();
+  const nome=(document.getElementById('rep-nome').value||'').trim();
+  const tipo=document.getElementById('rep-tipo').value;
+  const detalhe=(document.getElementById('rep-detalhe').value||'').trim();
+  const rep=(document.getElementById('rep-reporter').value||'').trim();
+  if(!nome&&!cod){alert('Informe o nome ou código do cliente.');return;}
+  try{
+    const arr=JSON.parse(localStorage.getItem('mn_reportes')||'[]');
+    arr.push({id:Date.now(),cod,nome,tipo,detalhe,rep,dt:new Date().toISOString()});
+    localStorage.setItem('mn_reportes',JSON.stringify(arr));
+  }catch(e){}
+  fecharReporteModal();
+  const btn=document.getElementById('btn-rep-global');
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓';btn.style.background='#16a34a';setTimeout(()=>{btn.innerHTML=orig;btn.style.background='#dc2626';},1800);}
+}
+
+function mnRenderReportes(){
+  const el=document.getElementById('mn-reportes-lista');if(!el)return;
+  let arr=[];
+  try{arr=JSON.parse(localStorage.getItem('mn_reportes')||'[]');}catch(e){}
+  arr=arr.slice().reverse();
+  const TIPOS={sem:'Sem endereço',errado:'Endereço errado',outro:'Outro'};
+  if(!arr.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px">Nenhum reporte ainda</div>';
+    return;
+  }
+  el.innerHTML=arr.map(r=>{
+    const d=new Date(r.dt);
+    const ds=d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="card" style="padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:11px;font-weight:700;color:#fca5a5;background:#7f1d1d33;border-radius:5px;padding:2px 7px">${TIPOS[r.tipo]||r.tipo}</span>
+          <span style="font-size:12px;font-weight:600;color:#fff">${r.nome||r.cod}</span>
+          ${r.cod&&r.nome?`<span style="font-size:11px;color:rgba(255,255,255,.4)">(${r.cod})</span>`:''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <span style="font-size:10px;color:rgba(255,255,255,.3)">${ds}</span>
+          <button onclick="mnDeleteReporte(${r.id})" style="background:rgba(255,0,0,.15);border:none;border-radius:5px;color:#fca5a5;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
+        </div>
+      </div>
+      ${r.detalhe?`<div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:6px">${r.detalhe}</div>`:''}
+      ${r.rep?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Por: ${r.rep}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function mnDeleteReporte(id){
+  try{
+    let arr=JSON.parse(localStorage.getItem('mn_reportes')||'[]');
+    arr=arr.filter(r=>r.id!==id);
+    localStorage.setItem('mn_reportes',JSON.stringify(arr));
+  }catch(e){}
+  mnRenderReportes();
+}
+
 });
 
 </script>
