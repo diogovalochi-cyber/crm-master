@@ -1366,8 +1366,86 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 <div class="tab-content" id="tab-manutencao">
   <!-- Sub-nav -->
   <div style="padding:12px 12px 0;display:flex;gap:6px;flex-wrap:wrap">
-    <button id="mn-btn-enderecos" onclick="showMn('enderecos',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Endereços</button>
+    <button id="mn-btn-formulario" onclick="showMn('formulario',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Formulário</button>
+    <button id="mn-btn-enderecos" onclick="showMn('enderecos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Endereços</button>
     <button id="mn-btn-reportes" onclick="showMn('reportes',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Reportes</button>
+  </div>
+
+  <!-- SEÇÃO FORMULÁRIO -->
+  <div id="mn-sec-formulario" class="mn-sec" style="display:none">
+    <div style="max-width:640px;margin:0 auto;padding:16px 12px">
+      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 4px">Formulário de Visita</h2>
+      <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0 0 18px">Preencha os dados e gere o espelho para copiar</p>
+
+      <!-- Cliente autocomplete -->
+      <div style="margin-bottom:14px;position:relative">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Cliente</label>
+        <input id="mnf-cli-busca" type="text" placeholder="Digite nome ou código do cliente…" autocomplete="off"
+          oninput="mnfBuscaCliente(this.value)"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+        <div id="mnf-cli-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1e2a3a;border:1px solid rgba(255,255,255,.12);border-radius:10px;z-index:500;max-height:220px;overflow-y:auto;margin-top:3px;box-shadow:0 8px 30px rgba(0,0,0,.5)"></div>
+      </div>
+      <!-- Endereço (preenchido automaticamente) -->
+      <div id="mnf-end-row" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+        <div id="mnf-end-txt" style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55"></div>
+        <a id="mnf-maps-link" href="#" target="_blank" style="font-size:11px;color:#60A5FA;display:none;margin-top:4px;display:block">📍 Abrir no Maps</a>
+      </div>
+
+      <!-- Data e Hora -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Data</label>
+          <input id="mnf-data" type="date" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;color-scheme:dark">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Hora</label>
+          <input id="mnf-hora" type="time" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;color-scheme:dark">
+        </div>
+      </div>
+
+      <!-- Técnico -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Técnico</label>
+        <input id="mnf-tecnico" type="text" placeholder="Nome do técnico…" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+      </div>
+
+      <!-- Tipo de serviço -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Tipo de Serviço</label>
+        <select id="mnf-tipo" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
+          <option value="">Selecionar…</option>
+          <option value="Manutenção Preventiva">Manutenção Preventiva</option>
+          <option value="Manutenção Corretiva">Manutenção Corretiva</option>
+          <option value="Instalação">Instalação</option>
+          <option value="Treinamento">Treinamento</option>
+          <option value="Visita Técnica">Visita Técnica</option>
+        </select>
+      </div>
+
+      <!-- Equipamento -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Equipamento</label>
+        <input id="mnf-equip" type="text" placeholder="Ex: Câmara fria, forno, balança…" autocomplete="off"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+      </div>
+
+      <!-- Problema -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Problema Relatado</label>
+        <textarea id="mnf-problema" rows="3" placeholder="Descreva o problema…"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;resize:vertical;-webkit-appearance:none"></textarea>
+      </div>
+
+      <!-- Solução -->
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Solução Aplicada</label>
+        <textarea id="mnf-solucao" rows="3" placeholder="Descreva o que foi feito…"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;resize:vertical;-webkit-appearance:none"></textarea>
+      </div>
+
+      <button onclick="mnfGerarEspelho()" style="width:100%;background:#7C3AED;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px">📋 Gerar Espelho</button>
+    </div>
   </div>
 
   <!-- SEÇÃO ENDEREÇOS -->
@@ -8641,7 +8719,7 @@ function showTab(tab, el){
   }
   if(tab==='comparativo') renderComparativo();
   if(tab==='representantes') renderRepresentantes();
-  if(tab==='manutencao') mnRenderLista();
+  if(tab==='manutencao') showMn('formulario',document.getElementById('mn-btn-formulario'));
 }
 
 /* ─── COMPARATIVO HISTÓRICO ──────────────────────────────── */
@@ -11646,7 +11724,7 @@ function applyManutencaoMode(user){
   if(tbs) tbs.style.display='none';
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Manutenção</strong><span>Visualização</span>';
-  if(typeof mnRenderLista==='function') mnRenderLista();
+  if(typeof showMn==='function') showMn('formulario',document.getElementById('mn-btn-formulario'));
 }
 
 function applyVendorMode(user){
@@ -13624,8 +13702,100 @@ function showMn(sec,el){
     b.style.background='rgba(255,255,255,.07)';b.style.color='rgba(255,255,255,.55)';b.style.fontWeight='500';
   });
   if(el){el.style.background='#7C3AED';el.style.color='#fff';el.style.fontWeight='700';}
+  if(sec==='formulario') mnfInit();
   if(sec==='enderecos') mnRenderLista();
   if(sec==='reportes') mnRenderReportes();
+}
+
+// ── FORMULÁRIO DE VISITA ────────────────────────────────────
+let _mnfCli={cod:'',nome:'',end:'',maps:''};
+
+function mnfInit(){
+  // Preenche data de hoje se vazio
+  const inp=document.getElementById('mnf-data');
+  if(inp&&!inp.value){
+    const d=new Date();
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    inp.value=y+'-'+m+'-'+day;
+  }
+  // Preenche hora atual se vazio
+  const ih=document.getElementById('mnf-hora');
+  if(ih&&!ih.value){
+    const d=new Date();
+    ih.value=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+}
+
+function mnfBuscaCliente(v){
+  const drop=document.getElementById('mnf-cli-drop');
+  if(!drop)return;
+  const q=(v||'').trim().toLowerCase();
+  if(q.length<2){drop.style.display='none';return;}
+  const res=CLIENTES_MANU.filter(c=>{
+    if(!c.nome&&!c.cod) return false;
+    return (c.nome||'').toLowerCase().includes(q)||(c.cod||'').toLowerCase().startsWith(q);
+  }).slice(0,10);
+  if(!res.length){drop.style.display='none';return;}
+  drop.innerHTML=res.map(c=>
+    `<div onclick="mnfSelecionarCliente('${c.cod}')" style="padding:9px 14px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.85);border-bottom:1px solid rgba(255,255,255,.06);transition:background .1s" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+      <span style="font-weight:600">${c.nome||'(sem nome)'}</span>
+      ${c.cod?`<span style="color:rgba(255,255,255,.35);margin-left:6px">· Cód ${c.cod}</span>`:''}
+      ${c.end?`<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.end}</div>`:''}
+    </div>`
+  ).join('');
+  drop.style.display='';
+}
+
+function mnfSelecionarCliente(cod){
+  const c=CLIENTES_MANU.find(x=>x.cod===cod);
+  if(!c)return;
+  _mnfCli=c;
+  const inp=document.getElementById('mnf-cli-busca');
+  if(inp) inp.value=(c.nome||'')+(c.cod?' (Cód '+c.cod+')':'');
+  const drop=document.getElementById('mnf-cli-drop');
+  if(drop) drop.style.display='none';
+  const row=document.getElementById('mnf-end-row');
+  const txt=document.getElementById('mnf-end-txt');
+  const mapsLink=document.getElementById('mnf-maps-link');
+  if(row&&txt){
+    txt.textContent=c.end||'Endereço não cadastrado';
+    if(mapsLink){
+      if(c.maps){mapsLink.href=c.maps;mapsLink.style.display='block';}
+      else mapsLink.style.display='none';
+    }
+    row.style.display='';
+  }
+}
+
+function mnfGerarEspelho(){
+  const nome=(document.getElementById('mnf-cli-busca')?.value||'').trim();
+  const dataVal=(document.getElementById('mnf-data')?.value||'');
+  const horaVal=(document.getElementById('mnf-hora')?.value||'');
+  const tecnico=(document.getElementById('mnf-tecnico')?.value||'').trim();
+  const tipo=(document.getElementById('mnf-tipo')?.value||'').trim();
+  const equip=(document.getElementById('mnf-equip')?.value||'').trim();
+  const problema=(document.getElementById('mnf-problema')?.value||'').trim();
+  const solucao=(document.getElementById('mnf-solucao')?.value||'').trim();
+
+  const dataFmt=dataVal?dataVal.split('-').reverse().join('/'):'';
+  const L=['📋 VISITA DE MANUTENÇÃO','─────────────────────────'];
+  if(nome) L.push('Cliente: '+nome);
+  if(_mnfCli.end) L.push('Endereço: '+_mnfCli.end);
+  if(_mnfCli.maps) L.push('📍 Maps: '+_mnfCli.maps);
+  L.push('');
+  const dtLine=[dataFmt,horaVal].filter(Boolean).join(' · ');
+  if(dtLine) L.push('Data: '+dtLine);
+  if(tecnico) L.push('Técnico: '+tecnico);
+  if(tipo) L.push('Tipo: '+tipo);
+  if(equip) L.push('Equipamento: '+equip);
+  if(problema){L.push('');L.push('Problema: '+problema);}
+  if(solucao){L.push('');L.push('Solução: '+solucao);}
+
+  const ta=document.getElementById('espelho-texto');
+  if(ta) ta.value=L.join('\n');
+  document.getElementById('modal-espelho').style.display='flex';
 }
 
 function mnBusca(v){_mnBusca=v.toLowerCase();mnRenderLista();}
