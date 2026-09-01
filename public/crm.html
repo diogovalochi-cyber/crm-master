@@ -1581,6 +1581,24 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <tbody id="hm-tbody"></tbody>
       </table>
     </div>
+    <!-- Curva ABC Agosto 2026 -->
+    <div style="margin-top:24px">
+      <div style="margin-bottom:12px">
+        <h3 style="font-size:14px;font-weight:700;color:#fff;margin:0 0 3px">Curva ABC · Agosto 2026</h3>
+        <p style="font-size:11px;color:rgba(255,255,255,.35);margin:0">Todos os vendedores · Total geral R$ 6.358.107,28</p>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:8px;flex-wrap:wrap;gap:4px">
+          <span style="color:#22c55e;font-weight:600">Equipe CRM · R$ 3.684.195 (57,9%)</span>
+          <span style="color:rgba(255,255,255,.4);font-weight:600">Outros · R$ 2.673.912 (42,1%)</span>
+        </div>
+        <div style="height:18px;border-radius:4px;overflow:hidden;display:flex">
+          <div style="width:57.9%;background:#22c55e;display:flex;align-items:center;justify-content:flex-end;padding-right:8px"><span style="font-size:11px;font-weight:700;color:#fff">57,9%</span></div>
+          <div style="flex:1;background:rgba(255,255,255,.18);display:flex;align-items:center;padding-left:8px"><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7)">42,1%</span></div>
+        </div>
+      </div>
+      <div id="abc-ago26" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden"></div>
+    </div>
   </div>
 </div>
 
@@ -8732,6 +8750,58 @@ function renderComparativo(){
   const _isVend=typeof CRM_USER!=='undefined'&&CRM_USER?.role==='VENDEDOR';
   if(_isVend&&CRM_USER.vendId) _hmSel=CRM_USER.vendId;
   _hmBuildStrip();_hmUpdateKPIs(_hmSel);_hmUpdateChart(_hmSel);_hmUpdateTable(_hmSel);
+  _renderAbcAgo26();
+}
+function _renderAbcAgo26(){
+  const el=document.getElementById('abc-ago26');
+  if(!el||el.dataset.built==='1') return;
+  el.dataset.built='1';
+  const TOTAL=6358107.28,MAX=535783.48;
+  const vends=[
+    {name:'Guilherme Pinheiro',v:535783.48,crm:true},
+    {name:'Cezar Junior',v:492735.75,crm:true},
+    {name:'Moab Xavier',v:448362.35,crm:true},
+    {name:'Kelly Cristina',v:422743.41,crm:true},
+    {name:'Flávio Augusto',v:380031.18,crm:false},
+    {name:'Fabiano José',v:363382.93,crm:false},
+    {name:'Alessandro Santos',v:347681.56,crm:false},
+    {name:'Direto',v:342554.94,crm:false},
+    {name:'Ediclécio / Theo',v:340299.73,crm:false},
+    {name:'Relson Soares',v:339456.66,crm:true},
+    {name:'Ramon Nascimento',v:327087.36,crm:true},
+    {name:'Natália Schunck',v:247497.63,crm:true},
+    {name:'Israel Rezende',v:236428.71,crm:true},
+    {name:'Althieres Soares',v:172368.38,crm:true},
+    {name:'Eduardo Corrêa',v:153472.20,crm:false},
+    {name:'Marcelo Gonçalves',v:141090.81,crm:false},
+    {name:'Keller Câmara',v:137121.01,crm:true},
+    {name:'Ricardo Inácio',v:133373.90,crm:false},
+    {name:'Leonardo Couto',v:112697.52,crm:false},
+    {name:'Everaldo Lins',v:112496.26,crm:true},
+    {name:'Lala',v:103089.68,crm:false},
+    {name:'Kelly Direto',v:89619.44,crm:false},
+    {name:'Rauer Tomás',v:82916.74,crm:true},
+    {name:'Cristiane Aparecida',v:74073.59,crm:false},
+    {name:'João Victor',v:71376.48,crm:true},
+    {name:'Luiz Henrique',v:57820.68,crm:true},
+    {name:'Tony',v:43780.67,crm:false},
+    {name:'Cezar Direto',v:42296.22,crm:false},
+    {name:'Moab Direto',v:3272.35,crm:false},
+    {name:'Lala Varejo',v:3195.66,crm:false},
+  ];
+  const fmtK=n=>n>=1e6?(n/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'M':(n/1000).toFixed(0)+'K';
+  el.innerHTML=vends.map(x=>{
+    const pct=(x.v/TOTAL*100).toFixed(2).replace('.',',');
+    const bw=(x.v/MAX*100).toFixed(1);
+    const clr=x.crm?'#22c55e':'rgba(255,255,255,.2)';
+    const bdg=x.crm?`<span style="font-size:9px;font-weight:700;background:rgba(34,197,94,.15);color:#22c55e;padding:1px 5px;border-radius:3px;flex-shrink:0">CRM</span>`:
+      `<span style="font-size:9px;color:rgba(255,255,255,.25);flex-shrink:0">···</span>`;
+    return `<div style="display:grid;grid-template-columns:180px 1fr 108px;align-items:center;gap:10px;padding:5px 16px;border-bottom:1px solid rgba(255,255,255,.05)">
+      <div style="display:flex;align-items:center;gap:6px;overflow:hidden">${bdg}<span style="font-size:12px;color:${x.crm?'#fff':'rgba(255,255,255,.55)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${x.name}</span></div>
+      <div style="height:11px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="width:${bw}%;height:100%;background:${clr};border-radius:3px"></div></div>
+      <div style="text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:${x.crm?'#fff':'rgba(255,255,255,.45)'}">${fmtK(x.v)}<span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.3);margin-left:3px">${pct}%</span></div>
+    </div>`;
+  }).join('')+`<div style="display:grid;grid-template-columns:180px 1fr 108px;gap:10px;padding:9px 16px;border-top:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.28)">Total · 30 vendedores</span><div></div><div style="text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:#f59e0b">R$ 6,36M</div></div>`;
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
