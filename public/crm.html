@@ -11367,6 +11367,8 @@ const CREDS=[
   {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luiz Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'1203', role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
   {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'118', color:'#FCD34D', newHire:true},
+  // Manutenção
+  {user:'manutencao', pass:'Manutenção123@', role:'MANUTENCAO', name:'Manutenção', av:'MN'},
   // Técnicos (6 oficiais)
   {user:'matheus',  pass:'123', role:'TECNICO',    name:'Matheus',   av:'MA', color:'#00D4AA'},
   {user:'rogerio',  pass:'123', role:'TECNICO',    name:'Rogério',   av:'RO', color:'#FF6B6B'},
@@ -11530,7 +11532,8 @@ function applySession(user){
     if(nm)nm.style.display='';if(bm)bm.style.display='';
   }
   // RBAC
-  if(user.role==='TECNICO')      applyTecnicoMode(user);
+  if(user.role==='MANUTENCAO')   applyManutencaoMode(user);
+  else if(user.role==='TECNICO') applyTecnicoMode(user);
   else if(user.role==='VENDEDOR') applyVendorMode(user);
   else if(user.fullAccess){
     if(user.team){
@@ -11629,6 +11632,26 @@ function applyTecnicoMode(user){
   }
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Técnico</strong><span>Visualização</span>';
+}
+
+function applyManutencaoMode(user){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  const tabMn=document.getElementById('tab-manutencao');
+  if(tabMn) tabMn.classList.add('active');
+  // Oculta todas as nav items
+  document.querySelectorAll('#sidebar .nav-item').forEach(n=>{n.style.display='none';n.classList.remove('active');});
+  document.querySelectorAll('.botnav-item').forEach(b=>{b.style.display='none';b.classList.remove('active');});
+  // Mostra só a nav de manutenção
+  const nm=document.getElementById('nav-manutencao');
+  if(nm){nm.style.display='';nm.classList.add('active');}
+  const bm=document.getElementById('botnav-manutencao');
+  if(bm){bm.style.display='';bm.classList.add('active');}
+  // Oculta topbar stats
+  const tbs=document.querySelector('.topbar-stats');
+  if(tbs) tbs.style.display='none';
+  const sf=document.querySelector('.sidebar-footer');
+  if(sf) sf.innerHTML='<strong>'+user.name+' · Manutenção</strong><span>Visualização</span>';
+  if(typeof mnRenderLista==='function') mnRenderLista();
 }
 
 function applyVendorMode(user){
