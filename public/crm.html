@@ -7679,13 +7679,16 @@ const HISTORICO_MENSAL = {
 /* ─── REPRESENTANTES ────────────────────────────────────────── */
 // Cadastro dos representantes — preencher com {name, av, color, cod}
 const REPR_VENDS = [
-  // {name:'Nome Repr', av:'NR', color:'#7C3AED', cod:'R01'},
+  {name:'Ricardo & Cristiane', av:'RC', color:'#F97316', cod:'RC'},
 ];
 
 // Histórico mensal por representante [jan,fev,...,dez]
+// RC = Ricardo Inácio (29) + Cristiane Aparecida (106) — casal
 const HISTORICO_MENSAL_REPR = {
   '2025': {},
-  '2026': {},
+  '2026': {
+    'RC': [188587.29, 172450.03, 198309.55, 188529.19, 187776.19, 223933.58, 213066.14, 207447.49, 0,0,0,0],
+  },
 };
 
 // Carteiras por mês — {cod_repr: [{cod, nome, valor}]}
