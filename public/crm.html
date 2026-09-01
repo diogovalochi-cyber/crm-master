@@ -1581,24 +1581,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <tbody id="hm-tbody"></tbody>
       </table>
     </div>
-    <!-- Curva ABC Agosto 2026 -->
-    <div style="margin-top:24px">
-      <div style="margin-bottom:12px">
-        <h3 style="font-size:14px;font-weight:700;color:#fff;margin:0 0 3px">Curva ABC · Agosto 2026</h3>
-        <p style="font-size:11px;color:rgba(255,255,255,.35);margin:0">Todos os vendedores · Total geral R$ 6.358.107,28</p>
-      </div>
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:8px;flex-wrap:wrap;gap:4px">
-          <span style="color:#22c55e;font-weight:600">Equipe CRM · R$ 3.684.195 (57,9%)</span>
-          <span style="color:rgba(255,255,255,.4);font-weight:600">Outros · R$ 2.673.912 (42,1%)</span>
-        </div>
-        <div style="height:18px;border-radius:4px;overflow:hidden;display:flex">
-          <div style="width:57.9%;background:#22c55e;display:flex;align-items:center;justify-content:flex-end;padding-right:8px"><span style="font-size:11px;font-weight:700;color:#fff">57,9%</span></div>
-          <div style="flex:1;background:rgba(255,255,255,.18);display:flex;align-items:center;padding-left:8px"><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.7)">42,1%</span></div>
-        </div>
-      </div>
-      <div id="abc-ago26" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden"></div>
-    </div>
   </div>
 </div>
 
@@ -7515,15 +7497,15 @@ const HISTORICO_MENSAL = {
   },
   '2026': {
     // [jan,          fev,          mar,          abr,          mai,          jun,          jul,          ago]
-    '12':      [657457.26,  527139.49,  433760.27,  373187.32,  374982.85,  352375.03,  375263.69,          0, 0,0,0,0],
+    '12':      [657457.26,  527139.49,  433760.27,  373187.32,  374982.85,  352375.03,  375263.69,  342554.94, 0,0,0,0],
     '63':      [462934.82,  450519.64,  457307.33,  468652.80,  127691.63,          0,          0,          0, 0,0,0,0],
-    '73':      [354060.94,  331041.02,  372679.59,  348932.86,  333651.18,  394328.74,  364840.38,          0, 0,0,0,0],
+    '73':      [354060.94,  331041.02,  372679.59,  348932.86,  333651.18,  394328.74,  364840.38,  380031.18, 0,0,0,0],
     '093':     [368910.42,  365732.43,  413310.44,  440861.66,  532155.91,  603239.19,  635221.36,  535783.48, 0,0,0,0],
     '094':     [301558.02,  300140.59,  338916.13,  318310.82,  282673.01,  340055.82,  330742.96,  339456.66, 0,0,0,0],
-    '38':      [321099.85,  306231.67,  325105.32,  344751.11,  303018.79,  328641.71,  371121.86,          0, 0,0,0,0],
+    '38':      [321099.85,  306231.67,  325105.32,  344751.11,  303018.79,  328641.71,  371121.86,  340299.73, 0,0,0,0],
     '48':      [296335.30,  275517.37,  306701.76,  227800.82,          0,          0,          0,          0, 0,0,0,0],
-    '97':      [312775.61,  297714.08,  274965.41,  354643.57,  383566.39,  361934.00,  459383.60,          0, 0,0,0,0],
-    '96':      [291053.39,  290589.44,  291476.69,  358388.39,  370091.99,  328880.73,  405707.09,          0, 0,0,0,0],
+    '97':      [312775.61,  297714.08,  274965.41,  354643.57,  383566.39,  361934.00,  459383.60,  363382.93, 0,0,0,0],
+    '96':      [291053.39,  290589.44,  291476.69,  358388.39,  370091.99,  328880.73,  405707.09,  347681.56, 0,0,0,0],
     '115':     [        0,   29043.32,   80961.54,   97245.40,  219817.64,  248386.60,  310541.33,  236428.71, 0,0,0,0],
     '116':     [        0,    1762.02,   70689.47,   82931.21,  230373.09,  281447.94,  323724.21,  247497.63, 0,0,0,0],
     '119':     [        0,          0,          0,          0,  101446.13,  164170.90,  167044.32,  172368.38, 0,0,0,0],
@@ -7531,22 +7513,22 @@ const HISTORICO_MENSAL = {
     '107':     [ 69483.98,   89247.59,   98835.66,   96541.81,  107273.97,  115682.24,  113870.84,  112496.26, 0,0,0,0],
     '120':     [        0,          0,          0,          0,    5177.07,   68434.04,   76437.52,   71376.48, 0,0,0,0],
     '121':     [342152.16,  343422.41,  433544.64,  446945.31,  468575.66,  492628.76,  540849.81,  448362.35, 0,0,0,0],
-    '84':      [109714.47,   97597.98,   98880.34,   91507.12,   96411.08,  102896.80,  106581.79,          0, 0,0,0,0],
-    '89':      [ 95893.33,   62029.55,   41253.57,   43661.28,   39038.45,   41392.89,   42930.06,          0, 0,0,0,0],
+    '84':      [109714.47,   97597.98,   98880.34,   91507.12,   96411.08,  102896.80,  106581.79,   89619.44, 0,0,0,0],
+    '89':      [ 95893.33,   62029.55,   41253.57,   43661.28,   39038.45,   41392.89,   42930.06,   42296.22, 0,0,0,0],
     '122':     [155387.09,  157223.96,  201776.26,  290066.71,  292050.08,  341216.90,  353390.65,  327087.36, 0,0,0,0],
     '123':     [437972.49,  419945.42,  470097.03,  486551.93,  481321.11,  454736.02,  510436.72,  422743.41, 0,0,0,0],
-    '7':       [107069.94,  106164.70,  112207.62,  112428.64,  108697.77,  112133.06,  120561.57,          0, 0,0,0,0],
-    '86':      [ 78038.45,   52588.43,   10177.66,    3368.34,    3298.87,    4364.40,    3700.33,          0, 0,0,0,0],
-    '106':     [ 96686.61,   82226.70,   92375.22,   96974.54,   93818.74,  104716.60,   88218.42,          0, 0,0,0,0],
-    '29':      [ 91900.68,   90223.33,  105934.33,   91554.65,   93957.45,  119216.98,  124847.72,          0, 0,0,0,0],
+    '7':       [107069.94,  106164.70,  112207.62,  112428.64,  108697.77,  112133.06,  120561.57,  103089.68, 0,0,0,0],
+    '86':      [ 78038.45,   52588.43,   10177.66,    3368.34,    3298.87,    4364.40,    3700.33,    3272.35, 0,0,0,0],
+    '106':     [ 96686.61,   82226.70,   92375.22,   96974.54,   93818.74,  104716.60,   88218.42,   74073.59, 0,0,0,0],
+    '29':      [ 91900.68,   90223.33,  105934.33,   91554.65,   93957.45,  119216.98,  124847.72,  133373.90, 0,0,0,0],
     '124':     [ 80997.58,   63529.82,   68898.13,   65928.18,   60306.27,   72568.31,   67876.94,   57820.68, 0,0,0,0],
     '125':     [478074.01,  425986.79,  503327.91,  504805.21,  518111.38,  523493.38,  574778.65,  492735.75, 0,0,0,0],
     'RA':      [        0,   51445.96,   83776.38,   90688.38,  126541.63,   92799.35,   95670.99,   82916.74, 0,0,0,0],
-    '8':       [ 45931.81,   43849.96,   45077.88,   47786.85,   44617.52,   44638.16,   51396.17,          0, 0,0,0,0],
-    '112':     [136909.07,  113725.93,  121845.39,  152990.13,  167800.55,  147194.99,  195509.23,          0, 0,0,0,0],
-    '110':     [ 40492.84,   55768.47,   44119.19,   82177.59,   96103.00,   99387.55,  145651.04,          0, 0,0,0,0],
-    '111':     [ 36990.98,   39437.14,   40600.87,   69855.62,  106180.69,   87622.71,  161528.61,          0, 0,0,0,0],
-    '109':     [  2141.64,    3195.68,    1879.81,    1832.81,    2399.76,    4229.55,    3187.68,          0, 0,0,0,0],
+    '8':       [ 45931.81,   43849.96,   45077.88,   47786.85,   44617.52,   44638.16,   51396.17,   43780.67, 0,0,0,0],
+    '112':     [136909.07,  113725.93,  121845.39,  152990.13,  167800.55,  147194.99,  195509.23,  153472.20, 0,0,0,0],
+    '110':     [ 40492.84,   55768.47,   44119.19,   82177.59,   96103.00,   99387.55,  145651.04,  112697.52, 0,0,0,0],
+    '111':     [ 36990.98,   39437.14,   40600.87,   69855.62,  106180.69,   87622.71,  161528.61,  141090.81, 0,0,0,0],
+    '109':     [  2141.64,    3195.68,    1879.81,    1832.81,    2399.76,    4229.55,    3187.68,    3195.66, 0,0,0,0],
     'INATIVO': [105146.66,   97633.45,   91849.78,          0,          0,          0,          0,          0, 0,0,0,0],
   }
 };
@@ -8750,58 +8732,6 @@ function renderComparativo(){
   const _isVend=typeof CRM_USER!=='undefined'&&CRM_USER?.role==='VENDEDOR';
   if(_isVend&&CRM_USER.vendId) _hmSel=CRM_USER.vendId;
   _hmBuildStrip();_hmUpdateKPIs(_hmSel);_hmUpdateChart(_hmSel);_hmUpdateTable(_hmSel);
-  _renderAbcAgo26();
-}
-function _renderAbcAgo26(){
-  const el=document.getElementById('abc-ago26');
-  if(!el||el.dataset.built==='1') return;
-  el.dataset.built='1';
-  const TOTAL=6358107.28,MAX=535783.48;
-  const vends=[
-    {name:'Guilherme Pinheiro',v:535783.48,crm:true},
-    {name:'Cezar Junior',v:492735.75,crm:true},
-    {name:'Moab Xavier',v:448362.35,crm:true},
-    {name:'Kelly Cristina',v:422743.41,crm:true},
-    {name:'Flávio Augusto',v:380031.18,crm:false},
-    {name:'Fabiano José',v:363382.93,crm:false},
-    {name:'Alessandro Santos',v:347681.56,crm:false},
-    {name:'Direto',v:342554.94,crm:false},
-    {name:'Ediclécio / Theo',v:340299.73,crm:false},
-    {name:'Relson Soares',v:339456.66,crm:true},
-    {name:'Ramon Nascimento',v:327087.36,crm:true},
-    {name:'Natália Schunck',v:247497.63,crm:true},
-    {name:'Israel Rezende',v:236428.71,crm:true},
-    {name:'Althieres Soares',v:172368.38,crm:true},
-    {name:'Eduardo Corrêa',v:153472.20,crm:false},
-    {name:'Marcelo Gonçalves',v:141090.81,crm:false},
-    {name:'Keller Câmara',v:137121.01,crm:true},
-    {name:'Ricardo Inácio',v:133373.90,crm:false},
-    {name:'Leonardo Couto',v:112697.52,crm:false},
-    {name:'Everaldo Lins',v:112496.26,crm:true},
-    {name:'Lala',v:103089.68,crm:false},
-    {name:'Kelly Direto',v:89619.44,crm:false},
-    {name:'Rauer Tomás',v:82916.74,crm:true},
-    {name:'Cristiane Aparecida',v:74073.59,crm:false},
-    {name:'João Victor',v:71376.48,crm:true},
-    {name:'Luiz Henrique',v:57820.68,crm:true},
-    {name:'Tony',v:43780.67,crm:false},
-    {name:'Cezar Direto',v:42296.22,crm:false},
-    {name:'Moab Direto',v:3272.35,crm:false},
-    {name:'Lala Varejo',v:3195.66,crm:false},
-  ];
-  const fmtK=n=>n>=1e6?(n/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'M':(n/1000).toFixed(0)+'K';
-  el.innerHTML=vends.map(x=>{
-    const pct=(x.v/TOTAL*100).toFixed(2).replace('.',',');
-    const bw=(x.v/MAX*100).toFixed(1);
-    const clr=x.crm?'#22c55e':'rgba(255,255,255,.2)';
-    const bdg=x.crm?`<span style="font-size:9px;font-weight:700;background:rgba(34,197,94,.15);color:#22c55e;padding:1px 5px;border-radius:3px;flex-shrink:0">CRM</span>`:
-      `<span style="font-size:9px;color:rgba(255,255,255,.25);flex-shrink:0">···</span>`;
-    return `<div style="display:grid;grid-template-columns:180px 1fr 108px;align-items:center;gap:10px;padding:5px 16px;border-bottom:1px solid rgba(255,255,255,.05)">
-      <div style="display:flex;align-items:center;gap:6px;overflow:hidden">${bdg}<span style="font-size:12px;color:${x.crm?'#fff':'rgba(255,255,255,.55)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${x.name}</span></div>
-      <div style="height:11px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="width:${bw}%;height:100%;background:${clr};border-radius:3px"></div></div>
-      <div style="text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:${x.crm?'#fff':'rgba(255,255,255,.45)'}">${fmtK(x.v)}<span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.3);margin-left:3px">${pct}%</span></div>
-    </div>`;
-  }).join('')+`<div style="display:grid;grid-template-columns:180px 1fr 108px;gap:10px;padding:9px 16px;border-top:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.28)">Total · 30 vendedores</span><div></div><div style="text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:#f59e0b">R$ 6,36M</div></div>`;
 }
 function showTabMobile(tab, el){
   showTab(tab, null);
