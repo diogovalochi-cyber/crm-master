@@ -1423,11 +1423,27 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         </select>
       </div>
 
-      <!-- Equipamento -->
+      <!-- Equipamentos -->
       <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Equipamento</label>
-        <input id="mnf-equip" type="text" placeholder="Ex: Câmara fria, forno, balança…" autocomplete="off"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Equipamentos</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+          <select id="mnf-equip-sel" onchange="mnfToggleOutro(this.value)"
+            style="flex:1;min-width:160px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
+            <option value="">Selecionar…</option>
+            <option value="Forno Elétrico">Forno Elétrico</option>
+            <option value="Forno a Gás">Forno a Gás</option>
+            <option value="Climatizadora">Climatizadora</option>
+            <option value="Freezer">Freezer</option>
+            <option value="Carrinho">Carrinho</option>
+            <option value="_outro">Outro…</option>
+          </select>
+          <input id="mnf-equip-outro" type="text" placeholder="Nome do equipamento" autocomplete="off"
+            style="display:none;flex:1;min-width:120px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+          <input id="mnf-equip-qtd" type="number" min="1" value="1"
+            style="width:72px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 10px;font-size:13px;outline:none;font-family:inherit;text-align:center;-webkit-appearance:none">
+          <button onclick="mnfAddEquip()" style="background:#7C3AED;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0">+</button>
+        </div>
+        <div id="mnf-equip-lista" style="display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
 
       <!-- Problema -->
@@ -13709,6 +13725,48 @@ function showMn(sec,el){
 
 // ── FORMULÁRIO DE VISITA ────────────────────────────────────
 let _mnfCli={cod:'',nome:'',end:'',maps:''};
+let _mnfEquips=[];
+
+function mnfToggleOutro(v){
+  const o=document.getElementById('mnf-equip-outro');
+  if(o) o.style.display=(v==='_outro')?'':'none';
+}
+
+function mnfAddEquip(){
+  const sel=document.getElementById('mnf-equip-sel');
+  const outro=document.getElementById('mnf-equip-outro');
+  const qtdEl=document.getElementById('mnf-equip-qtd');
+  let nome=sel?.value||'';
+  if(nome==='_outro') nome=(outro?.value||'').trim();
+  const qtd=Math.max(1,parseInt(qtdEl?.value||'1',10));
+  if(!nome) return;
+  const idx=_mnfEquips.findIndex(e=>e.nome===nome);
+  if(idx>=0) _mnfEquips[idx].qtd+=qtd;
+  else _mnfEquips.push({nome,qtd});
+  if(sel) sel.value='';
+  if(outro){outro.value='';outro.style.display='none';}
+  if(qtdEl) qtdEl.value='1';
+  mnfRenderEquips();
+}
+
+function mnfRemoveEquip(i){
+  _mnfEquips.splice(i,1);
+  mnfRenderEquips();
+}
+
+function mnfRenderEquips(){
+  const el=document.getElementById('mnf-equip-lista');
+  if(!el)return;
+  if(!_mnfEquips.length){el.innerHTML='';return;}
+  el.innerHTML=_mnfEquips.map((e,i)=>
+    `<div style="display:flex;align-items:center;gap:6px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);border-radius:8px;padding:5px 10px;font-size:12px;color:#c4b5fd">
+      <span style="font-weight:600">${e.nome}</span>
+      <span style="color:rgba(255,255,255,.4)">×</span>
+      <span style="font-weight:700;color:#fff">${e.qtd}</span>
+      <button onclick="mnfRemoveEquip(${i})" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:14px;cursor:pointer;padding:0;margin-left:2px;line-height:1">×</button>
+    </div>`
+  ).join('');
+}
 
 function mnfInit(){
   // Preenche data de hoje se vazio
@@ -13775,7 +13833,6 @@ function mnfGerarEspelho(){
   const horaVal=(document.getElementById('mnf-hora')?.value||'');
   const tecnico=(document.getElementById('mnf-tecnico')?.value||'').trim();
   const tipo=(document.getElementById('mnf-tipo')?.value||'').trim();
-  const equip=(document.getElementById('mnf-equip')?.value||'').trim();
   const problema=(document.getElementById('mnf-problema')?.value||'').trim();
   const solucao=(document.getElementById('mnf-solucao')?.value||'').trim();
 
@@ -13789,7 +13846,11 @@ function mnfGerarEspelho(){
   if(dtLine) L.push('Data: '+dtLine);
   if(tecnico) L.push('Técnico: '+tecnico);
   if(tipo) L.push('Tipo: '+tipo);
-  if(equip) L.push('Equipamento: '+equip);
+  if(_mnfEquips.length){
+    L.push('');
+    L.push('Equipamentos:');
+    _mnfEquips.forEach(e=>L.push('  • '+e.nome+' × '+e.qtd));
+  }
   if(problema){L.push('');L.push('Problema: '+problema);}
   if(solucao){L.push('');L.push('Solução: '+solucao);}
 
