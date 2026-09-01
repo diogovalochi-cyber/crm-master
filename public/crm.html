@@ -8719,6 +8719,8 @@ function showTab(tab, el){
     loadAllFormsCaches();
   }
   if(tab==='tecnicos'){
+    // MANUTENCAO abre direto em Equipamentos
+    if(CRM_USER?.role==='MANUTENCAO') { showTecnico('equipamentos'); return; }
     const sec=document.querySelector('.tec-sec:not([style*="display:none"])')?.id||'tec-sec-agenda';
     if(sec==='tec-sec-agenda'){
       if(_agSubnavAtivo==='lembretes') renderLembretes();
@@ -11730,11 +11732,15 @@ function applyManutencaoMode(user){
   // Oculta todas as nav items
   document.querySelectorAll('#sidebar .nav-item').forEach(n=>{n.style.display='none';n.classList.remove('active');});
   document.querySelectorAll('.botnav-item').forEach(b=>{b.style.display='none';b.classList.remove('active');});
-  // Mostra só a nav de manutenção
+  // Mostra nav de manutenção e técnicos (equipamentos)
   const nm=document.getElementById('nav-manutencao');
   if(nm){nm.style.display='';nm.classList.add('active');}
   const bm=document.getElementById('botnav-manutencao');
   if(bm){bm.style.display='';bm.classList.add('active');}
+  const nt=document.getElementById('nav-tecnicos');
+  if(nt) nt.style.display='';
+  const bt=document.getElementById('botnav-tecnicos');
+  if(bt) bt.style.display='';
   // Oculta topbar stats
   const tbs=document.querySelector('.topbar-stats');
   if(tbs) tbs.style.display='none';
