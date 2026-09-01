@@ -1413,13 +1413,13 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <!-- Tipo de serviço -->
       <div style="margin-bottom:14px">
         <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Tipo de Serviço</label>
-        <select id="mnf-tipo" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
-          <option value="">Selecionar…</option>
-          <option value="Manutenção Preventiva">Manutenção Preventiva</option>
-          <option value="Manutenção Corretiva">Manutenção Corretiva</option>
-          <option value="Instalação">Instalação</option>
-          <option value="Treinamento">Treinamento</option>
-          <option value="Visita Técnica">Visita Técnica</option>
+        <select id="mnf-tipo" style="width:100%;box-sizing:border-box;background:#1e2a3a;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#e2e8f0;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
+          <option value="" style="background:#1e2a3a;color:#e2e8f0">Selecionar…</option>
+          <option value="Manutenção Preventiva" style="background:#1e2a3a;color:#e2e8f0">Manutenção Preventiva</option>
+          <option value="Manutenção Corretiva" style="background:#1e2a3a;color:#e2e8f0">Manutenção Corretiva</option>
+          <option value="Instalação" style="background:#1e2a3a;color:#e2e8f0">Instalação</option>
+          <option value="Treinamento" style="background:#1e2a3a;color:#e2e8f0">Treinamento</option>
+          <option value="Visita Técnica" style="background:#1e2a3a;color:#e2e8f0">Visita Técnica</option>
         </select>
       </div>
 
@@ -1428,14 +1428,14 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Equipamentos</label>
         <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
           <select id="mnf-equip-sel" onchange="mnfToggleOutro(this.value)"
-            style="flex:1;min-width:160px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
-            <option value="">Selecionar…</option>
-            <option value="Forno Elétrico">Forno Elétrico</option>
-            <option value="Forno a Gás">Forno a Gás</option>
-            <option value="Climatizadora">Climatizadora</option>
-            <option value="Freezer">Freezer</option>
-            <option value="Carrinho">Carrinho</option>
-            <option value="_outro">Outro…</option>
+            style="flex:1;min-width:160px;background:#1e2a3a;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#e2e8f0;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
+            <option value="" style="background:#1e2a3a;color:#e2e8f0">Selecionar…</option>
+            <option value="Forno Elétrico" style="background:#1e2a3a;color:#e2e8f0">Forno Elétrico</option>
+            <option value="Forno a Gás" style="background:#1e2a3a;color:#e2e8f0">Forno a Gás</option>
+            <option value="Climatizadora" style="background:#1e2a3a;color:#e2e8f0">Climatizadora</option>
+            <option value="Freezer" style="background:#1e2a3a;color:#e2e8f0">Freezer</option>
+            <option value="Carrinho" style="background:#1e2a3a;color:#e2e8f0">Carrinho</option>
+            <option value="_outro" style="background:#1e2a3a;color:#e2e8f0">Outro…</option>
           </select>
           <input id="mnf-equip-outro" type="text" placeholder="Nome do equipamento" autocomplete="off"
             style="display:none;flex:1;min-width:120px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
