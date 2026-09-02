@@ -1633,12 +1633,12 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
     <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #ef4444;border-radius:10px;padding:12px 14px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2025 Jan–Ago</div>
+        <div id="hm-k25h" style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2025 Jan–Ago</div>
         <div id="hm-k25v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
         <div id="hm-k25s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
       </div>
       <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #22c55e;border-radius:10px;padding:12px 14px">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2026 Jan–Ago</div>
+        <div id="hm-k26h" style="font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px">2026 Jan–Ago</div>
         <div id="hm-k26v" style="font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:#fff">—</div>
         <div id="hm-k26s" style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px"></div>
       </div>
@@ -8689,7 +8689,7 @@ function showTab(tab, el){
 
 /* ─── COMPARATIVO HISTÓRICO ──────────────────────────────── */
 const _HM_MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const _HM_MES26=8;
+const _HM_MES26=(()=>{const b=nowBR();return Math.min(b.month+1,12);})(); // meses com dados em 2026 (dinâmico)
 const _HM_VENDS=[
   {id:'total',   label:'Total',        av:'Σ',   has25:true},
   {id:'12',      label:'Direto',       av:'DI',  has25:true},
@@ -8766,7 +8766,7 @@ function _hmBuildStrip(){
       <span>${v.label}</span>${badge}
     </div>`;
   }).join('');
-  el.style.display=_toShow.length<=1?'none':'flex';
+  el.style.display=(_q?!_toShow.length:_toShow.length<=1)?'none':'flex';
 }
 
 function _hmUpdateKPIs(id){
@@ -8774,10 +8774,14 @@ function _hmUpdateKPIs(id){
   const d25=_hmGetArr(id,'2025'),d26=_hmGetArr(id,'2026');
   const ytd25=d25.slice(0,_HM_MES26).reduce((s,x)=>s+x,0);
   const ytd26=d26.slice(0,_HM_MES26).reduce((s,x)=>s+x,0);
+  const _mAbr=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const _hmLbl='Jan–'+_mAbr[_HM_MES26-1];
+  const _h25=document.getElementById('hm-k25h');if(_h25)_h25.textContent='2025 '+_hmLbl;
+  const _h26=document.getElementById('hm-k26h');if(_h26)_h26.textContent='2026 '+_hmLbl;
   document.getElementById('hm-k25v').textContent=v.has25?_hmShort(ytd25):'—';
-  document.getElementById('hm-k25s').textContent=v.has25?'Jan–Ago 2025':'Sem dados 2025';
+  document.getElementById('hm-k25s').textContent=v.has25?_hmLbl+' 2025':'Sem dados 2025';
   document.getElementById('hm-k26v').textContent=_hmShort(ytd26);
-  document.getElementById('hm-k26s').textContent='Jan–Ago 2026';
+  document.getElementById('hm-k26s').textContent=_hmLbl+' 2026';
   const kd=document.getElementById('hm-kd'),kdv=document.getElementById('hm-kdv');
   if(v.has25&&ytd25){
     const p=(ytd26-ytd25)/ytd25*100,pos=p>=0;
