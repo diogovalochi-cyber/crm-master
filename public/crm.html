@@ -13770,7 +13770,7 @@ function mnRenderLista(){
   if(!el)return;
   _mnLoadEdits();
   const vendMap=_mnBuildVendMap();
-  // Merge edits — mark duplicates visually but keep cod as shared storage key
+  // Merge edits — track occurrence count only for unique element IDs
   const _oc={};
   const baseItems=CLIENTES_MANU.map(c=>{
     const n=_oc[c.cod]=(_oc[c.cod]??-1)+1;
@@ -13798,6 +13798,8 @@ function mnRenderLista(){
     return;
   }
   el.innerHTML=items.map(c=>{
+    const uid=(c.cod||'')+(c._occN>0?'__'+c._occN:''); // unique per occurrence, not visible
+    const safeUid=uid.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     const safeNome=(c.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
     const safeCod=(c.cod||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
     const safeEnd=(c.end||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
@@ -13806,47 +13808,44 @@ function mnRenderLista(){
     const vendBadge=vend?`<span style="font-size:10px;font-weight:700;color:${vend.color};background:${vend.color}22;border:1px solid ${vend.color}55;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle" title="Vendedor responsável">${vend.av}</span>`:'';
     const edited=_mnEdits[c.cod]?`<span style="font-size:10px;color:#fbbf24;margin-left:4px" title="Editado localmente">✏</span>`:'';
     const inativoBadge=c.inativo?`<span style="font-size:10px;font-weight:700;color:#ef4444;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle">INATIVO</span>`:'';
-    const dupBadge=c._occN>0?`<span style="font-size:10px;font-weight:700;color:#fbbf24;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle">Unidade ${c._occN+1}</span>`:'';
-    const cardId='mn-card-'+safeCod+(c._occN>0?'-'+c._occN:'');
-    const editId='mn-edit-'+safeCod+(c._occN>0?'-'+c._occN:'');
-    return `<div id="${cardId}" class="card" style="padding:12px 16px;margin-bottom:8px${c.inativo?';opacity:.45;filter:grayscale(.5)':''}">
+    return `<div id="mn-card-${safeUid}" class="card" style="padding:12px 16px;margin-bottom:8px${c.inativo?';opacity:.45;filter:grayscale(.5)':''}">
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'—'}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'}${vendBadge}${dupBadge}${edited}${inativoBadge}</div>
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'}${vendBadge}${edited}${inativoBadge}</div>
           ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
           ${c.obs?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px;font-style:italic">${c.obs}</div>`:''}
         </div>
         <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
           ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
-          ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('${editId}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('mn-edit-${safeUid}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnToggleInativo('${safeCod}')" title="${c.inativo?'Reativar cliente':'Inativar cliente'}" style="background:${c.inativo?'rgba(16,185,129,.12)':'rgba(239,68,68,.1)'};border:1px solid ${c.inativo?'rgba(16,185,129,.3)':'rgba(239,68,68,.25)'};border-radius:6px;color:${c.inativo?'#6ee7b7':'#fca5a5'};padding:5px 9px;font-size:12px;cursor:pointer">${c.inativo?'✅':'🚫'}</button>`:''}
           <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
         </div>
       </div>
-      <div id="${editId}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)">
+      <div id="mn-edit-${safeUid}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
           <div>
             <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Cód</label>
-            <input id="mne-cod-${safeCod}" type="text" value="${safeCod}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+            <input id="mne-cod-${safeUid}" type="text" value="${safeCod}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
           </div>
           <div>
             <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Nome</label>
-            <input id="mne-nome-${safeCod}" type="text" value="${safeNome}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+            <input id="mne-nome-${safeUid}" type="text" value="${safeNome}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
           </div>
         </div>
         <div style="margin-bottom:8px">
           <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Endereço</label>
-          <input id="mne-end-${safeCod}" type="text" value="${safeEnd}" placeholder="Ex: Rua das Flores, 123 – Bairro – Cidade/UF" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+          <input id="mne-end-${safeUid}" type="text" value="${safeEnd}" placeholder="Ex: Rua das Flores, 123 – Bairro – Cidade/UF" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
         </div>
         <div style="margin-bottom:10px">
           <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Link Maps</label>
-          <input id="mne-maps-${safeCod}" type="text" value="${safeMaps}" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+          <input id="mne-maps-${safeUid}" type="text" value="${safeMaps}" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="mnSaveEdit('${safeCod}')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
-          <button onclick="mnCancelEdit('${editId}')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
+          <button onclick="mnSaveEdit('${safeCod}','${safeUid}')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+          <button onclick="mnCancelEdit('mn-edit-${safeUid}')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
           ${_mnEdits[c.cod]?`<button onclick="mnResetEdit('${safeCod}')" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:7px 12px;font-size:11px;cursor:pointer">Reverter original</button>`:''}
         </div>
       </div>
@@ -13861,11 +13860,12 @@ function mnEditCard(id){
   editEl.style.display=isOpen?'none':'';
 }
 
-function mnSaveEdit(cod){
-  const newCod=(document.getElementById('mne-cod-'+cod)?.value||'').trim();
-  const nome=(document.getElementById('mne-nome-'+cod)?.value||'').trim();
-  const end=(document.getElementById('mne-end-'+cod)?.value||'').trim();
-  const maps=(document.getElementById('mne-maps-'+cod)?.value||'').trim();
+function mnSaveEdit(cod,uid){
+  const _u=uid||cod;
+  const newCod=(document.getElementById('mne-cod-'+_u)?.value||'').trim();
+  const nome=(document.getElementById('mne-nome-'+_u)?.value||'').trim();
+  const end=(document.getElementById('mne-end-'+_u)?.value||'').trim();
+  const maps=(document.getElementById('mne-maps-'+_u)?.value||'').trim();
   _mnLoadEdits();
   const _prevInativo=_mnEdits[cod]?.inativo;
   _mnEdits[cod]={cod:newCod||cod,nome,end,maps,...(_prevInativo?{inativo:true}:{})};
