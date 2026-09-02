@@ -13752,8 +13752,8 @@ function mnRenderLista(){
         </div>
         <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
           ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
-          <button onclick="mnEditCard('${safeCod}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>
-          <button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>
+          ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('${safeCod}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>`:''}
           <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
         </div>
       </div>
@@ -14147,7 +14147,13 @@ function _getImportedVends(mes){
     if(!key)return null;
     const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
     if(!data)return null;
-    return data.vendsArr.map(v=>({...v,abr:v.total,mar:0,ped:v.ped||0}));
+    const _prevMap={setembro:'agosto',outubro:'setembro',novembro:'outubro',dezembro:'novembro'};
+    const prevMes=_prevMap[mes];
+    const prevVends=prevMes&&_origGetVends?_origGetVends(prevMes):[];
+    return data.vendsArr.map(v=>{
+      const prev=prevVends.find?.(p=>p.cod===v.cod);
+      return{...v,abr:v.total,mar:prev?.abr||0,ped:v.ped||0};
+    });
   }catch(e){return null;}
 }
 function _getImportedCart(mes){
