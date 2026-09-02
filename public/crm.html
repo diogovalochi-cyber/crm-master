@@ -14091,9 +14091,11 @@ const _EQUIPE_COD_MAP={
 function _normStr(s){return(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
 
 function _parseEquipePDF(text){
-  const ym=text.match(/\b(\d{4})\/(\d{2})\b/);
-  const ano=ym?ym[1]:'2026';
-  const mesNum=ym?ym[2]:null;
+  // Usa o mês MÁXIMO encontrado (PDFs de setembro têm 2026/08 como comparativo antes de 2026/09)
+  const allYM=[...text.matchAll(/\b(\d{4})\/(\d{2})\b/g)];
+  let ano='2026',mesNum=null;
+  if(allYM.length){const latest=allYM.reduce((b,m)=>parseInt(m[2])>parseInt(b[2])?m:b,allYM[0]);ano=latest[1];mesNum=latest[2];}
+
   const vendors={};
   const lines=text.split('\n');
   let currentVend=null;
@@ -14360,19 +14362,34 @@ function _renderCurvaPreview(parsed,el){
   el.innerHTML=html;
 }
 
+function _pdfImportWarnUpdate(){
+  const sel=document.getElementById('pdf-mes-override');
+  const anoEl=document.getElementById('pdf-ano-override');
+  const warn=document.getElementById('pdf-overwrite-warn');
+  if(!sel||!anoEl||!warn)return;
+  const m=sel.value,a=anoEl.value;
+  const key='crm_import_equipe_'+a+'_'+m;
+  const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
+  const exists=!!localStorage.getItem(key);
+  warn.style.display=exists?'block':'none';
+  warn.textContent=exists?'⚠ ATENÇÃO: '+mesNames[m]+' já tem dados importados e será SOBRESCRITO':'';
+}
 function _renderEquipePreview(parsed,el){
   const{ano,mesNum,vendors,grandTotal}=parsed;
   const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
   const mesName=mesNames[mesNum]||mesNum||'(desconhecido)';
   const vendList=Object.values(vendors);
   const _opts=['01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>`<option value="${m}"${m===mesNum?' selected':''}>${mesNames[m]}</option>`).join('');
+  const existKey='crm_import_equipe_'+ano+'_'+mesNum;
+  const hasExist=!!localStorage.getItem(existKey);
   const html=`
     <div style="margin-bottom:10px;padding:10px 12px;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2);border-radius:8px">
       <div style="font-size:11px;color:rgba(110,231,183,.7);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Período detectado — corrija se necessário</div>
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-        <select id="pdf-mes-override" style="background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700">${_opts}</select>
-        <input id="pdf-ano-override" type="number" min="2024" max="2030" value="${ano}" style="width:72px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center">
+        <select id="pdf-mes-override" onchange="_pdfImportWarnUpdate()" style="background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700">${_opts}</select>
+        <input id="pdf-ano-override" type="number" min="2024" max="2030" value="${ano}" onchange="_pdfImportWarnUpdate()" style="width:72px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center">
       </div>
+      <div id="pdf-overwrite-warn" style="display:${hasExist?'block':'none'};font-size:12px;font-weight:700;color:#f87171;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);border-radius:6px;padding:7px 10px;margin-bottom:6px">${hasExist?'⚠ ATENÇÃO: '+mesName+' já tem dados importados e será SOBRESCRITO':''}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.4)">${vendList.length} vendedores · Grand Total: ${_fBRL2(grandTotal)}</div>
     </div>
     <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
