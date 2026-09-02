@@ -1034,7 +1034,11 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <div class="section-title">Análise Comercial</div>
       <div class="section-sub">Carteiras por vendedor</div>
     </div>
-    <button class="refresh-btn" id="refresh-btn-analise" onclick="refreshTab('analise')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div id="pdf-label-equipe" style="display:none;font-size:11px;color:#6ee7b7"></div>
+      <button onclick="pdfImportOpen('equipe')" id="pdf-btn-equipe" title="Importar PDF vendas equipe" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.45);border-radius:7px;color:#a78bfa;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">📥 Importar PDF</button>
+      <button class="refresh-btn" id="refresh-btn-analise" onclick="refreshTab('analise')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
+    </div>
   </div>
 
   <div class="subtab-row" id="analise-subtab-row">
@@ -1052,6 +1056,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <option value="junho">Junho</option>
         <option value="julho">Julho</option>
         <option value="agosto">Agosto</option>
+        <option value="setembro">Setembro</option>
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-b" onchange="setVdMes()">
@@ -1061,6 +1066,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <option value="junho">Junho</option>
         <option value="julho">Julho</option>
         <option value="agosto">Agosto</option>
+        <option value="setembro">Setembro</option>
       </select>
       <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
       <select class="comp-mes-sel" id="vd-mes-c" onchange="setVdMes()">
@@ -1070,6 +1076,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <option value="junho">Junho</option>
         <option value="julho">Julho</option>
         <option value="agosto">Agosto</option>
+        <option value="setembro">Setembro</option>
       </select>
     </div>
     <div class="pill-row" id="vendor-pills"></div>
@@ -1366,102 +1373,8 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 <div class="tab-content" id="tab-manutencao">
   <!-- Sub-nav -->
   <div style="padding:12px 12px 0;display:flex;gap:6px;flex-wrap:wrap">
-    <button id="mn-btn-formulario" onclick="showMn('formulario',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Formulário</button>
-    <button id="mn-btn-enderecos" onclick="showMn('enderecos',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Endereços</button>
+    <button id="mn-btn-enderecos" onclick="showMn('enderecos',this)" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer">Endereços</button>
     <button id="mn-btn-reportes" onclick="showMn('reportes',this)" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:none;border-radius:7px;padding:6px 16px;font-size:12px;font-weight:500;cursor:pointer">Reportes</button>
-  </div>
-
-  <!-- SEÇÃO FORMULÁRIO -->
-  <div id="mn-sec-formulario" class="mn-sec" style="display:none">
-    <div style="max-width:640px;margin:0 auto;padding:16px 12px">
-      <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 4px">Formulário de Visita</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0 0 18px">Preencha os dados e gere o espelho para copiar</p>
-
-      <!-- Cliente autocomplete -->
-      <div style="margin-bottom:14px;position:relative">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Cliente</label>
-        <input id="mnf-cli-busca" type="text" placeholder="Digite nome ou código do cliente…" autocomplete="off"
-          oninput="mnfBuscaCliente(this.value)"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
-        <div id="mnf-cli-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1e2a3a;border:1px solid rgba(255,255,255,.12);border-radius:10px;z-index:500;max-height:220px;overflow-y:auto;margin-top:3px;box-shadow:0 8px 30px rgba(0,0,0,.5)"></div>
-      </div>
-      <!-- Endereço (preenchido automaticamente) -->
-      <div id="mnf-end-row" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;border:1px solid rgba(255,255,255,.08)">
-        <div id="mnf-end-txt" style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.55"></div>
-        <a id="mnf-maps-link" href="#" target="_blank" style="font-size:11px;color:#60A5FA;display:none;margin-top:4px;display:block">📍 Abrir no Maps</a>
-      </div>
-
-      <!-- Data e Hora -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div>
-          <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Data</label>
-          <input id="mnf-data" type="date" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;color-scheme:dark">
-        </div>
-        <div>
-          <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Hora</label>
-          <input id="mnf-hora" type="time" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;color-scheme:dark">
-        </div>
-      </div>
-
-      <!-- Técnico -->
-      <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Técnico</label>
-        <input id="mnf-tecnico" type="text" placeholder="Nome do técnico…" autocomplete="off"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
-      </div>
-
-      <!-- Tipo de serviço -->
-      <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Tipo de Serviço</label>
-        <select id="mnf-tipo" style="width:100%;box-sizing:border-box;background:#1e2a3a;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#e2e8f0;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
-          <option value="" style="background:#1e2a3a;color:#e2e8f0">Selecionar…</option>
-          <option value="Manutenção Preventiva" style="background:#1e2a3a;color:#e2e8f0">Manutenção Preventiva</option>
-          <option value="Manutenção Corretiva" style="background:#1e2a3a;color:#e2e8f0">Manutenção Corretiva</option>
-          <option value="Instalação" style="background:#1e2a3a;color:#e2e8f0">Instalação</option>
-          <option value="Treinamento" style="background:#1e2a3a;color:#e2e8f0">Treinamento</option>
-          <option value="Visita Técnica" style="background:#1e2a3a;color:#e2e8f0">Visita Técnica</option>
-        </select>
-      </div>
-
-      <!-- Equipamentos -->
-      <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Equipamentos</label>
-        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-          <select id="mnf-equip-sel" onchange="mnfToggleOutro(this.value)"
-            style="flex:1;min-width:160px;background:#1e2a3a;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#e2e8f0;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none">
-            <option value="" style="background:#1e2a3a;color:#e2e8f0">Selecionar…</option>
-            <option value="Forno Elétrico" style="background:#1e2a3a;color:#e2e8f0">Forno Elétrico</option>
-            <option value="Forno a Gás" style="background:#1e2a3a;color:#e2e8f0">Forno a Gás</option>
-            <option value="Climatizadora" style="background:#1e2a3a;color:#e2e8f0">Climatizadora</option>
-            <option value="Freezer" style="background:#1e2a3a;color:#e2e8f0">Freezer</option>
-            <option value="Carrinho" style="background:#1e2a3a;color:#e2e8f0">Carrinho</option>
-            <option value="_outro" style="background:#1e2a3a;color:#e2e8f0">Outro…</option>
-          </select>
-          <input id="mnf-equip-outro" type="text" placeholder="Nome do equipamento" autocomplete="off"
-            style="display:none;flex:1;min-width:120px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
-          <input id="mnf-equip-qtd" type="number" min="1" value="1"
-            style="width:72px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 10px;font-size:13px;outline:none;font-family:inherit;text-align:center;-webkit-appearance:none">
-          <button onclick="mnfAddEquip()" style="background:#7C3AED;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0">+</button>
-        </div>
-        <div id="mnf-equip-lista" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-      </div>
-
-      <!-- Problema -->
-      <div style="margin-bottom:14px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Problema Relatado</label>
-        <textarea id="mnf-problema" rows="3" placeholder="Descreva o problema…"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;resize:vertical;-webkit-appearance:none"></textarea>
-      </div>
-
-      <!-- Solução -->
-      <div style="margin-bottom:20px">
-        <label style="font-size:11px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Solução Aplicada</label>
-        <textarea id="mnf-solucao" rows="3" placeholder="Descreva o que foi feito…"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;resize:vertical;-webkit-appearance:none"></textarea>
-      </div>
-
-      <button onclick="mnfGerarEspelho()" style="width:100%;background:#7C3AED;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px">📋 Gerar Espelho</button>
-    </div>
   </div>
 
   <!-- SEÇÃO ENDEREÇOS -->
@@ -1697,9 +1610,13 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="hm-btn-lin" onclick="hmSetMode('lin',this)" style="padding:5px 13px;font-size:12px;font-weight:500;border:none;background:none;color:rgba(255,255,255,.5);cursor:pointer">Linha</button>
       </div>
     </div>
-    <input id="hm-busca" type="text" placeholder="🔍  Buscar vendedor ou representante…" autocomplete="off"
-      oninput="_hmSearch=this.value;_hmBuildStrip()"
-      style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;margin-bottom:10px;-webkit-appearance:none">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <input id="hm-busca" type="text" placeholder="🔍  Buscar vendedor ou representante…" autocomplete="off"
+        oninput="_hmSearch=this.value;_hmBuildStrip()"
+        style="flex:1;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
+      <button onclick="pdfImportOpen('curva')" id="pdf-btn-curva" title="Importar Curva ABC via PDF" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.45);border-radius:9px;color:#a78bfa;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">📥 Importar PDF</button>
+    </div>
+    <div id="pdf-label-curva" style="display:none;font-size:11px;color:#6ee7b7;margin-bottom:6px;padding:4px 10px;background:rgba(110,231,183,.08);border-radius:6px;border:1px solid rgba(110,231,183,.2)"></div>
     <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
     <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:120px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:3px solid #ef4444;border-radius:10px;padding:12px 14px">
@@ -2065,7 +1982,7 @@ function updateGreetingClock(userName, roleEmoji){
   if(sub) sub.textContent=dateStr+' · '+timeStr+' (Brasília)';
 }
 
-let CRM_MES = (()=>{const b=nowBR();return b.month>=7?'agosto':b.month>=6?'julho':b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
+let CRM_MES = (()=>{const b=nowBR();return b.month>=8?'setembro':b.month>=7?'agosto':b.month>=6?'julho':b.month>=5?'junho':'maio';})(); // auto-detectado (Brasília)
 let CRM_EQUIPE_FILTER = 'total';
 const EQUIPES = {
   lazaro: ['093','116','117','118','120','121','122'],
@@ -2126,7 +2043,7 @@ function renderKPIs(){
   const liderVar=lider&&lider.mar>0?((lider.abr-lider.mar)/lider.mar*100):0;
   const altaVar=maiorAlta&&maiorAlta.mar>0?((maiorAlta.abr-maiorAlta.mar)/maiorAlta.mar*100):0;
   const quedaVar=maiorQueda&&maiorQueda.mar>0?((maiorQueda.abr-maiorQueda.mar)/maiorQueda.mar*100):0;
-  const mesLabel=CRM_MES==='agosto'?'vs Julho':CRM_MES==='julho'?'vs Junho':CRM_MES==='junho'?'vs Maio':CRM_MES==='maio'?'vs Abril':'vs Março';
+  const mesLabel=CRM_MES==='setembro'?'vs Agosto':CRM_MES==='agosto'?'vs Julho':CRM_MES==='julho'?'vs Junho':CRM_MES==='junho'?'vs Maio':CRM_MES==='maio'?'vs Abril':'vs Março';
   const mesTitle=MES_LABELS[CRM_MES]||'Abril';
 
   // Dashboard KPIs
@@ -2134,7 +2051,7 @@ function renderKPIs(){
   if($('kpi-total-val'))  $('kpi-total-val').textContent=fK(totalAbr);
   if($('kpi-total-sub'))  $('kpi-total-sub').textContent=fBRL(totalAbr);
   if($('kpi-total-change')) $('kpi-total-change').innerHTML=`<span class="${cls(varPct)}">${arrow(varPct)}${Math.abs(varPct).toFixed(1)}%</span> ${mesLabel}`;
-  const prevMesTitle=CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const prevMesTitle=CRM_MES==='setembro'?'Agosto':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
   const _calIco=`<svg style="vertical-align:middle;margin-right:4px;opacity:.65" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
   if($('kpi-prev-lbl')) $('kpi-prev-lbl').innerHTML=_calIco+'Total — '+prevMesTitle+' 2026';
   if($('kpi-prev-val')) $('kpi-prev-val').textContent=fK(totalMar);
@@ -8628,6 +8545,7 @@ function getVendedoresForMes(mes){
       return {...v,abr:r?r.total:0,mar:0,cli:r?r.cli:0,ped:r?r.ped:0};
     }).sort((a,b)=>b.abr-a.abr);
   }
+  if(mes==='setembro') return VENDEDORES_AGOSTO.filter(_tf).map(v=>({...v,abr:v.total,mar:v.total})); // fallback; replaced by import
   if(mes==='agosto') return VENDEDORES_AGOSTO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JULHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='julho') return VENDEDORES_JULHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JUNHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='junho') return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
@@ -8637,6 +8555,7 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
+  if(mes==='setembro') return {}; // replaced by import when available
   const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO,agosto:CARTEIRA_AGOSTO}[mes]||{};
   // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em CARTEIRA_JUNHO)
   const _nameMap=new Map();
@@ -8752,7 +8671,7 @@ function showTab(tab, el){
   }
   if(tab==='comparativo') renderComparativo();
   if(tab==='representantes') renderRepresentantes();
-  if(tab==='manutencao') showMn('formulario',document.getElementById('mn-btn-formulario'));
+  if(tab==='manutencao') showMn('enderecos',document.getElementById('mn-btn-enderecos'));
 }
 
 /* ─── COMPARATIVO HISTÓRICO ──────────────────────────────── */
@@ -11462,7 +11381,7 @@ function renderTabelas(){
 const CREDS=[
   // Gestão
   {user:'diogo',    pass:'Diogo10@',  role:'ANALISTA',   name:'Diogo',     av:'DI', fullAccess:true},
-  {user:'rafael',   pass:'Valochi@24', role:'ANALISTA', name:'Rafael',    av:'RF', fullAccess:true},
+  {user:'rafael',   pass:'Valochi@24', role:'ANALISTA', name:'Rafael',    av:'RF', fullAccess:true, readOnly:true},
   {user:'carlos',   pass:'carlos', role:'GERENTE',    name:'Carlos',    av:'CA', fullAccess:true},
   {user:'lazaro',   pass:'190809',  role:'SUPERVISOR', name:'Lázaro',    av:'LZ', fullAccess:true, team:['093','116','117','118','120','121','122']},
   {user:'valdenice', pass:'2712',  role:'SUPERVISOR', name:'Valdenice', av:'VD', fullAccess:true, team:['115','094','107','119','123','124','125']},
@@ -11764,7 +11683,7 @@ function applyManutencaoMode(user){
   if(tbs) tbs.style.display='none';
   const sf=document.querySelector('.sidebar-footer');
   if(sf) sf.innerHTML='<strong>'+user.name+' · Manutenção</strong><span>Visualização</span>';
-  if(typeof showMn==='function') showMn('formulario',document.getElementById('mn-btn-formulario'));
+  if(typeof showMn==='function') showMn('enderecos',document.getElementById('mn-btn-enderecos'));
 }
 
 function applyVendorMode(user){
@@ -13742,145 +13661,8 @@ function showMn(sec,el){
     b.style.background='rgba(255,255,255,.07)';b.style.color='rgba(255,255,255,.55)';b.style.fontWeight='500';
   });
   if(el){el.style.background='#7C3AED';el.style.color='#fff';el.style.fontWeight='700';}
-  if(sec==='formulario') mnfInit();
   if(sec==='enderecos') mnRenderLista();
   if(sec==='reportes') mnRenderReportes();
-}
-
-// ── FORMULÁRIO DE VISITA ────────────────────────────────────
-let _mnfCli={cod:'',nome:'',end:'',maps:''};
-let _mnfEquips=[];
-
-function mnfToggleOutro(v){
-  const o=document.getElementById('mnf-equip-outro');
-  if(o) o.style.display=(v==='_outro')?'':'none';
-}
-
-function mnfAddEquip(){
-  const sel=document.getElementById('mnf-equip-sel');
-  const outro=document.getElementById('mnf-equip-outro');
-  const qtdEl=document.getElementById('mnf-equip-qtd');
-  let nome=sel?.value||'';
-  if(nome==='_outro') nome=(outro?.value||'').trim();
-  const qtd=Math.max(1,parseInt(qtdEl?.value||'1',10));
-  if(!nome) return;
-  const idx=_mnfEquips.findIndex(e=>e.nome===nome);
-  if(idx>=0) _mnfEquips[idx].qtd+=qtd;
-  else _mnfEquips.push({nome,qtd});
-  if(sel) sel.value='';
-  if(outro){outro.value='';outro.style.display='none';}
-  if(qtdEl) qtdEl.value='1';
-  mnfRenderEquips();
-}
-
-function mnfRemoveEquip(i){
-  _mnfEquips.splice(i,1);
-  mnfRenderEquips();
-}
-
-function mnfRenderEquips(){
-  const el=document.getElementById('mnf-equip-lista');
-  if(!el)return;
-  if(!_mnfEquips.length){el.innerHTML='';return;}
-  el.innerHTML=_mnfEquips.map((e,i)=>
-    `<div style="display:flex;align-items:center;gap:6px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);border-radius:8px;padding:5px 10px;font-size:12px;color:#c4b5fd">
-      <span style="font-weight:600">${e.nome}</span>
-      <span style="color:rgba(255,255,255,.4)">×</span>
-      <span style="font-weight:700;color:#fff">${e.qtd}</span>
-      <button onclick="mnfRemoveEquip(${i})" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:14px;cursor:pointer;padding:0;margin-left:2px;line-height:1">×</button>
-    </div>`
-  ).join('');
-}
-
-function mnfInit(){
-  // Preenche data de hoje se vazio
-  const inp=document.getElementById('mnf-data');
-  if(inp&&!inp.value){
-    const d=new Date();
-    const y=d.getFullYear();
-    const m=String(d.getMonth()+1).padStart(2,'0');
-    const day=String(d.getDate()).padStart(2,'0');
-    inp.value=y+'-'+m+'-'+day;
-  }
-  // Preenche hora atual se vazio
-  const ih=document.getElementById('mnf-hora');
-  if(ih&&!ih.value){
-    const d=new Date();
-    ih.value=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  }
-}
-
-function mnfBuscaCliente(v){
-  const drop=document.getElementById('mnf-cli-drop');
-  if(!drop)return;
-  const q=(v||'').trim().toLowerCase();
-  if(q.length<2){drop.style.display='none';return;}
-  const res=CLIENTES_MANU.filter(c=>{
-    if(!c.nome&&!c.cod) return false;
-    return (c.nome||'').toLowerCase().includes(q)||(c.cod||'').toLowerCase().startsWith(q);
-  }).slice(0,10);
-  if(!res.length){drop.style.display='none';return;}
-  drop.innerHTML=res.map(c=>
-    `<div onclick="mnfSelecionarCliente('${c.cod}')" style="padding:9px 14px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.85);border-bottom:1px solid rgba(255,255,255,.06);transition:background .1s" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-      <span style="font-weight:600">${c.nome||'(sem nome)'}</span>
-      ${c.cod?`<span style="color:rgba(255,255,255,.35);margin-left:6px">· Cód ${c.cod}</span>`:''}
-      ${c.end?`<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.end}</div>`:''}
-    </div>`
-  ).join('');
-  drop.style.display='';
-}
-
-function mnfSelecionarCliente(cod){
-  const c=CLIENTES_MANU.find(x=>x.cod===cod);
-  if(!c)return;
-  _mnfCli=c;
-  const inp=document.getElementById('mnf-cli-busca');
-  if(inp) inp.value=(c.nome||'')+(c.cod?' (Cód '+c.cod+')':'');
-  const drop=document.getElementById('mnf-cli-drop');
-  if(drop) drop.style.display='none';
-  const row=document.getElementById('mnf-end-row');
-  const txt=document.getElementById('mnf-end-txt');
-  const mapsLink=document.getElementById('mnf-maps-link');
-  if(row&&txt){
-    txt.textContent=c.end||'Endereço não cadastrado';
-    if(mapsLink){
-      if(c.maps){mapsLink.href=c.maps;mapsLink.style.display='block';}
-      else mapsLink.style.display='none';
-    }
-    row.style.display='';
-  }
-}
-
-function mnfGerarEspelho(){
-  const nome=(document.getElementById('mnf-cli-busca')?.value||'').trim();
-  const dataVal=(document.getElementById('mnf-data')?.value||'');
-  const horaVal=(document.getElementById('mnf-hora')?.value||'');
-  const tecnico=(document.getElementById('mnf-tecnico')?.value||'').trim();
-  const tipo=(document.getElementById('mnf-tipo')?.value||'').trim();
-  const problema=(document.getElementById('mnf-problema')?.value||'').trim();
-  const solucao=(document.getElementById('mnf-solucao')?.value||'').trim();
-
-  const dataFmt=dataVal?dataVal.split('-').reverse().join('/'):'';
-  const L=['📋 VISITA DE MANUTENÇÃO','─────────────────────────'];
-  if(nome) L.push('Cliente: '+nome);
-  if(_mnfCli.end) L.push('Endereço: '+_mnfCli.end);
-  if(_mnfCli.maps) L.push('📍 Maps: '+_mnfCli.maps);
-  L.push('');
-  const dtLine=[dataFmt,horaVal].filter(Boolean).join(' · ');
-  if(dtLine) L.push('Data: '+dtLine);
-  if(tecnico) L.push('Técnico: '+tecnico);
-  if(tipo) L.push('Tipo: '+tipo);
-  if(_mnfEquips.length){
-    L.push('');
-    L.push('Equipamentos:');
-    _mnfEquips.forEach(e=>L.push('  • '+e.nome+' × '+e.qtd));
-  }
-  if(problema){L.push('');L.push('Problema: '+problema);}
-  if(solucao){L.push('');L.push('Solução: '+solucao);}
-
-  const ta=document.getElementById('espelho-texto');
-  if(ta) ta.value=L.join('\n');
-  document.getElementById('modal-espelho').style.display='flex';
 }
 
 function mnBusca(v){_mnBusca=v.toLowerCase();mnRenderLista();}
@@ -13895,10 +13677,33 @@ function mnSetFiltro(v){
   mnRenderLista();
 }
 
+// Edits overlay — persisted in localStorage
+let _mnEdits={};
+function _mnLoadEdits(){try{_mnEdits=JSON.parse(localStorage.getItem('mn_edits')||'{}');}catch(e){_mnEdits={};}}
+function _mnSaveEdits(){try{localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));}catch(e){}}
+
+// Build client→vendor reverse-map from current carteira
+function _mnBuildVendMap(){
+  const map={};
+  try{
+    const cart=typeof getCarteiraForMes==='function'?getCarteiraForMes(CRM_MES):{};
+    const vends=typeof getVendedoresForMes==='function'?getVendedoresForMes(CRM_MES):[];
+    Object.entries(cart).forEach(([vendCod,clients])=>{
+      const v=vends.find(x=>x.cod===vendCod);
+      if(v) clients.forEach(c=>{if(c.cod&&!map[c.cod]) map[c.cod]={nome:v.name,av:v.av,color:v.color||'#7C3AED'};});
+    });
+  }catch(e){}
+  return map;
+}
+
 function mnRenderLista(){
   const el=document.getElementById('mn-lista');
   if(!el)return;
-  let items=CLIENTES_MANU.filter(c=>{
+  _mnLoadEdits();
+  const vendMap=_mnBuildVendMap();
+  // Merge edits into base data
+  const baseItems=CLIENTES_MANU.map(c=>_mnEdits[c.cod]?{...c,..._mnEdits[c.cod]}:c);
+  let items=baseItems.filter(c=>{
     if(_mnFiltro==='sem_end'&&c.end)return false;
     if(_mnFiltro==='com_end'&&!c.end)return false;
     if(_mnBusca){
@@ -13908,7 +13713,7 @@ function mnRenderLista(){
     return true;
   });
   const total=CLIENTES_MANU.length;
-  const semEnd=CLIENTES_MANU.filter(c=>!c.end).length;
+  const semEnd=baseItems.filter(c=>!c.end).length;
   const st=document.getElementById('mn-stats');
   if(st)st.textContent=total?`${total} clientes · ${semEnd} sem endereço`:'Aguardando planilha de endereços';
   if(!items.length){
@@ -13916,22 +13721,85 @@ function mnRenderLista(){
     return;
   }
   el.innerHTML=items.map(c=>{
-    const safeNome=c.nome.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    const safeCod=(c.cod||'').replace(/'/g,"\\'");
-    return `<div class="card" style="padding:12px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px">
-      <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'—'}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome}</div>
-        ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
-        ${c.obs?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px;font-style:italic">${c.obs}</div>`:''}
+    const safeNome=(c.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeCod=(c.cod||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeEnd=(c.end||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeMaps=(c.maps||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const vend=vendMap[c.cod];
+    const vendBadge=vend?`<span style="font-size:10px;font-weight:700;color:${vend.color};background:${vend.color}22;border:1px solid ${vend.color}55;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle" title="Vendedor responsável">${vend.av}</span>`:'';
+    const edited=_mnEdits[c.cod]?`<span style="font-size:10px;color:#fbbf24;margin-left:4px" title="Editado localmente">✏</span>`:'';
+    return `<div id="mn-card-${safeCod}" class="card" style="padding:12px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'—'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'}${vendBadge}${edited}</div>
+          ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
+          ${c.obs?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px;font-style:italic">${c.obs}</div>`:''}
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
+          ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
+          <button onclick="mnEditCard('${safeCod}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>
+          <button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>
+          <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
+        </div>
       </div>
-      <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
-        ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
-        <button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>
-        <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
+      <div id="mn-edit-${safeCod}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Cód</label>
+            <input id="mne-cod-${safeCod}" type="text" value="${safeCod}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Nome</label>
+            <input id="mne-nome-${safeCod}" type="text" value="${safeNome}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+          </div>
+        </div>
+        <div style="margin-bottom:8px">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Endereço</label>
+          <input id="mne-end-${safeCod}" type="text" value="${safeEnd}" placeholder="Ex: Rua das Flores, 123 – Bairro – Cidade/UF" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Link Maps</label>
+          <input id="mne-maps-${safeCod}" type="text" value="${safeMaps}" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="mnSaveEdit('${safeCod}')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+          <button onclick="mnCancelEdit('${safeCod}')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
+          ${_mnEdits[c.cod]?`<button onclick="mnResetEdit('${safeCod}')" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:7px 12px;font-size:11px;cursor:pointer">Reverter original</button>`:''}
+        </div>
       </div>
     </div>`;
   }).join('');
+}
+
+function mnEditCard(cod){
+  const editEl=document.getElementById('mn-edit-'+cod);
+  if(!editEl)return;
+  const isOpen=editEl.style.display!=='none';
+  editEl.style.display=isOpen?'none':'';
+}
+
+function mnSaveEdit(cod){
+  const newCod=(document.getElementById('mne-cod-'+cod)?.value||'').trim();
+  const nome=(document.getElementById('mne-nome-'+cod)?.value||'').trim();
+  const end=(document.getElementById('mne-end-'+cod)?.value||'').trim();
+  const maps=(document.getElementById('mne-maps-'+cod)?.value||'').trim();
+  _mnLoadEdits();
+  _mnEdits[cod]={cod:newCod||cod,nome,end,maps};
+  _mnSaveEdits();
+  mnRenderLista();
+}
+
+function mnCancelEdit(cod){
+  const editEl=document.getElementById('mn-edit-'+cod);
+  if(editEl) editEl.style.display='none';
+}
+
+function mnResetEdit(cod){
+  _mnLoadEdits();
+  delete _mnEdits[cod];
+  _mnSaveEdits();
+  mnRenderLista();
 }
 
 function mnEspelho(cod){
@@ -14018,6 +13886,495 @@ function mnDeleteReporte(id){
   mnRenderReportes();
 }
 
+// ══════════════════════════════════════════════════════════════
+// PDF IMPORT SYSTEM
+// ══════════════════════════════════════════════════════════════
+
+let _pdfJsLib=null;
+
+async function _loadPdfJs(){
+  if(_pdfJsLib)return _pdfJsLib;
+  if(window.pdfjsLib){
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    _pdfJsLib=window.pdfjsLib;return _pdfJsLib;
+  }
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload=()=>{
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      _pdfJsLib=window.pdfjsLib;resolve(_pdfJsLib);
+    };
+    s.onerror=()=>reject(new Error('Falha ao carregar PDF.js'));
+    document.head.appendChild(s);
+  });
+}
+
+async function _extractPdfText(file){
+  const lib=await _loadPdfJs();
+  const buf=await file.arrayBuffer();
+  const doc=await lib.getDocument({data:buf}).promise;
+  let fullText='';
+  for(let p=1;p<=doc.numPages;p++){
+    const page=await doc.getPage(p);
+    const content=await page.getTextContent();
+    // Group items by Y for line-aware extraction
+    const lineMap=new Map();
+    content.items.forEach(item=>{
+      const y=Math.round(item.transform[5]);
+      if(!lineMap.has(y))lineMap.set(y,[]);
+      lineMap.get(y).push({x:item.transform[4],str:item.str});
+    });
+    const lines=[...lineMap.entries()]
+      .sort((a,b)=>b[0]-a[0])
+      .map(([,its])=>its.sort((a,b)=>a.x-b.x).map(i=>i.str).join(' '));
+    fullText+=lines.join('\n')+'\n';
+  }
+  return fullText;
+}
+
+// ── Curva ABC Parser ─────────────────────────────────────────
+// ERP vendor code → HISTORICO_MENSAL key
+const _ERP_HM={
+  '7':'7','8':'8','12':'12','29':'29','38':'38','48':'48',
+  '73':'73','84':'84','86':'86','89':'89','92':'92','96':'96','97':'97',
+  '106':'106','107':'107','109':'109','110':'110','111':'111','112':'112',
+  '115':'115','116':'116','117':'117','119':'119','120':'120',
+  '122':'122','123':'123','124':'124','125':'125',
+  // Special (ERP ≠ CRM key):
+  '93':'093','94':'094',
+  '74':'125', // Cezar old ERP
+  '72':'121', // Moab
+  '16':'123', // Kelly old
+  '105':'122',// Ramon old
+  '108':'124',// Luiz Henrique old
+  '118':'RA', // Rauer old
+  '121':'RA', // Rauer current ERP
+};
+// ERP code → Representante group (for HISTORICO_MENSAL_REPR)
+const _ERP_REPR={'73':'FL','38':'TH','29':'RC','106':'RC','7':'LT','8':'LT','109':'LT'};
+const _MES_IDX={'01':0,'02':1,'03':2,'04':3,'05':4,'06':5,'07':6,'08':7,'09':8,'10':9,'11':10,'12':11};
+
+function _parseCurvaABC(text){
+  // Detect period: "01/08/26"
+  const pm=text.match(/\b\d{2}\/(\d{2})\/(\d{2})\b/);
+  const mesNum=pm?pm[1]:null;
+  const ano=pm?'20'+pm[2]:'2026';
+  const rows=[];
+  // Each vendor line: CODE  NAME  VALUE  QTDE...
+  const re=/^(\d{1,3})\s+([A-ZÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ\/][A-ZÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ\s\/\.]{3,}?)\s+([\d]{1,3}(?:\.[\d]{3})*,\d{2})/gm;
+  let m;
+  while((m=re.exec(text))!==null){
+    const erpCod=m[1];
+    const nome=m[2].trim();
+    const valorStr=m[3].replace(/\./g,'').replace(',','.');
+    const valor=parseFloat(valorStr);
+    // Skip "Totais:" count line (code would be the vendor count, nome starts with digit-like)
+    if(valor>1000&&nome.length>3&&!/^\d/.test(nome)){
+      rows.push({erpCod,nome,valor});
+    }
+  }
+  return{mesNum,ano,rows};
+}
+
+// ── Team Vendors Parser ──────────────────────────────────────
+const _EQUIPE_VENDS=[
+  'ALTHIERES SOARES','CEZAR JUNIOR','EVERALDO LINS','GUILHERME PINHEIRO',
+  'JOAO VICTOR','JOÃO VICTOR','KELLER CAMARA','KELLER CÂMARA',
+  'KELLY CRISTINA','LUIZ HENRIQUE','MOAB XAVIER','NATALIA SCHUNCK',
+  'NATÁLIA SCHUNCK','RAMON NASCIMENTO','RAUER TOMAS','RAUER TOMÁS','RELSON SOARES'
+];
+const _EQUIPE_COD_MAP={
+  'ALTHIERES SOARES':'119','CEZAR JUNIOR':'125','EVERALDO LINS':'107',
+  'GUILHERME PINHEIRO':'093','JOAO VICTOR':'120','JOÃO VICTOR':'120',
+  'KELLER CAMARA':'117','KELLER CÂMARA':'117','KELLY CRISTINA':'123',
+  'LUIZ HENRIQUE':'124','MOAB XAVIER':'121','NATALIA SCHUNCK':'116',
+  'NATÁLIA SCHUNCK':'116','RAMON NASCIMENTO':'122','RAUER TOMAS':'RA',
+  'RAUER TOMÁS':'RA','RELSON SOARES':'094'
+};
+
+function _normStr(s){return(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+
+function _parseEquipePDF(text){
+  const ym=text.match(/\b(\d{4})\/(\d{2})\b/);
+  const ano=ym?ym[1]:'2026';
+  const mesNum=ym?ym[2]:null;
+  const vendors={};
+  const lines=text.split('\n');
+  let currentVend=null;
+  const clientRe=/(\d{2,5})\s+-\s+(.+?)\s+R\$\s*([\d.]+,\d{2})/;
+  const standaloneRe=/^\s*R\$\s*([\d.]+,\d{2})\s*$/;
+  const totalLineRe=/([A-ZÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ][A-ZÁÉÍÓÚ\s]{5,})\s+Total\s+R\$\s*([\d.]+,\d{2})/;
+
+  lines.forEach(line=>{
+    // Detect "VENDOR Total R$ AMOUNT" on same line (reliable)
+    const tl=line.match(totalLineRe);
+    if(tl){
+      const vn=tl[1].trim();
+      const norm=_normStr(vn);
+      const known=_EQUIPE_VENDS.find(v=>_normStr(v)===norm||norm.startsWith(_normStr(v)));
+      if(known){
+        if(!vendors[known])vendors[known]={nome:known,total:0,clientes:[]};
+        vendors[known].total=parseFloat(tl[2].replace(/\./g,'').replace(',','.'));
+        currentVend=known;
+        return;
+      }
+    }
+    // Detect vendor name starting a line (with or without first client)
+    const norm=_normStr(line);
+    const matched=_EQUIPE_VENDS.find(v=>{const nv=_normStr(v);return norm.startsWith(nv);});
+    if(matched){
+      if(!vendors[matched])vendors[matched]={nome:matched,total:0,clientes:[]};
+      currentVend=matched;
+      // May also have first client on same line
+      const cm=line.match(clientRe);
+      if(cm)vendors[matched].clientes.push({cod:cm[1],nome:cm[2].trim(),valor:parseFloat(cm[3].replace(/\./g,'').replace(',','.'))});
+      return;
+    }
+    if(currentVend){
+      const sam=line.match(standaloneRe);
+      if(sam&&!vendors[currentVend].total){
+        vendors[currentVend].total=parseFloat(sam[1].replace(/\./g,'').replace(',','.'));
+        return;
+      }
+      const cm=line.match(clientRe);
+      if(cm)vendors[currentVend].clientes.push({cod:cm[1],nome:cm[2].trim(),valor:parseFloat(cm[3].replace(/\./g,'').replace(',','.'))});
+    }
+  });
+
+  // Grand total
+  const gm=text.match(/Grand\s+Total\s+R\$\s*([\d.]+,\d{2})/i);
+  const grandTotal=gm?parseFloat(gm[1].replace(/\./g,'').replace(',','.')):0;
+  return{ano,mesNum,vendors,grandTotal};
+}
+
+// ── Apply imports to in-memory data ─────────────────────────
+
+function _applyImportCurva(mesNum,ano,rows,save){
+  const mesIdx=_MES_IDX[mesNum];
+  if(mesIdx===undefined)return false;
+  const reprAgg={};
+  rows.forEach(({erpCod,valor})=>{
+    const hmKey=_ERP_HM[erpCod];
+    if(hmKey){
+      if(!HISTORICO_MENSAL[ano])HISTORICO_MENSAL[ano]={};
+      if(!HISTORICO_MENSAL[ano][hmKey])HISTORICO_MENSAL[ano][hmKey]=Array(12).fill(0);
+      HISTORICO_MENSAL[ano][hmKey][mesIdx]=valor;
+    }
+    const reprKey=_ERP_REPR[erpCod];
+    if(reprKey)reprAgg[reprKey]=(reprAgg[reprKey]||0)+valor;
+  });
+  Object.entries(reprAgg).forEach(([reprKey,total])=>{
+    if(!HISTORICO_MENSAL_REPR[ano])HISTORICO_MENSAL_REPR[ano]={};
+    if(!HISTORICO_MENSAL_REPR[ano][reprKey])HISTORICO_MENSAL_REPR[ano][reprKey]=Array(12).fill(0);
+    HISTORICO_MENSAL_REPR[ano][reprKey][mesIdx]=total;
+  });
+  if(save){
+    try{
+      const k='crm_import_curva_'+ano+'_'+mesNum;
+      localStorage.setItem(k,JSON.stringify({rows,importedAt:new Date().toISOString()}));
+      const idx=JSON.parse(localStorage.getItem('crm_import_curva_idx')||'[]');
+      if(!idx.includes(ano+'_'+mesNum))idx.push(ano+'_'+mesNum);
+      localStorage.setItem('crm_import_curva_idx',JSON.stringify(idx));
+    }catch(e){}
+  }
+  return true;
+}
+
+function _applyImportEquipe(mesNum,ano,vendors,save){
+  const mesIdx=_MES_IDX[mesNum];
+  if(mesIdx===undefined)return false;
+  // Build VENDEDORES for the mes (stored in localStorage)
+  const vendsArr=Object.values(vendors).map(v=>{
+    const cod=_EQUIPE_COD_MAP[v.nome]||'';
+    const src=typeof VENDEDORES_AGOSTO!=='undefined'?VENDEDORES_AGOSTO:[];
+    const ref=src.find(x=>x.cod===cod);
+    return{name:ref?.name||v.nome,av:ref?.av||v.nome.slice(0,2),color:ref?.color||'#94a3b8',total:v.total,cli:v.clientes.length,cod};
+  });
+  // Build CARTEIRA for the mes
+  const carteira={};
+  Object.values(vendors).forEach(v=>{
+    const cod=_EQUIPE_COD_MAP[v.nome]||'';
+    if(cod&&v.clientes.length)carteira[cod]=v.clientes.map(c=>({cod:c.cod,nome:c.nome,valor:c.valor}));
+  });
+  if(save){
+    try{
+      const k='crm_import_equipe_'+ano+'_'+mesNum;
+      localStorage.setItem(k,JSON.stringify({vendsArr,carteira,importedAt:new Date().toISOString()}));
+      const idx=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
+      if(!idx.includes(ano+'_'+mesNum))idx.push(ano+'_'+mesNum);
+      localStorage.setItem('crm_import_equipe_idx',JSON.stringify(idx));
+    }catch(e){}
+  }
+  return true;
+}
+
+// Apply stored imports on startup
+function _applyStoredImports(){
+  try{
+    const ci=JSON.parse(localStorage.getItem('crm_import_curva_idx')||'[]');
+    ci.forEach(key=>{
+      const data=JSON.parse(localStorage.getItem('crm_import_curva_'+key)||'null');
+      if(data&&data.rows){const[ano,mesNum]=key.split('_');_applyImportCurva(mesNum,ano,data.rows,false);}
+    });
+  }catch(e){}
+}
+
+// Override getVendedoresForMes and getCarteiraForMes to check localStorage first
+const _origGetVends=typeof getVendedoresForMes==='function'?getVendedoresForMes:null;
+const _origGetCart=typeof getCarteiraForMes==='function'?getCarteiraForMes:null;
+
+function _getImportedVends(mes){
+  const mesNumMap={marco:'03',abril:'04',maio:'05',junho:'06',julho:'07',agosto:'08',setembro:'09',outubro:'10',novembro:'11',dezembro:'12'};
+  const mesNum=mesNumMap[mes];if(!mesNum)return null;
+  try{
+    const idx=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
+    const key=idx.find(k=>k.endsWith('_'+mesNum));
+    if(!key)return null;
+    const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
+    return data?data.vendsArr:null;
+  }catch(e){return null;}
+}
+function _getImportedCart(mes){
+  const mesNumMap={marco:'03',abril:'04',maio:'05',junho:'06',julho:'07',agosto:'08',setembro:'09',outubro:'10',novembro:'11',dezembro:'12'};
+  const mesNum=mesNumMap[mes];if(!mesNum)return null;
+  try{
+    const idx=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
+    const key=idx.find(k=>k.endsWith('_'+mesNum));
+    if(!key)return null;
+    const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
+    return data?data.carteira:null;
+  }catch(e){return null;}
+}
+
+// Monkey-patch the getter functions
+if(_origGetVends){
+  window.getVendedoresForMes=function(mes){
+    const imp=_getImportedVends(mes);
+    if(imp)return imp;
+    return _origGetVends(mes);
+  };
+}
+if(_origGetCart){
+  window.getCarteiraForMes=function(mes){
+    const imp=_getImportedCart(mes);
+    if(imp)return imp;
+    return _origGetCart(mes);
+  };
+}
+
+// ── Import UI ────────────────────────────────────────────────
+
+let _pdfImportMode='curva';
+let _pdfParsedData=null;
+
+function pdfImportOpen(mode){
+  _pdfImportMode=mode;
+  _pdfParsedData=null;
+  const modal=document.getElementById('modal-pdf-import');
+  if(!modal)return;
+  document.getElementById('pdi-title').textContent=mode==='curva'?'Importar Curva ABC (Faturamento Mensal)':'Importar PDF Equipe de Vendas';
+  document.getElementById('pdi-hint').textContent=mode==='curva'?'Selecione o arquivo PDF da Curva ABC (relatório geral de faturamento mensal)':'Selecione o arquivo PDF das vendas da equipe (equip. laz / equip. val)';
+  document.getElementById('pdi-file').value='';
+  document.getElementById('pdi-status').style.display='none';
+  document.getElementById('pdi-preview').style.display='none';
+  document.getElementById('pdi-btn-confirm').style.display='none';
+  document.getElementById('pdi-progress').style.display='none';
+  modal.style.display='flex';
+}
+
+function pdfImportClose(){
+  const modal=document.getElementById('modal-pdf-import');
+  if(modal)modal.style.display='none';
+  _pdfParsedData=null;
+}
+
+async function pdfImportLoad(){
+  const fileInput=document.getElementById('pdi-file');
+  const file=fileInput?.files?.[0];
+  if(!file){alert('Selecione um arquivo PDF.');return;}
+  const status=document.getElementById('pdi-status');
+  const preview=document.getElementById('pdi-preview');
+  const confirmBtn=document.getElementById('pdi-btn-confirm');
+  const progress=document.getElementById('pdi-progress');
+  status.style.display='';status.textContent='Carregando PDF.js…';
+  progress.style.display='';preview.style.display='none';confirmBtn.style.display='none';
+  try{
+    status.textContent='Extraindo texto do PDF…';
+    const text=await _extractPdfText(file);
+    status.textContent='Analisando dados…';
+    if(_pdfImportMode==='curva'){
+      const parsed=_parseCurvaABC(text);
+      _pdfParsedData=parsed;
+      _renderCurvaPreview(parsed,preview);
+    } else {
+      const parsed=_parseEquipePDF(text);
+      _pdfParsedData=parsed;
+      _renderEquipePreview(parsed,preview);
+    }
+    status.style.display='none';
+    progress.style.display='none';
+    preview.style.display='';
+    confirmBtn.style.display='';
+  }catch(err){
+    status.textContent='Erro: '+(err.message||err);
+    progress.style.display='none';
+    console.error(err);
+  }
+}
+
+function _fBRL2(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+
+function _renderCurvaPreview(parsed,el){
+  const{mesNum,ano,rows}=parsed;
+  const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
+  const mesName=mesNames[mesNum]||mesNum||'(desconhecido)';
+  const total=rows.reduce((s,r)=>s+r.valor,0);
+  const known=rows.filter(r=>_ERP_HM[r.erpCod]||_ERP_REPR[r.erpCod]);
+  const html=`
+    <div style="margin-bottom:10px;padding:10px 12px;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2);border-radius:8px">
+      <div style="font-size:13px;font-weight:700;color:#6ee7b7">Período detectado: ${mesName} ${ano}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px">${rows.length} vendedores encontrados · Total: ${_fBRL2(total)} · Mapeados: ${known.length}</div>
+    </div>
+    <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr>
+        <th style="text-align:left;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Cód ERP</th>
+        <th style="text-align:left;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Nome</th>
+        <th style="text-align:right;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Valor</th>
+        <th style="text-align:center;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">CRM</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>{
+        const hmKey=_ERP_HM[r.erpCod];const reprKey=_ERP_REPR[r.erpCod];
+        const mapped=hmKey||reprKey;
+        return`<tr>
+          <td style="padding:5px 8px;color:rgba(255,255,255,.5)">${r.erpCod}</td>
+          <td style="padding:5px 8px;color:#e2e8f0">${r.nome}</td>
+          <td style="padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums;color:#fff">${_fBRL2(r.valor)}</td>
+          <td style="padding:5px 8px;text-align:center">${mapped?`<span style="font-size:10px;background:rgba(110,231,183,.15);color:#6ee7b7;border-radius:4px;padding:1px 6px">${hmKey||reprKey}</span>`:'<span style="font-size:10px;color:rgba(255,255,255,.25)">—</span>'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  el.innerHTML=html;
+}
+
+function _renderEquipePreview(parsed,el){
+  const{ano,mesNum,vendors,grandTotal}=parsed;
+  const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
+  const mesName=mesNames[mesNum]||mesNum||'(desconhecido)';
+  const vendList=Object.values(vendors);
+  const html=`
+    <div style="margin-bottom:10px;padding:10px 12px;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2);border-radius:8px">
+      <div style="font-size:13px;font-weight:700;color:#6ee7b7">Período detectado: ${mesName} ${ano}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px">${vendList.length} vendedores · Grand Total: ${_fBRL2(grandTotal)}</div>
+    </div>
+    <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr>
+        <th style="text-align:left;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Vendedor</th>
+        <th style="text-align:right;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Total</th>
+        <th style="text-align:right;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Clientes</th>
+        <th style="text-align:center;padding:6px 8px;color:rgba(255,255,255,.4);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1)">Cod CRM</th>
+      </tr></thead>
+      <tbody>${vendList.map(v=>{
+        const cod=_EQUIPE_COD_MAP[v.nome]||'';
+        return`<tr>
+          <td style="padding:5px 8px;color:#e2e8f0">${v.nome}</td>
+          <td style="padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums;color:#fff">${v.total>0?_fBRL2(v.total):'<span style="color:rgba(255,255,255,.3)">—</span>'}</td>
+          <td style="padding:5px 8px;text-align:right;color:rgba(255,255,255,.55)">${v.clientes.length}</td>
+          <td style="padding:5px 8px;text-align:center">${cod?`<span style="font-size:10px;background:rgba(110,231,183,.15);color:#6ee7b7;border-radius:4px;padding:1px 6px">${cod}</span>`:'<span style="font-size:10px;color:rgba(255,255,255,.25)">—</span>'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
+    ${vendList.some(v=>!v.total)?'<div style="font-size:11px;color:#fbbf24;margin-top:8px;padding:6px 10px;background:rgba(251,191,36,.08);border-radius:6px">⚠ Alguns totais não foram detectados (layout colunar do PDF). Os clientes foram atribuídos mas o total ficou 0.</div>':''}`;
+  el.innerHTML=html;
+}
+
+async function pdfImportConfirm(){
+  if(!_pdfParsedData)return;
+  const confirmBtn=document.getElementById('pdi-btn-confirm');
+  confirmBtn.disabled=true;confirmBtn.textContent='Salvando…';
+  try{
+    if(_pdfImportMode==='curva'){
+      const{mesNum,ano,rows}=_pdfParsedData;
+      if(!mesNum){alert('Mês não detectado no PDF. Verifique o arquivo.');confirmBtn.disabled=false;confirmBtn.textContent='Confirmar Importação';return;}
+      _applyImportCurva(mesNum,ano,rows,true);
+      const dt=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const lbl=document.getElementById('pdf-label-curva');
+      if(lbl){lbl.textContent='Importado em '+dt+' · '+rows.length+' vendedores';lbl.style.display='';}
+      // Re-render comparativo
+      if(typeof renderComparativo==='function')renderComparativo();
+      if(typeof renderRepresentantes==='function')renderRepresentantes();
+    } else {
+      const{ano,mesNum,vendors,grandTotal}=_pdfParsedData;
+      if(!mesNum){alert('Mês não detectado no PDF. Verifique o arquivo.');confirmBtn.disabled=false;confirmBtn.textContent='Confirmar Importação';return;}
+      _applyImportEquipe(mesNum,ano,vendors,true);
+      const dt=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const lbl=document.getElementById('pdf-label-equipe');
+      if(lbl){lbl.textContent='Importado '+dt;lbl.style.display='';}
+      if(typeof renderKPIs==='function')renderKPIs();
+    }
+    pdfImportClose();
+  }catch(err){
+    alert('Erro ao salvar: '+(err.message||err));
+    confirmBtn.disabled=false;confirmBtn.textContent='Confirmar Importação';
+  }
+}
+
+// Apply stored imports at startup
+_applyStoredImports();
+
+// Show import labels if data exists
+(function _showImportLabels(){
+  try{
+    const ci=JSON.parse(localStorage.getItem('crm_import_curva_idx')||'[]');
+    if(ci.length){
+      const lastKey=ci[ci.length-1];
+      const data=JSON.parse(localStorage.getItem('crm_import_curva_'+lastKey)||'null');
+      if(data&&data.importedAt){
+        const dt=new Date(data.importedAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        setTimeout(()=>{const lbl=document.getElementById('pdf-label-curva');if(lbl){lbl.textContent='Último import: '+dt;lbl.style.display='';}},500);
+      }
+    }
+    const ei=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
+    if(ei.length){
+      const lastKey=ei[ei.length-1];
+      const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+lastKey)||'null');
+      if(data&&data.importedAt){
+        const dt=new Date(data.importedAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        setTimeout(()=>{const lbl=document.getElementById('pdf-label-equipe');if(lbl){lbl.textContent='Importado '+dt;lbl.style.display='';}},500);
+      }
+    }
+  }catch(e){}
+})();
+
 </script>
+
+<!-- ── Modal Import PDF ─────────────────────────────────── -->
+<div id="modal-pdf-import" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#1a2335;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h3 id="pdi-title" style="font-size:16px;font-weight:700;color:#fff;margin:0"></h3>
+      <button onclick="pdfImportClose()" style="background:rgba(255,255,255,.08);border:none;border-radius:7px;color:rgba(255,255,255,.6);padding:6px 10px;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <p id="pdi-hint" style="font-size:12px;color:rgba(255,255,255,.4);margin:0 0 16px;line-height:1.5"></p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <input id="pdi-file" type="file" accept=".pdf" onchange="pdfImportLoad()"
+        style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:rgba(255,255,255,.7);padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer">
+    </div>
+    <div id="pdi-progress" style="display:none;margin-bottom:12px">
+      <div style="height:3px;background:rgba(124,58,237,.2);border-radius:2px;overflow:hidden">
+        <div style="height:100%;background:#7C3AED;width:100%;animation:pdiPulse 1.2s ease-in-out infinite"></div>
+      </div>
+    </div>
+    <div id="pdi-status" style="display:none;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px"></div>
+    <div id="pdi-preview" style="display:none;margin-bottom:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="pdfImportClose()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+      <button id="pdi-btn-confirm" onclick="pdfImportConfirm()" style="display:none;background:#7C3AED;color:#fff;border:none;border-radius:9px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer">Confirmar Importação</button>
+    </div>
+  </div>
+</div>
+<style>@keyframes pdiPulse{0%,100%{opacity:.4}50%{opacity:1}}</style>
 </body>
 </html>
