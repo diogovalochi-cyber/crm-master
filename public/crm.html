@@ -1415,6 +1415,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="mn-fil-" class="mn-fil-btn" onclick="mnSetFiltro('')" style="background:#7C3AED;color:#fff;border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:700;cursor:pointer">Todos</button>
         <button id="mn-fil-com_end" class="mn-fil-btn" onclick="mnSetFiltro('com_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Com endereço</button>
         <button id="mn-fil-sem_end" class="mn-fil-btn" onclick="mnSetFiltro('sem_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Sem endereço</button>
+        <button id="mn-fil-inativos" class="mn-fil-btn" onclick="mnSetFiltro('inativos')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Inativos</button>
       </div>
       <div id="mn-lista"></div>
     </div>
@@ -13772,6 +13773,8 @@ function mnRenderLista(){
   // Merge edits into base data
   const baseItems=CLIENTES_MANU.map(c=>_mnEdits[c.cod]?{...c,..._mnEdits[c.cod]}:c);
   let items=baseItems.filter(c=>{
+    if(_mnFiltro==='inativos') return !!c.inativo;
+    if(c.inativo) return false;
     if(_mnFiltro==='sem_end'&&c.end)return false;
     if(_mnFiltro==='com_end'&&!c.end)return false;
     if(_mnBusca){
@@ -13781,9 +13784,10 @@ function mnRenderLista(){
     return true;
   });
   const total=CLIENTES_MANU.length;
-  const semEnd=baseItems.filter(c=>!c.end).length;
+  const semEnd=baseItems.filter(c=>!c.end&&!c.inativo).length;
+  const inativoCount=baseItems.filter(c=>c.inativo).length;
   const st=document.getElementById('mn-stats');
-  if(st)st.textContent=total?`${total} clientes · ${semEnd} sem endereço`:'Aguardando planilha de endereços';
+  if(st)st.textContent=total?`${total-inativoCount} ativos · ${semEnd} sem endereço${inativoCount?' · '+inativoCount+' inativos':''}`:'Aguardando planilha de endereços';
   if(!items.length){
     el.innerHTML=`<div style="text-align:center;padding:40px 16px;color:rgba(255,255,255,.3);font-size:13px">${!total?'Aguardando planilha de endereços — dados serão carregados em breve':'Nenhum resultado encontrado'}</div>`;
     return;
@@ -13796,11 +13800,12 @@ function mnRenderLista(){
     const vend=vendMap[c.cod];
     const vendBadge=vend?`<span style="font-size:10px;font-weight:700;color:${vend.color};background:${vend.color}22;border:1px solid ${vend.color}55;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle" title="Vendedor responsável">${vend.av}</span>`:'';
     const edited=_mnEdits[c.cod]?`<span style="font-size:10px;color:#fbbf24;margin-left:4px" title="Editado localmente">✏</span>`:'';
-    return `<div id="mn-card-${safeCod}" class="card" style="padding:12px 16px;margin-bottom:8px">
+    const inativoBadge=c.inativo?`<span style="font-size:10px;font-weight:700;color:#ef4444;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle">INATIVO</span>`:'';
+    return `<div id="mn-card-${safeCod}" class="card" style="padding:12px 16px;margin-bottom:8px${c.inativo?';opacity:.45;filter:grayscale(.5)':''}">
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'—'}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'}${vendBadge}${edited}</div>
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'}${vendBadge}${edited}${inativoBadge}</div>
           ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
           ${c.obs?`<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px;font-style:italic">${c.obs}</div>`:''}
         </div>
@@ -13808,6 +13813,7 @@ function mnRenderLista(){
           ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('${safeCod}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnToggleInativo('${safeCod}')" title="${c.inativo?'Reativar cliente':'Inativar cliente'}" style="background:${c.inativo?'rgba(16,185,129,.12)':'rgba(239,68,68,.1)'};border:1px solid ${c.inativo?'rgba(16,185,129,.3)':'rgba(239,68,68,.25)'};border-radius:6px;color:${c.inativo?'#6ee7b7':'#fca5a5'};padding:5px 9px;font-size:12px;cursor:pointer">${c.inativo?'✅':'🚫'}</button>`:''}
           <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
         </div>
       </div>
@@ -13853,7 +13859,17 @@ function mnSaveEdit(cod){
   const end=(document.getElementById('mne-end-'+cod)?.value||'').trim();
   const maps=(document.getElementById('mne-maps-'+cod)?.value||'').trim();
   _mnLoadEdits();
-  _mnEdits[cod]={cod:newCod||cod,nome,end,maps};
+  const _prevInativo=_mnEdits[cod]?.inativo;
+  _mnEdits[cod]={cod:newCod||cod,nome,end,maps,...(_prevInativo?{inativo:true}:{})};
+  _mnSaveEdits();
+  mnRenderLista();
+}
+
+function mnToggleInativo(cod){
+  _mnLoadEdits();
+  const cur=!!_mnEdits[cod]?.inativo;
+  if(!_mnEdits[cod])_mnEdits[cod]={};
+  _mnEdits[cod].inativo=!cur;
   _mnSaveEdits();
   mnRenderLista();
 }
