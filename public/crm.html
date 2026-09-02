@@ -14338,10 +14338,15 @@ function _renderEquipePreview(parsed,el){
   const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
   const mesName=mesNames[mesNum]||mesNum||'(desconhecido)';
   const vendList=Object.values(vendors);
+  const _opts=['01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>`<option value="${m}"${m===mesNum?' selected':''}>${mesNames[m]}</option>`).join('');
   const html=`
     <div style="margin-bottom:10px;padding:10px 12px;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2);border-radius:8px">
-      <div style="font-size:13px;font-weight:700;color:#6ee7b7">Período detectado: ${mesName} ${ano}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px">${vendList.length} vendedores · Grand Total: ${_fBRL2(grandTotal)}</div>
+      <div style="font-size:11px;color:rgba(110,231,183,.7);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Período detectado — corrija se necessário</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        <select id="pdf-mes-override" style="background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700">${_opts}</select>
+        <input id="pdf-ano-override" type="number" min="2024" max="2030" value="${ano}" style="width:72px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center">
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4)">${vendList.length} vendedores · Grand Total: ${_fBRL2(grandTotal)}</div>
     </div>
     <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -14381,8 +14386,10 @@ async function pdfImportConfirm(){
       if(typeof renderComparativo==='function')renderComparativo();
       if(typeof renderRepresentantes==='function')renderRepresentantes();
     } else {
-      const{ano,mesNum,vendors,grandTotal}=_pdfParsedData;
-      if(!mesNum){alert('Mês não detectado no PDF. Verifique o arquivo.');confirmBtn.disabled=false;confirmBtn.textContent='Confirmar Importação';return;}
+      const{vendors,grandTotal}=_pdfParsedData;
+      const mesNum=(document.getElementById('pdf-mes-override')?.value)||_pdfParsedData.mesNum;
+      const ano=(document.getElementById('pdf-ano-override')?.value)||_pdfParsedData.ano||'2026';
+      if(!mesNum){alert('Mês não detectado no PDF. Selecione o mês correto e tente novamente.');confirmBtn.disabled=false;confirmBtn.textContent='Confirmar Importação';return;}
       _applyImportEquipe(mesNum,ano,vendors,true);
       const dt=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const lbl=document.getElementById('pdf-label-equipe');
