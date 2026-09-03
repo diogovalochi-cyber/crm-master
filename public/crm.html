@@ -14244,7 +14244,10 @@ const _EQUIPE_COD_MAP={
 function _normStr(s){return(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
 
 function _parseEquipePDF(text){
-  const ym=text.match(/\b(\d{4})\/(\d{2})\b/);
+  // Pega a ÚLTIMA ocorrência de YYYY/MM (= data final do período = mês do relatório)
+  // A primeira pode ser o início do período (mês anterior), ex: "2026/07/01 a 2026/08/31"
+  const allYm=[...text.matchAll(/\b(\d{4})\/(\d{2})\b/g)];
+  const ym=allYm.length?allYm[allYm.length-1]:null;
   const ano=ym?ym[1]:'2026';
   const mesNum=ym?ym[2]:null;
   const vendors={};
