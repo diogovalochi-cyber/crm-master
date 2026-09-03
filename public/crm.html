@@ -13779,7 +13779,11 @@ function mnRenderLista(){
     return edit?{...c,...edit,_occN:n}:{...c,_occN:n};
   });
   let items=baseItems.filter(c=>{
-    if(_mnFiltro==='inativos') return !!c.inativo;
+    if(_mnFiltro==='inativos'){
+      if(!c.inativo)return false;
+      if(_mnBusca){const q=_mnBusca;return(c.cod&&c.cod.toLowerCase().includes(q))||(c.nome&&c.nome.toLowerCase().includes(q))||(c.end&&c.end.toLowerCase().includes(q));}
+      return true;
+    }
     if(c.inativo) return false;
     if(_mnFiltro==='sem_end'&&c.end)return false;
     if(_mnFiltro==='com_end'&&!c.end)return false;
