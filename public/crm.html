@@ -1416,6 +1416,8 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="mn-fil-com_end" class="mn-fil-btn" onclick="mnSetFiltro('com_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Com endereço</button>
         <button id="mn-fil-sem_end" class="mn-fil-btn" onclick="mnSetFiltro('sem_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Sem endereço</button>
         <button id="mn-fil-inativos" class="mn-fil-btn" onclick="mnSetFiltro('inativos')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Inativos</button>
+        <button onclick="mnExportBackup()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Backup</button>
+        <label style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↑ Restaurar<input type="file" accept=".json" onchange="mnImportBackup(this)" style="display:none"></label>
       </div>
       <div id="mn-lista"></div>
     </div>
@@ -13749,7 +13751,40 @@ function mnSetFiltro(v){
 // Edits overlay — persisted in localStorage
 let _mnEdits={};
 function _mnLoadEdits(){try{_mnEdits=JSON.parse(localStorage.getItem('mn_edits')||'{}');}catch(e){_mnEdits={};}}
-function _mnSaveEdits(){try{localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));}catch(e){}}
+function _mnSaveEdits(){
+  try{
+    localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));
+    const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+    localStorage.setItem('mn_edits_bkp_'+today,JSON.stringify(_mnEdits));
+  }catch(e){}
+}
+function mnExportBackup(){
+  _mnLoadEdits();
+  const json=JSON.stringify(_mnEdits,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='mn_edits_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function mnImportBackup(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(typeof data!=='object'||Array.isArray(data)){alert('Arquivo inválido.');return;}
+      const count=Object.keys(data).length;
+      if(!confirm('Restaurar '+count+' registros? Isso vai SUBSTITUIR os edits atuais.'))return;
+      localStorage.setItem('mn_edits',JSON.stringify(data));
+      _mnLoadEdits();
+      mnRenderLista();
+      alert('Restaurado com sucesso: '+count+' registros.');
+    }catch(err){alert('Erro ao ler arquivo: '+err.message);}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
 
 // Build client→vendor reverse-map from current carteira
 function _mnBuildVendMap(){
