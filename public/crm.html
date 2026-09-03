@@ -1416,8 +1416,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="mn-fil-com_end" class="mn-fil-btn" onclick="mnSetFiltro('com_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Com endereço</button>
         <button id="mn-fil-sem_end" class="mn-fil-btn" onclick="mnSetFiltro('sem_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Sem endereço</button>
         <button id="mn-fil-inativos" class="mn-fil-btn" onclick="mnSetFiltro('inativos')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Inativos</button>
-        <button onclick="mnExportBackup()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Backup</button>
-        <label style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↑ Restaurar<input type="file" accept=".json" onchange="mnImportBackup(this)" style="display:none"></label>
       </div>
       <div id="mn-lista"></div>
     </div>
@@ -11812,7 +11810,7 @@ function renderVendorDashboard(user, vendorKey){
   if(!vM) return;
 
   const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='diario'?'Julho':CRM_MES==='setembro'?'Agosto':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesAnt=CRM_MES==='diario'?'Julho':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -11853,18 +11851,15 @@ function renderVendorDashboard(user, vendorKey){
   const _junhoTotal=vRawJunho?.total||0;
   const _julhoTotal=vRawJulho?.total||0;
   const _agostoTotal=vRawAgosto?.total||0;
-  const _vSet=(()=>{if(CRM_MES==='setembro')return vM;const sd=_getImportedVends('setembro');return sd?sd.find(v=>v.cod===user.vendId):null;})();
-  const _setembroTotal=_vSet?.abr||0;
-  const _MES_SEQ=['marco','abril','maio','junho','julho','agosto','setembro'];
+  const _MES_SEQ=['marco','abril','maio','junho','julho','agosto'];
   const _MES_DATA={
-    marco:    {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
-    abril:    {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
-    maio:     {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
-    junho:    {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
-    julho:    {label:'Julho',             abr:_julhoTotal,        ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0,prev:_junhoTotal,      prevLabel:'Junho'},
-    agosto:   {label:'Agosto',            abr:_agostoTotal,       ped:vRawAgosto?.ped||0,cli:vRawAgosto?.cli||0,prev:_julhoTotal,   prevLabel:'Julho'},
-    setembro: {label:'Setembro',          abr:_setembroTotal,     ped:_vSet?.ped||0,    cli:_vSet?.cli||0,    prev:_agostoTotal,    prevLabel:'Agosto'},
-    diario:   {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_agostoTotal,    prevLabel:'Agosto'},
+    marco:  {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
+    abril:  {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
+    maio:   {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
+    junho:  {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
+    julho:  {label:'Julho',             abr:_julhoTotal,        ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0,prev:_junhoTotal,      prevLabel:'Junho'},
+    agosto: {label:'Agosto',            abr:_agostoTotal,       ped:vRawAgosto?.ped||0,cli:vRawAgosto?.cli||0,prev:_julhoTotal,    prevLabel:'Julho'},
+    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_agostoTotal,    prevLabel:'Agosto'},
   };
   const _mesIdx=_MES_SEQ.indexOf(CRM_MES);
   const _hist3=_MES_SEQ.slice(Math.max(0,_mesIdx-2),_mesIdx+1);
@@ -13754,41 +13749,7 @@ function mnSetFiltro(v){
 // Edits overlay — persisted in localStorage
 let _mnEdits={};
 function _mnLoadEdits(){try{_mnEdits=JSON.parse(localStorage.getItem('mn_edits')||'{}');}catch(e){_mnEdits={};}}
-function _mnSaveEdits(){
-  try{
-    localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));
-    // Auto-backup diário
-    const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
-    localStorage.setItem('mn_edits_bkp_'+today,JSON.stringify(_mnEdits));
-  }catch(e){}
-}
-function mnExportBackup(){
-  _mnLoadEdits();
-  const json=JSON.stringify(_mnEdits,null,2);
-  const blob=new Blob([json],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='mn_edits_backup_'+new Date().toISOString().slice(0,10)+'.json';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-}
-function mnImportBackup(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const data=JSON.parse(e.target.result);
-      if(typeof data!=='object'||Array.isArray(data)){alert('Arquivo inválido.');return;}
-      const count=Object.keys(data).length;
-      if(!confirm('Restaurar '+count+' registros? Isso vai SUBSTITUIR os edits atuais.'))return;
-      localStorage.setItem('mn_edits',JSON.stringify(data));
-      _mnLoadEdits();
-      mnRenderLista();
-      alert('Restaurado com sucesso: '+count+' registros.');
-    }catch(err){alert('Erro ao ler arquivo: '+err.message);}
-  };
-  reader.readAsText(file);
-  input.value='';
-}
+function _mnSaveEdits(){try{localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));}catch(e){}}
 
 // Build client→vendor reverse-map from current carteira
 function _mnBuildVendMap(){
@@ -13813,7 +13774,8 @@ function mnRenderLista(){
   const _oc={};
   const baseItems=CLIENTES_MANU.map(c=>{
     const n=_oc[c.cod]=(_oc[c.cod]??-1)+1;
-    const edit=_mnEdits[c.cod];
+    const uidKey=(c.cod||'')+(n>0?'__'+n:'');
+    const edit=_mnEdits[uidKey]||_mnEdits[c.cod];
     return edit?{...c,...edit,_occN:n}:{...c,_occN:n};
   });
   let items=baseItems.filter(c=>{
@@ -13845,7 +13807,7 @@ function mnRenderLista(){
     const safeMaps=(c.maps||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
     const vend=vendMap[c.cod];
     const vendBadge=vend?`<span style="font-size:10px;font-weight:700;color:${vend.color};background:${vend.color}22;border:1px solid ${vend.color}55;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle" title="Vendedor responsável">${vend.av}</span>`:'';
-    const edited=_mnEdits[c.cod]?`<span style="font-size:10px;color:#fbbf24;margin-left:4px" title="Editado localmente">✏</span>`:'';
+    const edited=(_mnEdits[uid]||_mnEdits[c.cod])?`<span style="font-size:10px;color:#fbbf24;margin-left:4px" title="Editado localmente">✏</span>`:'';
     const inativoBadge=c.inativo?`<span style="font-size:10px;font-weight:700;color:#ef4444;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:1px 7px;margin-left:6px;vertical-align:middle">INATIVO</span>`:'';
     return `<div id="mn-card-${safeUid}" class="card" style="padding:12px 16px;margin-bottom:8px${c.inativo?';opacity:.45;filter:grayscale(.5)':''}">
       <div style="display:flex;align-items:flex-start;gap:12px">
@@ -13859,7 +13821,7 @@ function mnRenderLista(){
           ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('mn-edit-${safeUid}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
           ${CRM_USER?.fullAccess?`<button onclick="mnEspelho('${safeCod}')" title="Gerar Espelho" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:12px;cursor:pointer">📋</button>`:''}
-          ${CRM_USER?.fullAccess?`<button onclick="mnToggleInativo('${safeCod}')" title="${c.inativo?'Reativar cliente':'Inativar cliente'}" style="background:${c.inativo?'rgba(16,185,129,.12)':'rgba(239,68,68,.1)'};border:1px solid ${c.inativo?'rgba(16,185,129,.3)':'rgba(239,68,68,.25)'};border-radius:6px;color:${c.inativo?'#6ee7b7':'#fca5a5'};padding:5px 9px;font-size:12px;cursor:pointer">${c.inativo?'✅':'🚫'}</button>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnToggleInativo('${safeCod}','${safeUid}')" title="${c.inativo?'Reativar cliente':'Inativar cliente'}" style="background:${c.inativo?'rgba(16,185,129,.12)':'rgba(239,68,68,.1)'};border:1px solid ${c.inativo?'rgba(16,185,129,.3)':'rgba(239,68,68,.25)'};border-radius:6px;color:${c.inativo?'#6ee7b7':'#fca5a5'};padding:5px 9px;font-size:12px;cursor:pointer">${c.inativo?'✅':'🚫'}</button>`:''}
           <button onclick="abrirReporteModal('${safeCod}','${safeNome}')" title="Reportar problema" style="background:#7f1d1d33;border:1px solid #7f1d1d66;border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🚩</button>
         </div>
       </div>
@@ -13885,7 +13847,7 @@ function mnRenderLista(){
         <div style="display:flex;gap:8px">
           <button onclick="mnSaveEdit('${safeCod}','${safeUid}')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
           <button onclick="mnCancelEdit('mn-edit-${safeUid}')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
-          ${_mnEdits[c.cod]?`<button onclick="mnResetEdit('${safeCod}')" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:7px 12px;font-size:11px;cursor:pointer">Reverter original</button>`:''}
+          ${(_mnEdits[uid]||_mnEdits[c.cod])?`<button onclick="mnResetEdit('${safeCod}','${safeUid}')" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:7px 12px;font-size:11px;cursor:pointer">Reverter original</button>`:''}
         </div>
       </div>
     </div>`;
@@ -13906,17 +13868,19 @@ function mnSaveEdit(cod,uid){
   const end=(document.getElementById('mne-end-'+_u)?.value||'').trim();
   const maps=(document.getElementById('mne-maps-'+_u)?.value||'').trim();
   _mnLoadEdits();
-  const _prevInativo=_mnEdits[cod]?.inativo;
-  _mnEdits[cod]={cod:newCod||cod,nome,end,maps,...(_prevInativo?{inativo:true}:{})};
+  const storageKey=(_u&&_u.includes('__'))?_u:cod;
+  const _prevInativo=(_mnEdits[storageKey]||_mnEdits[cod])?.inativo;
+  _mnEdits[storageKey]={cod:newCod||cod,nome,end,maps,...(_prevInativo?{inativo:true}:{})};
   _mnSaveEdits();
   mnRenderLista();
 }
 
-function mnToggleInativo(cod){
+function mnToggleInativo(cod,uid){
   _mnLoadEdits();
-  const cur=!!_mnEdits[cod]?.inativo;
-  if(!_mnEdits[cod])_mnEdits[cod]={};
-  _mnEdits[cod].inativo=!cur;
+  const storageKey=(uid&&uid.includes('__'))?uid:cod;
+  const cur=!!(_mnEdits[storageKey]||_mnEdits[cod])?.inativo;
+  if(!_mnEdits[storageKey])_mnEdits[storageKey]={};
+  _mnEdits[storageKey].inativo=!cur;
   _mnSaveEdits();
   mnRenderLista();
 }
@@ -13926,9 +13890,10 @@ function mnCancelEdit(cod){
   if(editEl) editEl.style.display='none';
 }
 
-function mnResetEdit(cod){
+function mnResetEdit(cod,uid){
   _mnLoadEdits();
-  delete _mnEdits[cod];
+  const storageKey=(uid&&uid.includes('__'))?uid:cod;
+  delete _mnEdits[storageKey];
   _mnSaveEdits();
   mnRenderLista();
 }
@@ -14127,11 +14092,9 @@ const _EQUIPE_COD_MAP={
 function _normStr(s){return(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
 
 function _parseEquipePDF(text){
-  // Usa o mês MÁXIMO encontrado (PDFs de setembro têm 2026/08 como comparativo antes de 2026/09)
-  const allYM=[...text.matchAll(/\b(\d{4})\/(\d{2})\b/g)];
-  let ano='2026',mesNum=null;
-  if(allYM.length){const latest=allYM.reduce((b,m)=>parseInt(m[2])>parseInt(b[2])?m:b,allYM[0]);ano=latest[1];mesNum=latest[2];}
-
+  const ym=text.match(/\b(\d{4})\/(\d{2})\b/);
+  const ano=ym?ym[1]:'2026';
+  const mesNum=ym?ym[2]:null;
   const vendors={};
   const lines=text.split('\n');
   let currentVend=null;
@@ -14268,7 +14231,7 @@ function _getImportedVends(mes){
     if(!data)return null;
     const _prevMap={setembro:'agosto',outubro:'setembro',novembro:'outubro',dezembro:'novembro'};
     const prevMes=_prevMap[mes];
-    const prevVends=prevMes?(window.getVendedoresForMes?window.getVendedoresForMes(prevMes):(_origGetVends?_origGetVends(prevMes):[])):[];
+    const prevVends=prevMes&&_origGetVends?_origGetVends(prevMes):[];
     return data.vendsArr.map(v=>{
       const prev=prevVends.find?.(p=>p.cod===v.cod);
       return{...v,abr:v.total,mar:prev?.abr||0,ped:v.ped||0};
@@ -14398,34 +14361,19 @@ function _renderCurvaPreview(parsed,el){
   el.innerHTML=html;
 }
 
-function _pdfImportWarnUpdate(){
-  const sel=document.getElementById('pdf-mes-override');
-  const anoEl=document.getElementById('pdf-ano-override');
-  const warn=document.getElementById('pdf-overwrite-warn');
-  if(!sel||!anoEl||!warn)return;
-  const m=sel.value,a=anoEl.value;
-  const key='crm_import_equipe_'+a+'_'+m;
-  const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
-  const exists=!!localStorage.getItem(key);
-  warn.style.display=exists?'block':'none';
-  warn.textContent=exists?'⚠ ATENÇÃO: '+mesNames[m]+' já tem dados importados e será SOBRESCRITO':'';
-}
 function _renderEquipePreview(parsed,el){
   const{ano,mesNum,vendors,grandTotal}=parsed;
   const mesNames={'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'};
   const mesName=mesNames[mesNum]||mesNum||'(desconhecido)';
   const vendList=Object.values(vendors);
   const _opts=['01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>`<option value="${m}"${m===mesNum?' selected':''}>${mesNames[m]}</option>`).join('');
-  const existKey='crm_import_equipe_'+ano+'_'+mesNum;
-  const hasExist=!!localStorage.getItem(existKey);
   const html=`
     <div style="margin-bottom:10px;padding:10px 12px;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2);border-radius:8px">
       <div style="font-size:11px;color:rgba(110,231,183,.7);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Período detectado — corrija se necessário</div>
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-        <select id="pdf-mes-override" onchange="_pdfImportWarnUpdate()" style="background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700">${_opts}</select>
-        <input id="pdf-ano-override" type="number" min="2024" max="2030" value="${ano}" onchange="_pdfImportWarnUpdate()" style="width:72px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center">
+        <select id="pdf-mes-override" style="background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700">${_opts}</select>
+        <input id="pdf-ano-override" type="number" min="2024" max="2030" value="${ano}" style="width:72px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(110,231,183,.4);border-radius:6px;padding:4px 8px;font-size:13px;font-weight:700;text-align:center">
       </div>
-      <div id="pdf-overwrite-warn" style="display:${hasExist?'block':'none'};font-size:12px;font-weight:700;color:#f87171;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);border-radius:6px;padding:7px 10px;margin-bottom:6px">${hasExist?'⚠ ATENÇÃO: '+mesName+' já tem dados importados e será SOBRESCRITO':''}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.4)">${vendList.length} vendedores · Grand Total: ${_fBRL2(grandTotal)}</div>
     </div>
     <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
