@@ -11815,7 +11815,7 @@ function renderVendorDashboard(user, vendorKey){
   if(!vM) return;
 
   const mesLabel=MES_LABELS[CRM_MES]||'Maio';
-  const mesAnt=CRM_MES==='diario'?'Julho':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
+  const mesAnt=CRM_MES==='setembro'?'Agosto':CRM_MES==='diario'?'Agosto':CRM_MES==='agosto'?'Julho':CRM_MES==='julho'?'Junho':CRM_MES==='junho'?'Maio':CRM_MES==='maio'?'Abril':'Março';
 
   const sorted=[...mesData].filter(v=>!v.newHire).sort((a,b)=>b.abr-a.abr);
   const rank=sorted.findIndex(v=>v.cod===user.vendId)+1;
@@ -11856,15 +11856,18 @@ function renderVendorDashboard(user, vendorKey){
   const _junhoTotal=vRawJunho?.total||0;
   const _julhoTotal=vRawJulho?.total||0;
   const _agostoTotal=vRawAgosto?.total||0;
-  const _MES_SEQ=['marco','abril','maio','junho','julho','agosto'];
+  const _setRaw=(typeof _getImportedVends==='function'?_getImportedVends('setembro'):null)?.find?.(v=>v.cod===user.vendId);
+  const _setTotal=_setRaw?.abr||0;
+  const _MES_SEQ=['marco','abril','maio','junho','julho','agosto','setembro'];
   const _MES_DATA={
-    marco:  {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
-    abril:  {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
-    maio:   {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
-    junho:  {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
-    julho:  {label:'Julho',             abr:_julhoTotal,        ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0,prev:_junhoTotal,      prevLabel:'Junho'},
-    agosto: {label:'Agosto',            abr:_agostoTotal,       ped:vRawAgosto?.ped||0,cli:vRawAgosto?.cli||0,prev:_julhoTotal,    prevLabel:'Julho'},
-    diario: {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_agostoTotal,    prevLabel:'Agosto'},
+    marco:   {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
+    abril:   {label:'Abril',             abr:vRawAbr?.abr||0,    ped:vRawAbr?.ped||0,  cli:vRawAbr?.cli||0,  prev:vRawAbr?.mar||0,  prevLabel:'Março'},
+    maio:    {label:'Maio',              abr:vRawMaio?.total||0, ped:vRawMaio?.ped||0, cli:vRawMaio?.cli||0, prev:vRawAbr?.abr||0,  prevLabel:'Abril'},
+    junho:   {label:'Junho',             abr:_junhoTotal,        ped:vRawJunho?.ped||0,cli:vRawJunho?.cli||0,prev:vRawMaio?.total||0,prevLabel:'Maio'},
+    julho:   {label:'Julho',             abr:_julhoTotal,        ped:vRawJulho?.ped||0,cli:vRawJulho?.cli||0,prev:_junhoTotal,      prevLabel:'Junho'},
+    agosto:  {label:'Agosto',            abr:_agostoTotal,       ped:vRawAgosto?.ped||0,cli:vRawAgosto?.cli||0,prev:_julhoTotal,    prevLabel:'Julho'},
+    setembro:{label:'Setembro',          abr:_setTotal,          ped:_setRaw?.ped||0,  cli:_setRaw?.cli||0,  prev:_agostoTotal,    prevLabel:'Agosto'},
+    diario:  {label:getDiaLabel(CRM_DIA),abr:_diaRaw.total,      ped:_diaRaw.ped,      cli:_diaRaw.cli,      prev:_agostoTotal,    prevLabel:'Agosto'},
   };
   const _mesIdx=_MES_SEQ.indexOf(CRM_MES);
   const _hist3=_MES_SEQ.slice(Math.max(0,_mesIdx-2),_mesIdx+1);
@@ -14378,9 +14381,12 @@ function _getImportedVends(mes){
     if(!key)return null;
     const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
     if(!data)return null;
-    const _prevMap={setembro:'agosto',outubro:'setembro',novembro:'outubro',dezembro:'novembro'};
+    const _prevMap={julho:'junho',agosto:'julho',setembro:'agosto',outubro:'setembro',novembro:'outubro',dezembro:'novembro'};
     const prevMes=_prevMap[mes];
-    const prevVends=prevMes&&_origGetVends?_origGetVends(prevMes):[];
+    // Usa getVendedoresForMes (monkey-patched) para pegar dados importados do mês anterior;
+    // cai no _origGetVends se não houver import
+    const _getPrev=window.getVendedoresForMes||_origGetVends;
+    const prevVends=prevMes&&_getPrev?_getPrev(prevMes):[];
     return data.vendsArr.map(v=>{
       const prev=prevVends.find?.(p=>p.cod===v.cod);
       return{...v,abr:v.total,mar:prev?.abr||0,ped:v.ped||0};
