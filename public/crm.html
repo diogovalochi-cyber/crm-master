@@ -1416,6 +1416,9 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="mn-fil-com_end" class="mn-fil-btn" onclick="mnSetFiltro('com_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Com endereço</button>
         <button id="mn-fil-sem_end" class="mn-fil-btn" onclick="mnSetFiltro('sem_end')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Sem endereço</button>
         <button id="mn-fil-inativos" class="mn-fil-btn" onclick="mnSetFiltro('inativos')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">Inativos</button>
+        <button id="mn-fil-editados" class="mn-fil-btn" onclick="mnSetFiltro('editados')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">✏ Editados</button>
+        <button id="mn-fil-sem_edicao" class="mn-fil-btn" onclick="mnSetFiltro('sem_edicao')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">○ Não editados</button>
+        <button onclick="mnAddNovo()" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">➕ Novo</button>
         <button onclick="mnExportBackup()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Backup</button>
         <label style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↑ Restaurar<input type="file" accept=".json" onchange="mnImportBackup(this)" style="display:none"></label>
       </div>
@@ -13814,8 +13817,22 @@ function mnRenderLista(){
     return edit?{...c,...edit,_occN:n}:{...c,_occN:n};
   });
   let items=baseItems.filter(c=>{
+    const _uid=(c.cod||'')+(c._occN>0?'__'+c._occN:'');
+    const _edit=_mnEdits[_uid]||_mnEdits[c.cod];
+    const _hasReal=_edit&&!!(_edit.end||_edit.nome||_edit.maps);
     if(_mnFiltro==='inativos'){
       if(!c.inativo)return false;
+      if(_mnBusca){const q=_mnBusca;return(c.cod&&c.cod.toLowerCase().includes(q))||(c.nome&&c.nome.toLowerCase().includes(q))||(c.end&&c.end.toLowerCase().includes(q));}
+      return true;
+    }
+    if(_mnFiltro==='editados'){
+      if(!_hasReal)return false;
+      if(_mnBusca){const q=_mnBusca;return(c.cod&&c.cod.toLowerCase().includes(q))||(c.nome&&c.nome.toLowerCase().includes(q))||(c.end&&c.end.toLowerCase().includes(q));}
+      return true;
+    }
+    if(_mnFiltro==='sem_edicao'){
+      if(c.inativo)return false;
+      if(_hasReal)return false;
       if(_mnBusca){const q=_mnBusca;return(c.cod&&c.cod.toLowerCase().includes(q))||(c.nome&&c.nome.toLowerCase().includes(q))||(c.end&&c.end.toLowerCase().includes(q));}
       return true;
     }
@@ -13837,7 +13854,45 @@ function mnRenderLista(){
     el.innerHTML=`<div style="text-align:center;padding:40px 16px;color:rgba(255,255,255,.3);font-size:13px">${!total?'Aguardando planilha de endereços — dados serão carregados em breve':'Nenhum resultado encontrado'}</div>`;
     return;
   }
-  el.innerHTML=items.map(c=>{
+  // Novo entries (manually added, not from CLIENTES_MANU)
+  const novosHtml=(_mnFiltro===''||_mnFiltro==='editados')?Object.entries(_mnEdits).filter(([k])=>k.startsWith('_novo_')).filter(([,v])=>{
+    if(!_mnBusca)return true;
+    const q=_mnBusca;
+    return(v.cod&&v.cod.toLowerCase().includes(q))||(v.nome&&v.nome.toLowerCase().includes(q))||(v.end&&v.end.toLowerCase().includes(q));
+  }).map(([k,c])=>{
+    const safeKey=k.replace(/'/g,"\\'");
+    const safeNome=(c.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeCod=(c.cod||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeEnd=(c.end||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const safeMaps=(c.maps||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return `<div id="mn-card-novo-${safeKey}" class="card" style="padding:12px 16px;margin-bottom:8px;border-left:3px solid #a78bfa">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="background:#7C3AED22;border:1px solid #7C3AED55;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#a78bfa;flex-shrink:0;white-space:nowrap;margin-top:2px">${c.cod||'NOVO'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px">${c.nome||'(sem nome)'} <span style="font-size:10px;font-weight:700;color:#a78bfa;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);border-radius:4px;padding:1px 6px;margin-left:4px">NOVO</span></div>
+          ${c.end?`<div style="font-size:12px;color:rgba(255,255,255,.55)">📍 ${c.end}</div>`:`<div style="font-size:12px;color:#f59e0b">⚠ Sem endereço em texto</div>`}
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0;margin-top:2px">
+          ${c.maps?`<a href="${c.maps}" target="_blank" rel="noopener" style="background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center" title="Abrir no Maps">🗺</a>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnEditCard('mn-edit-novo-${safeKey}')" title="Editar" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);border-radius:6px;color:#a78bfa;padding:5px 9px;font-size:12px;cursor:pointer">✏</button>`:''}
+          ${CRM_USER?.fullAccess?`<button onclick="mnDeleteNovo('${safeKey}')" title="Excluir" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:6px;color:#fca5a5;padding:5px 9px;font-size:12px;cursor:pointer">🗑</button>`:''}
+        </div>
+      </div>
+      <div id="mn-edit-novo-${safeKey}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Cód</label><input id="mne-novo-cod-${safeKey}" type="text" value="${safeCod}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+          <div><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Nome</label><input id="mne-novo-nome-${safeKey}" type="text" value="${safeNome}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+        </div>
+        <div style="margin-bottom:8px"><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Endereço</label><input id="mne-novo-end-${safeKey}" type="text" value="${safeEnd}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+        <div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Link Maps</label><input id="mne-novo-maps-${safeKey}" type="text" value="${safeMaps}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+        <div style="display:flex;gap:8px">
+          <button onclick="mnSaveNovoEdit('${safeKey}')" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+          <button onclick="mnEditCard('mn-edit-novo-${safeKey}')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'';
+  el.innerHTML=novosHtml+items.map(c=>{
     const uid=(c.cod||'')+(c._occN>0?'__'+c._occN:''); // unique per occurrence, not visible
     const safeUid=uid.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     const safeNome=(c.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
@@ -13933,6 +13988,59 @@ function mnResetEdit(cod,uid){
   _mnLoadEdits();
   const storageKey=(uid&&uid.includes('__'))?uid:cod;
   delete _mnEdits[storageKey];
+  _mnSaveEdits();
+  mnRenderLista();
+}
+
+function mnAddNovo(){
+  mnRenderLista();
+  const lista=document.getElementById('mn-lista');
+  if(document.getElementById('mn-novo-form')){document.getElementById('mn-novo-form').remove();return;}
+  const div=document.createElement('div');
+  div.id='mn-novo-form';
+  div.style.cssText='background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.4);border-radius:10px;padding:14px 16px;margin-bottom:10px';
+  div.innerHTML=`<div style="font-size:12px;font-weight:700;color:#a78bfa;margin-bottom:10px">➕ Novo cliente</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Cód</label><input id="mn-novo-cod" type="text" placeholder="Ex: 5100" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+      <div><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Nome</label><input id="mn-novo-nome" type="text" placeholder="Nome do cliente" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+    </div>
+    <div style="margin-bottom:8px"><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Endereço</label><input id="mn-novo-end" type="text" placeholder="Rua, número, bairro, cidade/UF" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+    <div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Link Maps</label><input id="mn-novo-maps" type="text" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;padding:7px 10px;font-size:12px;outline:none;font-family:inherit"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="mnSaveNovo()" style="background:#7C3AED;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">Salvar</button>
+      <button onclick="document.getElementById('mn-novo-form').remove()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer">Cancelar</button>
+    </div>`;
+  lista.insertBefore(div,lista.firstChild);
+  document.getElementById('mn-novo-cod').focus();
+}
+
+function mnSaveNovo(){
+  const cod=(document.getElementById('mn-novo-cod')?.value||'').trim();
+  const nome=(document.getElementById('mn-novo-nome')?.value||'').trim();
+  const end=(document.getElementById('mn-novo-end')?.value||'').trim();
+  const maps=(document.getElementById('mn-novo-maps')?.value||'').trim();
+  if(!cod&&!nome){alert('Informe pelo menos o código ou nome do cliente.');return;}
+  _mnLoadEdits();
+  _mnEdits['_novo_'+Date.now()]={cod,nome,end,maps,_novo:true};
+  _mnSaveEdits();
+  mnRenderLista();
+}
+
+function mnSaveNovoEdit(key){
+  const cod=(document.getElementById('mne-novo-cod-'+key)?.value||'').trim();
+  const nome=(document.getElementById('mne-novo-nome-'+key)?.value||'').trim();
+  const end=(document.getElementById('mne-novo-end-'+key)?.value||'').trim();
+  const maps=(document.getElementById('mne-novo-maps-'+key)?.value||'').trim();
+  _mnLoadEdits();
+  if(_mnEdits[key]) _mnEdits[key]={..._mnEdits[key],cod,nome,end,maps};
+  _mnSaveEdits();
+  mnRenderLista();
+}
+
+function mnDeleteNovo(key){
+  if(!confirm('Excluir este cliente novo?'))return;
+  _mnLoadEdits();
+  delete _mnEdits[key];
   _mnSaveEdits();
   mnRenderLista();
 }
