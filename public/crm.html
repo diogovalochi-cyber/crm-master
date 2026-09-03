@@ -1043,8 +1043,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <div class="section-sub">Carteiras por vendedor</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <div id="pdf-label-equipe" style="display:none;font-size:11px;color:#6ee7b7"></div>
-      <button onclick="pdfImportOpen('equipe')" id="pdf-btn-equipe" title="Importar PDF vendas equipe" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.45);border-radius:7px;color:#a78bfa;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">📥 Importar PDF</button>
       <button class="refresh-btn" id="refresh-btn-analise" onclick="refreshTab('analise')" title="Atualizar dados"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Atualizar</button>
     </div>
   </div>
@@ -1642,7 +1640,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <input id="hm-busca" type="text" placeholder="🔍  Buscar vendedor ou representante…" autocomplete="off"
         oninput="_hmSearch=this.value;_hmBuildStrip()"
         style="flex:1;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:8px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none">
-      <button onclick="pdfImportOpen('curva')" id="pdf-btn-curva" title="Importar Curva ABC via PDF" style="background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.45);border-radius:9px;color:#a78bfa;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">📥 Importar PDF</button>
     </div>
     <div id="pdf-label-curva" style="display:none;font-size:11px;color:#6ee7b7;margin-bottom:6px;padding:4px 10px;background:rgba(110,231,183,.08);border-radius:6px;border:1px solid rgba(110,231,183,.2)"></div>
     <div id="hm-vstrip" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:thin"></div>
@@ -3214,6 +3211,39 @@ const VENDEDORES_AGOSTO = [
   {name:'Cezar',av:'CZ',color:'#F43F5E',total:492735.75,cli:49,ped:0,cod:'125',newHire:true},
   {name:'Rauer',av:'RA',color:'#FCD34D',total:82916.74,cli:12,ped:0,cod:'',newHire:true}
 ];
+// Setembro 2026 — período 01/09 a 02/09/2026, Grand Total R$ 349.460,16
+const VENDEDORES_SETEMBRO = [
+  {name:'Guilherme',av:'GU',color:'#10B981',total:59235.04,cli:26,ped:0,cod:'093'},
+  {name:'Relson',av:'RE',color:'#60A5FA',total:3586.09,cli:6,ped:0,cod:'094'},
+  {name:'Everaldo',av:'EV',color:'#F59E0B',total:1948.90,cli:1,ped:0,cod:'107'},
+  {name:'Israel',av:'IS',color:'#8B5CF6',total:40728.07,cli:33,ped:0,cod:'115'},
+  {name:'Natália',av:'NA',color:'#F472B6',total:42229.99,cli:21,ped:0,cod:'116'},
+  {name:'Keller',av:'KE',color:'#22D3EE',total:16853.25,cli:16,ped:0,cod:'117'},
+  {name:'Althieres',av:'AL',color:'#FBBF24',total:23268.15,cli:17,ped:0,cod:'119',newHire:true},
+  {name:'João',av:'JO2',color:'#2DD4BF',total:9425.32,cli:8,ped:0,cod:'120',newHire:true},
+  {name:'Moab',av:'MB',color:'#FB923C',total:32007.34,cli:26,ped:0,cod:'121',newHire:true},
+  {name:'Ramon',av:'RM',color:'#A3E635',total:22339.59,cli:11,ped:0,cod:'122',newHire:true},
+  {name:'Kelly',av:'KL',color:'#E879F9',total:44134.52,cli:34,ped:0,cod:'123',newHire:true},
+  {name:'Luiz Henrique',av:'LH',color:'#38BDF8',total:17371.29,cli:17,ped:0,cod:'124',newHire:true},
+  {name:'Cezar',av:'CZ',color:'#F43F5E',total:25998.64,cli:22,ped:0,cod:'125',newHire:true},
+  {name:'Rauer',av:'RA',color:'#FCD34D',total:10333.97,cli:8,ped:0,cod:'',newHire:true},
+];
+const CARTEIRA_SETEMBRO = {
+  '119':[{cod:'1016',nome:'MERCADO H R. LTDA',valor:1157.67},{cod:'2216',nome:'ROSELIANA DOS SANTOS PAES',valor:558.03},{cod:'2826',nome:'CRISTIANO DA SILVA RAMALHO SANTANA',valor:1190.45},{cod:'3295',nome:'JOSÉ NUNES DOS SANTOS',valor:1603.46},{cod:'3320',nome:'GR MORAES SUPERMERCADOS',valor:3781.70},{cod:'3481',nome:'MERCADO EMPORIO EUCALIPTOS LTDA',valor:1641.47},{cod:'3498',nome:'MARCOS DOS SANTOS',valor:647.53},{cod:'3952',nome:'JEFFERSON VIGILIO DA SILVA NASCIMENTO',valor:1309.94},{cod:'4280',nome:'SUPERMERCADO RONDON LTDA',valor:440.80},{cod:'4630',nome:'COMERCIAL DE ALIMENTOS PRESTES MAIA LTDA',valor:2167.45},{cod:'4650',nome:'MERCADO EMPORIO FAZENDINHA LTDA',valor:1427.47},{cod:'4680',nome:'VANIRA FERREIRA DA SILVA',valor:1619.14},{cod:'4927',nome:'LJG BELLA ROSA C LTDA',valor:1365.39},{cod:'4995',nome:'BRUNO MORENO DE OLIVEIRA',valor:503.68},{cod:'5037',nome:'ALAN SILVA DOS SANTOS',valor:615.23},{cod:'5070',nome:'EMANUELA SAMPAIO BATISTA FREITAS',valor:480.53},{cod:'5075',nome:'MARIA VALDENE FERREIRA RIBEIRO',valor:2758.21}],
+  '125':[{cod:'2931',nome:'FOFOSUL COMERCIAL E DISTRIBUIDORA LTDA',valor:2231.72},{cod:'3097',nome:'REGINA PAULA PEREIRA DA SILVA',valor:746.07},{cod:'3293',nome:'JP ADEGA & MERCADO LTDA',valor:1610.64},{cod:'3297',nome:'REGINALDO CARDOSO FERRAZ',valor:456.30},{cod:'3317',nome:'MARIA CRISTINA GUEDES DA SILVA SANTOS',valor:568.56},{cod:'3477',nome:'ERLÊ GOMES BARBOSA',valor:466.22},{cod:'3635',nome:'MIL FOLHAS PAES E DOCES LTDA',valor:1223.56},{cod:'3646',nome:'MICHELLE APARECIDA KAMIMURA GONSALES',valor:1290.63},{cod:'3647',nome:'VINICIUS KAMIMURA BITTENCOURT DOS SANTOS',valor:757.39},{cod:'3702',nome:'VANIA MARIA DA SILVA FEITOSA',valor:1008.41},{cod:'3812',nome:'FERNANDO SIMONCELO GUIMARAES',valor:614.00},{cod:'3874',nome:'MINIMERCADO CAPRICHO LIMITADA',valor:701.35},{cod:'3966',nome:'MERCADINHO BONSUCESSO LTDA',valor:1174.22},{cod:'4083',nome:'SUPERMERCADO SUPER VITAL DE BIRITIBA MIRIM LTDA',valor:1888.08},{cod:'4123',nome:'COMERCIAL JARDIM BRASILIA LTDA',valor:1564.69},{cod:'4124',nome:'COMERCIAL SANTA ETELVINA LTDA',valor:843.40},{cod:'4238',nome:'MERCADINHO STILO VIP LTDA',valor:3233.13},{cod:'4297',nome:'NATALIA NASCIMENTO SANTANA',valor:2406.92},{cod:'4622',nome:'MARIA EDILEUZA DE SOUSA GOMES',valor:1708.70},{cod:'489',nome:'MERCADO DALLAS LTDA - ME',valor:838.40},{cod:'4990',nome:'MERCADO VEREDAS LTDA',valor:492.18},{cod:'5097',nome:'QIN MERCADO LTDA',valor:174.07}],
+  '107':[{cod:'4730',nome:'FAMILIA III SUPERMERCADO LTDA',valor:1948.90}],
+  '093':[{cod:'3382',nome:'RENATA MAIA DE ALMEIDA',valor:1303.31},{cod:'3933',nome:'WL SUPERMERCADO LTDA',valor:639.28},{cod:'3998',nome:'MERCANTIL MAX CARNES LTDA',valor:1202.96},{cod:'3999',nome:'MERCANTIL MAX CARNES LTDA',valor:1026.06},{cod:'4000',nome:'MERCANTIL MAX CARNES LTDA',valor:1168.29},{cod:'4063',nome:'AMB COMERCIO DE ALIMENTOS LTDA',valor:3528.86},{cod:'4136',nome:'MERCADINHO GUIMAR LTDA',valor:2698.02},{cod:'4190',nome:'EQUILIBRIO COMERCIO DE ALIMENTOS LTDA',valor:4901.13},{cod:'4310',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:2736.08},{cod:'4314',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:3760.08},{cod:'4315',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:3587.13},{cod:'4316',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:6181.26},{cod:'4336',nome:'MERCADINHO MICHELITO COMERCIO VAREJISTA',valor:1645.21},{cod:'4380',nome:'MEDEIROS E VIEIRA SUPERMERCADOS LTDA',valor:734.75},{cod:'4489',nome:'COMERCIAL DE ALIMENTOS PENTA LTDA',valor:739.70},{cod:'4534',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:7378.40},{cod:'4701',nome:'ANTONIO DE ALCANTARA SILVA',valor:1246.53},{cod:'4726',nome:'J J VIANA COMERCIO E DISTRIBUIDORA LTDA',valor:1096.30},{cod:'4849',nome:'HORTIFRUTI BEM ESTAR LTDA',valor:689.01},{cod:'4864',nome:'PADARIA E CONFEITARIA SAO LUIS LTDA',valor:629.85},{cod:'4963',nome:'MEDEIROS E VIEIRA SUPERMERCADOS LTDA',valor:1757.26},{cod:'4964',nome:'MEDEIROS E VIEIRA SUPERMERCADOS LTDA',valor:1170.53},{cod:'4986',nome:'CAMILA FEITOSA BORGES',valor:479.70},{cod:'5009',nome:'INSTITUTO NACIONAL DE TECNOLOGIA EDUCACAO CULTURA E SAUDE',valor:6849.12},{cod:'781',nome:'OSVALDO XAVIER DE MACEDO JUNIOR',valor:674.84},{cod:'852',nome:'MERCADO ULTRA ECONOMIA LTDA',valor:1411.38}],
+  '115':[{cod:'1268',nome:'ERIVALDO PEREIRA DA SILVA',valor:1150.45},{cod:'1657',nome:'MERCADO SANTA FE DE ITAPECERICA DA SERRA LTDA',valor:562.03},{cod:'2128',nome:'LUCIANA PEREIRA GONCALVES PAES',valor:866.92},{cod:'2193',nome:'HORTIFRUTI E EMPORIO OLIVEIRA LTDA',valor:1112.92},{cod:'2230',nome:'PADARIA E MERCADO APS CRISPIM LTDA',valor:1007.88},{cod:'2380',nome:'J A S BARBOSA - MERCADINHO',valor:2504.60},{cod:'2495',nome:'IPAVA RAIO SUPERMERCADO LTDA',valor:2800.30},{cod:'2496',nome:'MERCADINHO AMANHECER EIRELI',valor:540.15},{cod:'2735',nome:'MERCADO E MERCEARIA BOM CLIMA LTDA',valor:408.13},{cod:'2808',nome:'TAYNA YNGRISLAINY DA SILVA CANUTO ARAUJO',valor:650.87},{cod:'3350',nome:'AGNALDO FERREIRA EVANGELISTA',valor:1527.89},{cod:'3437',nome:'MERCADO ENERGIA POSITIVA LTDA',valor:2111.13},{cod:'4093',nome:'JOSE EDILASIO ALVES',valor:1598.82},{cod:'4134',nome:'C. W. MOELLER - REFEICOES',valor:999.38},{cod:'4186',nome:'HORTIFRUTI MAIS SABOR SANTA TEREZA LTDA',valor:1052.65},{cod:'4195',nome:'FOX CARNES INDEPENDENCIA LTDA',valor:2409.88},{cod:'4296',nome:'ALPHA CENTER CARNES LTDA',valor:3382.72},{cod:'4389',nome:'KATIA DIANA CARDOSO COSTA',valor:1496.54},{cod:'4467',nome:'LILIAN ROLEMBERG FERREIRA',valor:349.50},{cod:'4508',nome:'JOSE APARECIDO MOREIRA DE OLIVEIRA PADARIA LTDA',valor:760.50},{cod:'4513',nome:'BOI FORTE INDEPENDENCIA LTDA',valor:891.12},{cod:'4550',nome:'RICARDO FERREIRA DE MELO',valor:731.86},{cod:'4568',nome:'FRANCISCO SEVERINO SILVA',valor:627.34},{cod:'4662',nome:'DLR PADARIA E MINI MERCADO LTDA',valor:348.96},{cod:'4685',nome:'EMPORIO DANI E CIA LTDA',valor:563.10},{cod:'4722',nome:'BARATINHO ALMEIDA SU LTDA',valor:1410.52},{cod:'4723',nome:'ALPHA CENTER CARNES LTDA',valor:2060.88},{cod:'4832',nome:'MERCADINHO RIOS CARNEIRO LTDA',valor:1556.83},{cod:'4884',nome:'MGM COMERCIO MARTINS E GOUVEIA LTDA',valor:825.11},{cod:'4904',nome:'MAMMA XICA DELIVERY LTDA',valor:573.69},{cod:'5030',nome:'JMJ MENDES CARNES LTDA',valor:1384.79},{cod:'5040',nome:'ALINE LIMA DOS SANTOS',valor:543.88},{cod:'5095',nome:'CENTRAL DE CARNES LK LTDA',valor:1916.73}],
+  '120':[{cod:'171',nome:'MARIA EDITE FREIRES',valor:913.50},{cod:'172',nome:'JOSE ADEILSON',valor:1806.98},{cod:'266',nome:'MINI MERCADO E MERCEARIA TRINDADE',valor:2015.53},{cod:'4188',nome:'MERCADO DA CARNE SB LTDA',valor:503.99},{cod:'4191',nome:'FENIX SUPERMERCADO LTDA',valor:663.00},{cod:'4242',nome:'EDIVANE MAGALHAES DE OLIVEIRA',valor:1081.51},{cod:'4387',nome:'MONICA LEITE DA SILVA MERCADO',valor:1262.39},{cod:'98',nome:'MINI MERCADO REIS LTDA ME',valor:1178.42}],
+  '117':[{cod:'211',nome:'MERCADO CENTRAL DA PONTE ALTA LTDA - ME',valor:1090.94},{cod:'2114',nome:'MARIA DO CARMO OLIVEIRA SILVA',valor:842.30},{cod:'31',nome:'RAEL PEREIRA MENDES',valor:853.56},{cod:'3650',nome:'OTAVIO FRANCISCO DOS SANTOS',valor:1223.55},{cod:'4189',nome:'ANTONIO FERNANDO RODRIGUES',valor:612.00},{cod:'4351',nome:'IVONE FARIA NEVES',valor:517.79},{cod:'4413',nome:'IRIS ARAGÃO BERNARDO DA SILVA',valor:1272.86},{cod:'4430',nome:'SEVERINA RUTH DE ARAUJO OLIVEIRA',valor:2234.70},{cod:'4582',nome:'IVANILSON SILVA DOS SANTOS',valor:1230.52},{cod:'4628',nome:'ADEGA ALEMAO E CIDA LTDA',valor:499.37},{cod:'4908',nome:'MARCIA CRISTINA DA SILVA',valor:886.86},{cod:'4969',nome:'LUCIANO DE OLIVEIRA GOMES',valor:637.57},{cod:'5016',nome:'GRACA SUPERMERCADO LTDA',valor:2366.40},{cod:'5080',nome:'COMETA MERCADO & PADARIA LTDA',valor:1183.38},{cod:'5087',nome:'PANIFICADORA CACAPAVA VELHA LTDA',valor:880.84},{cod:'5090',nome:'VALDIR DOS SANTOS FERNANDES',valor:520.61}],
+  '123':[{cod:'1197',nome:'CENTER LIDER COMERCIO DE CARNES LTDA',valor:855.82},{cod:'1230',nome:'CENTER LIDER COMERCIO DE CARNES LTDA LOJA 03',valor:1362.75},{cod:'1234',nome:'CENTER LIDER COMERCIO DE CARNES LTDA',valor:1697.59},{cod:'1866',nome:'MERCADO E MERCEARIA ROCHA LTDA',valor:928.00},{cod:'1882',nome:'WALLACE KEMPIS SOARES ANGELO',valor:592.35},{cod:'2012',nome:'CENTER LIDER COMERCIO DE CARNES LTDA LOJA 06',valor:1868.90},{cod:'2261',nome:'J PALHUCA PADARIA E MINIMERCADO LTDA',valor:540.15},{cod:'2744',nome:'IRMAOS MADUREIRA SUPERMERCADO LTDA',valor:581.37},{cod:'2810',nome:'JOÃO FILIPE BARROS DE SOUZA MERCADO',valor:523.97},{cod:'2917',nome:'MINI MERCADO BARÃO DO CARMO LTDA',valor:1371.24},{cod:'2966',nome:'VALDIR DA COSTA PIMENTEL',valor:3027.81},{cod:'3021',nome:'MERCADO ALIANCA 3 EIRELI',valor:892.84},{cod:'3071',nome:'MDR MERCADO LTDA',valor:612.36},{cod:'3129',nome:'BRUNO MAMEDE PEREIRA',valor:744.24},{cod:'3298',nome:'CENTER LIDER COMERCIO DE CARNES LTDA',valor:1274.25},{cod:'3315',nome:'ITALO ROBERTO BARROS DE SOUZA',valor:1154.58},{cod:'3342',nome:'LEONARDO MANTOAN PAES',valor:1871.48},{cod:'3383',nome:'DAMIAO RODRIGUES DOS SANTOS',valor:2364.69},{cod:'3565',nome:'POINT DO ACAI E TAPIOCA LTDA',valor:921.88},{cod:'3897',nome:'MINIMERCADO CENTRAL DO JARDIM LTDA',valor:713.27},{cod:'3916',nome:'NOVO MERCADO ACOUGUE E PADARIA SUPER BOM DE PRECO LTDA',valor:760.50},{cod:'4005',nome:'ISAIAS INACIO DE MELO SILVA',valor:3983.79},{cod:'4018',nome:'MERCADINHO DO TICO LTDA',valor:937.56},{cod:'4142',nome:'MOTA SUPERMERCADO LTDA',valor:2131.67},{cod:'4398',nome:'MINI MERCADO E PADARIA 7 ELO LTDA',valor:1997.92},{cod:'4406',nome:'PANIFICADORA E RESTAURANTE RODRIGUES LTDA',valor:760.50},{cod:'4460',nome:'NOVO MERCADO PADARIA E ACOUGUE SUPER BOM DE PRECO LTDA',valor:570.38},{cod:'4542',nome:'NOVA PADARIA MERCADO E ACOUGUE SUPER BOM DE PRECO LTDA',valor:912.60},{cod:'4543',nome:'PONTO DA ECONOMIA MERCADO PADARIA E HORTIFRUTI LTDA',valor:2053.85},{cod:'4624',nome:'TENNESSEE TABOAO CARNES LTDA',valor:2387.93},{cod:'4646',nome:'CARLOS WILLIAM PONTES JARDIM',valor:760.50},{cod:'4689',nome:'MINI MERCADO NOVO HORIZONTE LTDA',valor:648.30},{cod:'4811',nome:'MERCADO NOVOLAR PREMIUM LTDA',valor:1623.06},{cod:'560',nome:'IRISMAR HOSTEGAL DE OLIVEIRA',valor:706.42}],
+  '124':[{cod:'4584',nome:'SUPERMERCADO TRES PODERES LTDA',valor:1170.00},{cod:'4637',nome:'CAUE BORBA DA SILVA',valor:570.09},{cod:'4653',nome:'ALEXANDRE NADDEO',valor:691.49},{cod:'4670',nome:'ABRAAO DOS SANTOS LEANDRO',valor:1423.69},{cod:'4674',nome:'MERCADO LAURA SAO VICENTE LTDA',valor:2125.79},{cod:'4684',nome:'MARTA THAIS DO AMARAL SANTANA',valor:813.00},{cod:'4696',nome:'ROSA OLIVEIRA DOS ANJOS',valor:461.56},{cod:'4705',nome:'CLAUDIA SANTOS OLIVEIRA',valor:830.50},{cod:'4727',nome:'RENILDO DA SILVA',valor:1356.96},{cod:'4740',nome:'JAQUELINE ALVES COSTA',valor:1574.00},{cod:'4755',nome:'MAGNO JOSE MEGIATTO',valor:507.00},{cod:'4793',nome:'BRUNO MERCADO DIAS DE OLIVEIRA',valor:507.00},{cod:'4794',nome:'BRUNA BEATRIZ CADENASSE DOS ANJOS',valor:775.41},{cod:'4901',nome:'NICOLLY SOPHYA GUIMARÃES DA SILVA',valor:1159.92},{cod:'5025',nome:'LAURITA PEREIRA DA SILVA OLIVEIRA',valor:1832.60},{cod:'5031',nome:'BRISA MAR GAIVOTA LTDA',valor:957.13},{cod:'5083',nome:'MERCADO DA CASSIA',valor:615.15}],
+  '121':[{cod:'1148',nome:'REI DO REAL MASTER EIRELI - ME',valor:1477.85},{cod:'1713',nome:'WANESSA MESSIAS DE SOUZA',valor:701.90},{cod:'2200',nome:'MERCADINHO DILLA LTDA',valor:2664.81},{cod:'2427',nome:'REI DO REAL MAIS EIRELI',valor:720.40},{cod:'2645',nome:'MERCADO DA CARNE T.F. LTDA',valor:1295.19},{cod:'3035',nome:'REI DO REAL PARK LTDA',valor:1267.24},{cod:'3124',nome:'CLAUDINEY VELOSO DA SILVA',valor:554.71},{cod:'3385',nome:'MERCADO E HORTIFRUTI DA FAMILIA LTDA',valor:1568.92},{cod:'3386',nome:'ANTONIO AMADEU LOPES CLAUDINO',valor:702.00},{cod:'3491',nome:'MERCADO MIX AZUL LTDA',valor:912.10},{cod:'3659',nome:'MERCADO TEM LTDA',valor:1720.17},{cod:'3661',nome:'MERCADINHO FERREIRA DANTAS LTDA',valor:1068.48},{cod:'3678',nome:'MATEUS GOES DO SANTOS',valor:1185.30},{cod:'3962',nome:'A.A.N. GAZETA MINIMERCADO',valor:3422.38},{cod:'4019',nome:'COMERCIO DE DOCES BIG-PRECO LTDA',valor:1350.44},{cod:'4121',nome:'MILENA SILVA BARROSO',valor:1048.53},{cod:'4150',nome:'RINALDO MARIANO LOURENCO DA SILVA',valor:2101.55},{cod:'4160',nome:'ESTRELA MAJU LTDA',valor:1073.04},{cod:'4246',nome:'COMERCIAL MIX LEVE LTDA',valor:1025.06},{cod:'4258',nome:'NOSSA MASSA PADARIA E CONFEITARIA LTDA',valor:1685.00},{cod:'4558',nome:'MERCADO ADEMIR E BIANCA LTDA',valor:638.27},{cod:'4561',nome:'CARNES & CIA FGD LTDA',valor:714.86},{cod:'4697',nome:'MERCADO MIX KEMEL LTDA',valor:468.13},{cod:'4852',nome:'MERCADO MIX AZUL LTDA',valor:1080.30},{cod:'4854',nome:'MARIA DEIVANE CRUZ MENEZES',valor:540.94},{cod:'4957',nome:'SONIA PINA FERNANDES',valor:1019.77}],
+  '116':[{cod:'144',nome:'LEANDRO RIBEIRO PORTO',valor:2105.30},{cod:'151',nome:'JOSE CARLOS BATISTA DA SILVA',valor:453.83},{cod:'1681',nome:'DISTRIBUIDORA DE HORTIFRUTIGRANJEIROS GATAO LTDA.',valor:5937.33},{cod:'1726',nome:'ROGÉRIO DE ANDRADE BENEDITO',valor:1163.05},{cod:'1982',nome:'ROSA GOMES DA SILVA',valor:545.90},{cod:'1996',nome:'MERCADO DOCE PRIMOR EIRELI',valor:1331.83},{cod:'2153',nome:'JOAO PEDRO MARTINS',valor:522.08},{cod:'2416',nome:'ERICA PORTIFÍRIO SANTA ROSA',valor:1626.90},{cod:'2692',nome:'GONCALO GENERINO DA SILVA',valor:523.26},{cod:'2726',nome:'MERCADO ROVIRA LTDA',valor:1080.30},{cod:'3024',nome:'BOUTIQUE DE CARNES EURO LTDA',valor:855.39},{cod:'3108',nome:'SUPERMERCADO PETEKO LTDA',valor:7964.99},{cod:'3369',nome:'GUILHERME AMORIM GONÇALVES',valor:2543.97},{cod:'3402',nome:'MERCADINHO & PADARIA MR LTDA',valor:4989.40},{cod:'43',nome:'MANOEL A SOBRINHO-ME',valor:1731.22},{cod:'4456',nome:'OITO DE AGOSTO MERCADO LTDA',valor:484.25},{cod:'4541',nome:'DISTRIBUIDORA DE HORTIFRUTIGRANJEIROS GATAO LTDA.',valor:3198.00},{cod:'4907',nome:'EMPORIO MPORTELA LTDA',valor:538.15},{cod:'4980',nome:'HORTIFRUTI CAPITAO CASA',valor:1797.29},{cod:'520',nome:'MARA FERREIRA MARQUES',valor:1434.01},{cod:'527',nome:'ALEX SANDRO MAIA DOS SANTOS',valor:1403.54}],
+  '122':[{cod:'2075',nome:'JOAO LUCAS DE SOUZA DA SILVA MERCADINHO',valor:1702.87},{cod:'3704',nome:'GILBERTO MORATORIA DE MEDEIROS',valor:3693.24},{cod:'3730',nome:'SANTOS MERCADO LTDA',valor:1272.10},{cod:'4410',nome:'OP DISTRIBUIDORA DE ALIMENTOS LTDA',valor:2921.85},{cod:'4636',nome:'YASMIN PAULINA SALES',valor:1972.16},{cod:'4736',nome:'EDUARDO QUATRIN DE OLIVEIRA',valor:1520.00},{cod:'4772',nome:'CARLOS EDUARDO BRANDAO MACEDO',valor:914.77},{cod:'4821',nome:'LAUDIRENE ALVES DA SILVA',valor:2513.83},{cod:'4837',nome:'COMERCIAL DE HORTIFRUTIGRANJEIROS GVD LTDA',valor:3687.58},{cod:'4961',nome:'LENITA JOANA CHAGAS',valor:1051.09},{cod:'4991',nome:'DAVID BRUNO SILVESTRE DOS SANTOS',valor:1090.10}],
+  '':[{cod:'1140',nome:'MINI PADARIA E MERCEARIA JM',valor:911.01},{cod:'1167',nome:'FRANCISCO CARLOS ALVES MERCADO - ME',valor:789.48},{cod:'2414',nome:'MERCADO E MERCEARIA RODRIGUES E BEZERRA LTDA',valor:956.12},{cod:'4388',nome:'FABIANA PELISSARI TOBIAS',valor:858.48},{cod:'4933',nome:'EMERSON SILVA SOUSA',valor:524.00},{cod:'4999',nome:'MATHEUS KAIQUE SILVA CHAVES',valor:544.16},{cod:'5055',nome:'CONQUISTA SUPER VAREJO LTDA',valor:2930.13},{cod:'59',nome:'MERCADO E MERC.ALIANÇA LTDA',valor:2820.59}],
+  '094':[{cod:'3636',nome:'MAZZA EMPORIO LTDA',valor:88.53},{cod:'3777',nome:'EDVANIA ALVES COUTINHO',valor:743.61},{cod:'3924',nome:'MINIMERCADO DO REI LTDA',valor:719.75},{cod:'3969',nome:'SUPERMERCADO ALIANCA LTDA',valor:985.25},{cod:'4044',nome:'MERCADO ALIADO LTDA',valor:373.21},{cod:'4881',nome:'ATACADO E VAREJO JJ LTDA',valor:675.75}],
+};
 // Julho 2026 — atualizado 31/07/2026 (PDF ppppp, Grand Total R$ 4.257.566,75)
 const VENDEDORES_JULHO = [
   {name:'Guilherme',av:'GU',color:'#10B981',total:635221.36,cli:40,ped:0,cod:'093'},
@@ -8602,7 +8632,7 @@ function getVendedoresForMes(mes){
       return {...v,abr:r?r.total:0,mar:0,cli:r?r.cli:0,ped:r?r.ped:0};
     }).sort((a,b)=>b.abr-a.abr);
   }
-  if(mes==='setembro') return VENDEDORES_AGOSTO.filter(_tf).map(v=>({...v,abr:v.total,mar:v.total})); // fallback; replaced by import
+  if(mes==='setembro') return VENDEDORES_SETEMBRO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_AGOSTO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='agosto') return VENDEDORES_AGOSTO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JULHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='julho') return VENDEDORES_JULHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_JUNHO.find(x=>x.cod===v.cod)?.total||0}));
   if(mes==='junho') return VENDEDORES_JUNHO.filter(_tf).map(v=>({...v,abr:v.total,mar:VENDEDORES_MAIO.find(x=>x.cod===v.cod)?.total||0}));
@@ -8612,8 +8642,7 @@ function getVendedoresForMes(mes){
 }
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
-  if(mes==='setembro') return {}; // replaced by import when available
-  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO,agosto:CARTEIRA_AGOSTO}[mes]||{};
+  const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO,agosto:CARTEIRA_AGOSTO,setembro:CARTEIRA_SETEMBRO}[mes]||{};
   // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em CARTEIRA_JUNHO)
   const _nameMap=new Map();
   Object.values(CARTEIRA_JUNHO).forEach(arr=>arr.forEach(c=>{if(!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
@@ -14371,58 +14400,7 @@ function _applyStoredImports(){
   }catch(e){}
 }
 
-// Override getVendedoresForMes and getCarteiraForMes to check localStorage first
-const _origGetVends=typeof getVendedoresForMes==='function'?getVendedoresForMes:null;
-const _origGetCart=typeof getCarteiraForMes==='function'?getCarteiraForMes:null;
-
-function _getImportedVends(mes){
-  const mesNumMap={marco:'03',abril:'04',maio:'05',junho:'06',julho:'07',agosto:'08',setembro:'09',outubro:'10',novembro:'11',dezembro:'12'};
-  const mesNum=mesNumMap[mes];if(!mesNum)return null;
-  try{
-    const idx=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
-    const key=idx.find(k=>k.endsWith('_'+mesNum));
-    if(!key)return null;
-    const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
-    if(!data)return null;
-    const _prevMap={julho:'junho',agosto:'julho',setembro:'agosto',outubro:'setembro',novembro:'outubro',dezembro:'novembro'};
-    const prevMes=_prevMap[mes];
-    // Usa getVendedoresForMes (monkey-patched) para pegar dados importados do mês anterior;
-    // cai no _origGetVends se não houver import
-    const _getPrev=window.getVendedoresForMes||_origGetVends;
-    const prevVends=prevMes&&_getPrev?_getPrev(prevMes):[];
-    return data.vendsArr.map(v=>{
-      const prev=prevVends.find?.(p=>p.cod===v.cod);
-      return{...v,abr:v.total,mar:prev?.abr||0,ped:v.ped||0};
-    });
-  }catch(e){return null;}
-}
-function _getImportedCart(mes){
-  const mesNumMap={marco:'03',abril:'04',maio:'05',junho:'06',julho:'07',agosto:'08',setembro:'09',outubro:'10',novembro:'11',dezembro:'12'};
-  const mesNum=mesNumMap[mes];if(!mesNum)return null;
-  try{
-    const idx=JSON.parse(localStorage.getItem('crm_import_equipe_idx')||'[]');
-    const key=idx.find(k=>k.endsWith('_'+mesNum));
-    if(!key)return null;
-    const data=JSON.parse(localStorage.getItem('crm_import_equipe_'+key)||'null');
-    return data?data.carteira:null;
-  }catch(e){return null;}
-}
-
-// Monkey-patch the getter functions
-if(_origGetVends){
-  window.getVendedoresForMes=function(mes){
-    const imp=_getImportedVends(mes);
-    if(imp)return imp;
-    return _origGetVends(mes);
-  };
-}
-if(_origGetCart){
-  window.getCarteiraForMes=function(mes){
-    const imp=_getImportedCart(mes);
-    if(imp)return imp;
-    return _origGetCart(mes);
-  };
-}
+// Equipe imports agora são hardcoded — sem monkey-patching de localStorage
 
 // ── Import UI ────────────────────────────────────────────────
 
