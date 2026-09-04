@@ -1495,8 +1495,12 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div style="display:grid;gap:14px">
       <div>
         <label style="font-size:11px;color:rgba(255,255,255,.45);display:block;margin-bottom:5px;font-weight:600;letter-spacing:.4px">CLIENTE *</label>
-        <input id="ag-cli" type="text" placeholder="Nome do cliente" autocomplete="off"
-          style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start">
+          <input id="ag-cli" type="text" placeholder="Nome do cliente" autocomplete="off"
+            style="width:100%;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:13px;outline:none">
+          <input id="ag-cod" type="text" placeholder="Cód" autocomplete="off" maxlength="12"
+            style="width:72px;box-sizing:border-box;background:#0f1923;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fbbf24;padding:8px 10px;font-size:13px;outline:none;font-family:monospace;font-weight:700" title="Código do cliente (para buscar endereço)">
+        </div>
       </div>
       <div id="ag-tipo-vend-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
@@ -12413,7 +12417,10 @@ function _agGerarEspelho(e){
   if(e.tipo!=='APRESENTAÇÃO'&&e.tipo!=='REAPRESENTAÇÃO'){
     const mn=(typeof _mnEdits!=='undefined'?_mnEdits:{});
     const cli=(e.cli||'').trim().toLowerCase();
-    let found=mn[e.cli];
+    const cod=(e.cod||'').trim();
+    let found=null;
+    if(cod){found=mn[cod]||Object.values(mn).find(v=>v.cod&&v.cod===cod);}
+    if(!found) found=mn[e.cli];
     if(!found) found=Object.values(mn).find(v=>v.cod&&v.cod===e.cli);
     if(!found) found=Object.values(mn).find(v=>v.nome&&v.nome.toLowerCase()===cli);
     if(!found&&cli.length>3) found=Object.values(mn).find(v=>v.nome&&v.nome.toLowerCase().includes(cli));
@@ -12452,10 +12459,10 @@ function abrirAgenda(legacy,d1,d2,editId){
   if(editId){
     const e=_loadAg().find(x=>x.id===editId);
     if(e){
-      ['cli','tipo','vend','loc','nota'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.value=e[k]||'';});
+      ['cli','cod','tipo','vend','loc','nota'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.value=e[k]||'';});
     }
   } else {
-    ['ag-cli','ag-vend','ag-loc','ag-nota'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+    ['ag-cli','ag-cod','ag-vend','ag-loc','ag-nota'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
     document.getElementById('ag-tipo').value='TREINAMENTO';
   }
   setTimeout(()=>document.getElementById('ag-cli').focus(),100);
@@ -12469,6 +12476,7 @@ function salvarAgenda(){
     tec:_agTecAtivo,
     d1:_agSlotAtivo.d1,d2:_agSlotAtivo.d2,
     cli,
+    cod:(document.getElementById('ag-cod').value||'').trim(),
     tipo:document.getElementById('ag-tipo').value,
     vend:(document.getElementById('ag-vend').value||'').trim(),
     loc:(document.getElementById('ag-loc').value||'').trim(),
