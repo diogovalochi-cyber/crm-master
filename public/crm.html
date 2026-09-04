@@ -12432,6 +12432,7 @@ function _agGerarEspelho(e){
 function abrirEspelhoModal(id){
   const e=_loadAg().find(x=>x.id===id);
   if(!e) return;
+  _mnLoadEdits();
   const ta=document.getElementById('espelho-texto');
   if(ta) ta.value=_agGerarEspelho(e);
   document.getElementById('modal-espelho').style.display='flex';
