@@ -12410,6 +12410,16 @@ function _agGerarEspelho(e){
   L.push(e.tec||'');
   L.push('');
   if(e.loc) L.push(e.loc);
+  if(e.tipo!=='APRESENTAÇÃO'&&e.tipo!=='REAPRESENTAÇÃO'){
+    const mn=(typeof _mnEdits!=='undefined'?_mnEdits:{});
+    const cli=(e.cli||'').trim().toLowerCase();
+    let found=mn[e.cli];
+    if(!found) found=Object.values(mn).find(v=>v.cod&&v.cod===e.cli);
+    if(!found) found=Object.values(mn).find(v=>v.nome&&v.nome.toLowerCase()===cli);
+    if(!found&&cli.length>3) found=Object.values(mn).find(v=>v.nome&&v.nome.toLowerCase().includes(cli));
+    if(found&&found.maps){L.push('');L.push('📍 '+found.maps);}
+    else if(found&&found.end){L.push('');L.push('📍 '+found.end);}
+  }
   return L.join('\n');
 }
 function abrirEspelhoModal(id){
