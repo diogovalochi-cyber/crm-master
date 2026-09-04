@@ -11821,7 +11821,9 @@ function applyVendorMode(user){
   const vRawJ=VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
   const vRawJul=VENDEDORES_JULHO.find(v=>v.cod===user.vendId);
   const vRawAgo=VENDEDORES_AGOSTO.find(v=>v.cod===user.vendId);
-  if(vRawAgo&&(vRawAgo.total||0)>0) CRM_MES='agosto';
+  const vRawSet=(typeof VENDEDORES_SETEMBRO!=='undefined')?VENDEDORES_SETEMBRO.find(v=>v.cod===user.vendId):null;
+  if(vRawSet&&(vRawSet.total||0)>0) CRM_MES='setembro';
+  else if(vRawAgo&&(vRawAgo.total||0)>0) CRM_MES='agosto';
   else if(vRawJul&&(vRawJul.total||0)>0) CRM_MES='julho';
   else if(vRawJ&&(vRawJ.total||0)>0) CRM_MES='junho';
   else if(vRawM&&(vRawM.total||0)>0) CRM_MES='maio';
@@ -11889,8 +11891,8 @@ function renderVendorDashboard(user, vendorKey){
   const _junhoTotal=vRawJunho?.total||0;
   const _julhoTotal=vRawJulho?.total||0;
   const _agostoTotal=vRawAgosto?.total||0;
-  const _setRaw=(typeof _getImportedVends==='function'?_getImportedVends('setembro'):null)?.find?.(v=>v.cod===user.vendId);
-  const _setTotal=_setRaw?.abr||0;
+  const _setRaw=(typeof VENDEDORES_SETEMBRO!=='undefined')?VENDEDORES_SETEMBRO.find(v=>v.cod===user.vendId):null;
+  const _setTotal=_setRaw?.total||0;
   const _MES_SEQ=['marco','abril','maio','junho','julho','agosto','setembro'];
   const _MES_DATA={
     marco:   {label:'Março',             abr:vRawAbr?.mar||0,    ped:0,                cli:CARTEIRA_MARCO[user.vendId]?.length||0, prev:0,               prevLabel:''},
