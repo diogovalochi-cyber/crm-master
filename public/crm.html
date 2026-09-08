@@ -900,10 +900,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <span style="font-size:15px;line-height:1;flex-shrink:0">📊</span>
     Comparativo
   </div>
-  <div class="nav-item" id="nav-representantes" onclick="showTab('representantes',this)" style="display:none">
-    <span style="font-size:15px;line-height:1;flex-shrink:0">🤝</span>
-    Representantes
-  </div>
   <div class="nav-item" id="nav-manutencao" onclick="showTab('manutencao',this)" style="display:none">
     <span style="font-size:15px;line-height:1;flex-shrink:0">🔧</span>
     Manutenção
@@ -940,10 +936,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div class="botnav-item" id="botnav-comparativo" onclick="showTabMobile('comparativo',this)" style="display:none">
       <span style="font-size:22px;line-height:1">📊</span>
       Comparativo
-    </div>
-    <div class="botnav-item" id="botnav-representantes" onclick="showTabMobile('representantes',this)" style="display:none">
-      <span style="font-size:22px;line-height:1">🤝</span>
-      Repres.
     </div>
     <div class="botnav-item" id="botnav-manutencao" onclick="showTabMobile('manutencao',this)" style="display:none">
       <span style="font-size:22px;line-height:1">🔧</span>
@@ -1110,47 +1102,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
   </div>
 
 <!-- SUB: Comissão 22→22 -->
-</div>
-
-<!-- ══════════════════════════════════════════ -->
-<!-- ABA: REPRESENTANTES                      -->
-<!-- ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-representantes">
-  <div class="section-header">
-    <div>
-      <div class="section-title">Representantes</div>
-      <div class="section-sub">Carteiras por representante</div>
-    </div>
-  </div>
-
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-    <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODOS</span>
-    <select class="comp-mes-sel" id="repr-mes-a" onchange="renderReprDetail(activeRepr)">
-      <option value="marco">Março</option><option value="abril">Abril</option><option value="maio">Maio</option>
-      <option value="junho">Junho</option><option value="julho">Julho</option><option value="agosto" selected>Agosto</option><option value="setembro">Setembro</option><option value="outubro">Outubro</option><option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
-    </select>
-    <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
-    <select class="comp-mes-sel" id="repr-mes-b" onchange="renderReprDetail(activeRepr)">
-      <option value="marco">Março</option><option value="abril">Abril</option><option value="maio">Maio</option>
-      <option value="junho">Junho</option><option value="julho" selected>Julho</option><option value="agosto">Agosto</option><option value="setembro">Setembro</option><option value="outubro">Outubro</option><option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
-    </select>
-    <span style="color:rgba(255,255,255,.4);font-size:11px;font-weight:600">vs</span>
-    <select class="comp-mes-sel" id="repr-mes-c" onchange="renderReprDetail(activeRepr)">
-      <option value="marco">Março</option><option value="abril">Abril</option><option value="maio">Maio</option>
-      <option value="junho" selected>Junho</option><option value="julho">Julho</option><option value="agosto">Agosto</option><option value="setembro">Setembro</option><option value="outubro">Outubro</option><option value="novembro">Novembro</option><option value="dezembro">Dezembro</option>
-    </select>
-  </div>
-
-  <div class="pill-row" id="repr-pills"></div>
-
-  <div style="margin:10px 0 4px">
-    <input type="text" id="repr-srch" placeholder="Filtrar cliente por nome ou código..." autocomplete="off"
-      style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;width:100%;box-sizing:border-box"
-      oninput="renderReprDetail(activeRepr)"
-      onkeydown="if(event.key==='Escape'){this.value='';renderReprDetail(activeRepr);}">
-  </div>
-
-  <div id="repr-detail-grid"></div>
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -8761,7 +8712,6 @@ function showTab(tab, el){
     }
   }
   if(tab==='comparativo') renderComparativo();
-  if(tab==='representantes') renderRepresentantes();
   if(tab==='manutencao') showMn('enderecos',document.getElementById('mn-btn-enderecos'));
 }
 
@@ -8926,110 +8876,6 @@ function hmSetMode(m,btn){
   _hmUpdateChart(_hmSel);
 }
 
-/* ─── REPRESENTANTES ─────────────────────────────────────────── */
-let activeRepr='';
-function _getCarteiraRepr(mes){
-  const m={marco:CARTEIRA_REPR_MARCO,abril:CARTEIRA_REPR_ABRIL,maio:CARTEIRA_REPR_MAIO,
-           junho:CARTEIRA_REPR_JUNHO,julho:CARTEIRA_REPR_JULHO,agosto:CARTEIRA_REPR_AGOSTO};
-  const raw=m[mes]||{};
-  const out={};
-  for(const cod of Object.keys(raw)){
-    out[cod]=raw[cod].map(x=>typeof x.v!=='undefined'?{cod:x.cod,nome:x.nome||'',valor:x.v}:x);
-  }
-  return out;
-}
-function initReprPills(){
-  const row=document.getElementById('repr-pills');
-  if(!row) return;
-  row.innerHTML='';
-  if(!REPR_VENDS.length){
-    row.innerHTML='<span style="font-size:12px;color:rgba(255,255,255,.4);padding:6px 0">Nenhum representante cadastrado ainda.</span>';
-    return;
-  }
-  REPR_VENDS.forEach((v,i)=>{
-    const pill=document.createElement('div');
-    pill.className='pill'+(i===0?' active':'');
-    pill.textContent=v.name;
-    pill.onclick=()=>{
-      document.querySelectorAll('#repr-pills .pill').forEach(p=>p.classList.remove('active'));
-      pill.classList.add('active');
-      activeRepr=v.name;
-      const si=document.getElementById('repr-srch');if(si)si.value='';
-      renderReprDetail(v.name);
-    };
-    row.appendChild(pill);
-  });
-  if(REPR_VENDS.length){activeRepr=REPR_VENDS[0].name;renderReprDetail(activeRepr);}
-}
-function renderRepresentantes(){initReprPills();}
-function renderReprDetail(name){
-  const v=REPR_VENDS.find(x=>x.name===name);
-  if(!v){document.getElementById('repr-detail-grid').innerHTML='';return;}
-  const cod=v.cod;
-  const _mseq=['marco','abril','maio','junho','julho','agosto'];
-  const _ci=_mseq.indexOf(CRM_MES);
-  const mesA=document.getElementById('repr-mes-a')?.value||_mseq[Math.max(0,_ci-2)];
-  const mesB=document.getElementById('repr-mes-b')?.value||_mseq[Math.max(0,_ci-1)];
-  const mesC=document.getElementById('repr-mes-c')?.value||CRM_MES;
-  const lblA=MES_LABELS[mesA]||mesA,lblB=MES_LABELS[mesB]||mesB,lblC=MES_LABELS[mesC]||mesC;
-  const _mIdx={marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7};
-  const _hist=(HISTORICO_MENSAL_REPR['2026']||{})[cod]||Array(12).fill(0);
-  const _tot=mes=>_hist[_mIdx[mes]]||0;
-  const compRows=[mesA,mesB,mesC].map((mes,i,arr)=>{
-    const tot=_tot(mes),prev=i===0?null:_tot(arr[i-1]);
-    const diff=prev!==null?tot-prev:null;
-    const empty=tot===0;
-    return`<tr><td style="font-weight:700;color:#fff">${MES_LABELS[mes]||mes}</td>
-      <td style="font-weight:${i===2?'700':'400'};color:${empty?'rgba(255,255,255,.35)':'#fff'}">${empty?'—':fBRL(tot)}</td>
-      <td style="color:${diff===null?'rgba(255,255,255,.4)':diff>=0?'#4ade80':'#f87171'};font-weight:600">${diff===null?'—':(diff>=0?'▲ +':'▼ ')+fBRL(Math.abs(diff))}</td></tr>`;
-  }).join('');
-  const cA=_getCarteiraRepr(mesA)[cod]||[];
-  const cB=_getCarteiraRepr(mesB)[cod]||[];
-  const cC=_getCarteiraRepr(mesC)[cod]||[];
-  const clientMap=new Map();
-  [[cA,'a'],[cB,'b'],[cC,'c']].forEach(([list,k])=>{
-    list.forEach(c=>{
-      if(!clientMap.has(c.cod))clientMap.set(c.cod,{cod:c.cod,nome:c.nome||'',a:0,b:0,c:0});
-      const e=clientMap.get(c.cod);e[k]=c.valor;if(c.nome)e.nome=c.nome;
-    });
-  });
-  const allClients=[...clientMap.values()].sort((x,y)=>(y.c||y.b||y.a)-(x.c||x.b||x.a));
-  const srch=(document.getElementById('repr-srch')?.value||'').trim();
-  const _norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-  const displayed=srch?allClients.filter(c=>_norm(c.nome).includes(_norm(srch))||c.cod===srch):allClients;
-  const single=mesA===mesB&&mesA===mesC;
-  const _fv=v=>v>0?fBRL(v):`<span style="color:rgba(255,255,255,.3)">—</span>`;
-  let tblHtml;
-  if(allClients.length){
-    const rows=single
-      ?displayed.map((c,i)=>`<tr><td style="color:rgba(255,255,255,.5)">${i+1}</td><td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td><td>${c.nome}</td><td style="font-weight:700;color:#fff">${_fv(c.a||c.b||c.c)}</td></tr>`).join('')
-      :displayed.map((c,i)=>`<tr><td style="color:rgba(255,255,255,.5)">${i+1}</td><td style="color:rgba(255,255,255,.45);font-size:11px">${c.cod}</td><td>${c.nome}</td><td style="color:rgba(255,255,255,.7)">${_fv(c.a)}</td><td style="color:rgba(255,255,255,.7)">${_fv(c.b)}</td><td style="font-weight:700;color:#fff">${_fv(c.c)}</td></tr>`).join('');
-    const thead=single
-      ?`<tr><th>#</th><th>Cód.</th><th>Cliente</th><th>${lblA}</th></tr>`
-      :`<tr><th>#</th><th>Cód.</th><th>Cliente</th><th>${lblA}</th><th>${lblB}</th><th>${lblC}</th></tr>`;
-    const totA=displayed.reduce((s,c)=>s+c.a,0),totB=displayed.reduce((s,c)=>s+c.b,0),totC=displayed.reduce((s,c)=>s+c.c,0);
-    const tfoot=single
-      ?`<tr class="total-row"><td colspan="3">Total</td><td style="font-weight:800">${fBRL(totA||totB||totC)}</td></tr>`
-      :`<tr class="total-row"><td colspan="3">Total</td><td>${fBRL(totA)}</td><td>${fBRL(totB)}</td><td style="font-weight:800">${fBRL(totC)}</td></tr>`;
-    tblHtml=`<table class="tbl"><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table>`;
-  }else{
-    tblHtml=`<div style="color:rgba(255,255,255,.4);font-size:13px;padding:20px 0;text-align:center">Sem dados de carteira para o período selecionado</div>`;
-  }
-  document.getElementById('repr-detail-grid').innerHTML=`
-    <div class="card mb-12">
-      <div class="card-header"><span class="card-title">${name} · ${lblA} vs ${lblB} vs ${lblC}</span></div>
-      <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr><th>Mês</th><th>Faturamento</th><th>Diferença R$</th></tr></thead>
-          <tbody>${compRows}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">${single?'Carteira · '+lblC.toUpperCase():'Carteira · '+lblA.toUpperCase()+' VS '+lblB.toUpperCase()+' VS '+lblC.toUpperCase()}</span></div>
-      <div style="overflow-x:auto">${tblHtml}</div>
-    </div>`;
-}
 function renderComparativo(){
   const _isVend=typeof CRM_USER!=='undefined'&&CRM_USER?.role==='VENDEDOR';
   if(_isVend&&CRM_USER.vendId) _hmSel=CRM_USER.vendId;
@@ -11670,8 +11516,6 @@ function applySession(user){
     if(np)np.style.display='';if(bp)bp.style.display='';
     const ne=document.getElementById('nav-comparativo'),be=document.getElementById('botnav-comparativo');
     if(ne)ne.style.display='';if(be)be.style.display='';
-    const nr=document.getElementById('nav-representantes'),br=document.getElementById('botnav-representantes');
-    if(nr)nr.style.display='';if(br)br.style.display='';
     const nm=document.getElementById('nav-manutencao'),bm=document.getElementById('botnav-manutencao');
     if(nm)nm.style.display='';if(bm)bm.style.display='';
   }
