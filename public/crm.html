@@ -1497,7 +1497,20 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
 <div class="tab-content" id="tab-placas">
   <div style="max-width:860px;margin:0 auto;padding:20px 12px">
     <h2 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 4px">Placas</h2>
-    <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0 0 18px">Veículos da equipe</p>
+    <p style="font-size:12px;color:rgba(255,255,255,.38);margin:0 0 12px">Veículos da equipe</p>
+    <input type="text" id="placas-srch" placeholder="🔍  Buscar por nome ou placa…" autocomplete="off"
+      oninput="_filterPlacas(this.value)"
+      onkeydown="if(event.key==='Escape'){this.value='';_filterPlacas('');}"
+      style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;padding:9px 14px;border-radius:8px;font-size:13px;outline:none;font-family:inherit;margin-bottom:18px">
+    <script>
+    function _filterPlacas(q){
+      const n=q.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      document.querySelectorAll('#tab-placas tbody tr').forEach(tr=>{
+        const txt=tr.innerText.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        tr.style.display=(!n||txt.includes(n))?'':'none';
+      });
+    }
+    </script>
 
     <!-- TÉCNICOS -->
     <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;margin-bottom:8px">TÉCNICOS</div>
@@ -1518,7 +1531,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
           <tr><td style="padding:10px 14px;font-weight:600">Hélio</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">IPF-9G19</span></td></tr>
           <tr><td style="padding:10px 14px;font-weight:600">Juan</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">EAX-5I72</span></td></tr>
           <tr><td style="padding:10px 14px;font-weight:600">Leandro</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">FUJ-0F38</span></td></tr>
-          <tr><td style="padding:10px 14px;font-weight:600">Leonardo</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">AYP-7A80</span></td></tr>
+          <tr><td style="padding:10px 14px;font-weight:600">Leonardo</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">DVL-2D31</span></td></tr>
           <tr><td style="padding:10px 14px;font-weight:600">Matheus</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">SHG1F75</span></td></tr>
           <tr><td style="padding:10px 14px;font-weight:600">Rodrigo</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">FHZ-2191</span></td></tr>
           <tr><td style="padding:10px 14px;font-weight:600">Rogério</td><td style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:12px">Técnico de Panificação</td><td style="padding:10px 14px;text-align:center"><span style="font-family:monospace;font-weight:700;font-size:13px;background:rgba(255,255,255,.09);border-radius:6px;padding:3px 10px;letter-spacing:1px">RUW-4D47</span></td></tr>
