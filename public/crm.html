@@ -7637,8 +7637,8 @@ const HISTORICO_MENSAL = {
     '123':     [437972.49,  419945.42,  470097.03,  486551.93,  481321.11,  454736.02,  510436.72,  422743.41, 128479.71,0,0,0],
     '7':       [107069.94,  106164.70,  112207.62,  112428.64,  108697.77,  112133.06,  120561.57,  103089.68, 0,0,0,0],
     '86':      [ 78038.45,   52588.43,   10177.66,    3368.34,    3298.87,    4364.40,    3700.33,    3272.35, 0,0,0,0],
-    '106':     [ 96686.61,   82226.70,   92375.22,   96974.54,   93818.74,  104716.60,   88218.42,   74073.59, 0,0,0,0],
-    '29':      [ 91900.68,   90223.33,  105934.33,   91554.65,   93957.45,  119216.98,  124847.72,  133373.90, 0,0,0,0],
+    '106':     [ 96686.61,   82226.70,   92375.22,   96974.54,   93818.74,  104716.60,   88218.42,   74073.59,  19285.91,0,0,0],
+    '29':      [ 91900.68,   90223.33,  105934.33,   91554.65,   93957.45,  119216.98,  124847.72,  133373.90,  29461.33,0,0,0],
     '124':     [ 80997.58,   63529.82,   68898.13,   65928.18,   60306.27,   72568.31,   67876.94,   57820.68,  33958.06,0,0,0],
     '125':     [478074.01,  425986.79,  503327.91,  504805.21,  518111.38,  523493.38,  574778.65,  492735.75, 141213.55,0,0,0],
     'RA':      [        0,   51445.96,   83776.38,   90688.38,  126541.63,   92799.35,   95670.99,   82916.74,  24428.29,0,0,0],
@@ -7670,18 +7670,31 @@ const HISTORICO_MENSAL_REPR = {
   '2026': {
     'FL': [354060.94, 331041.02, 372679.59, 348932.86, 333651.18, 394328.74, 364840.38, 380031.18, 0,0,0,0],
     'TH': [321099.85, 306231.67, 325105.32, 344751.11, 303018.79, 328641.71, 371121.86, 340299.73, 0,0,0,0],
-    'RC': [188587.29, 172450.03, 198309.55, 188529.19, 187776.19, 223933.58, 213066.14, 207447.49, 0,0,0,0],
+    'RC': [188587.29, 172450.03, 198309.55, 188529.19, 187776.19, 223933.58, 213066.14, 207447.49, 48747.24,0,0,0],
     'LT': [155143.39, 153210.34, 159165.31, 162048.30, 155715.05, 161000.77, 175145.42, 150066.01, 0,0,0,0],
   },
 };
 
-// Carteiras por mês — {cod_repr: [{cod, nome, valor}]}
+// Carteiras por mês — {cod_repr: [{cod, v}]}
 const CARTEIRA_REPR_MARCO   = {};
 const CARTEIRA_REPR_ABRIL   = {};
 const CARTEIRA_REPR_MAIO    = {};
-const CARTEIRA_REPR_JUNHO   = {};
-const CARTEIRA_REPR_JULHO   = {};
-const CARTEIRA_REPR_AGOSTO  = {};
+const CARTEIRA_REPR_JUNHO   = {
+  '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:16419.96},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:9016.45},{cod:'3113',nome:'JOSE SILVA CABRAL',v:6727.90},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:21986.34},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:10337.84},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:16685.32},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:11761.97},{cod:'4707',nome:'PADARIA NOVA PALMARES LTDA',v:1662.90},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:7079.44},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:3038.48}],
+  '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:4120.41},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:11111.50},{cod:'3480',nome:'MINIMERCADO TRES ESTRELAS LTDA',v:12580.20},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:20604.17},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:7582.27},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:3941.66},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:4497.68},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:2918.62},{cod:'4499',nome:'REDE FRED LTDA',v:5870.84},{cod:'4591',nome:'CRISTIANE APARECIDA IGNACIO',v:780.00},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:8928.66},{cod:'4593',nome:'PEDRO HENRIQUE BATISTA DA SILVA',v:3452.63},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:4712.16},{cod:'4815',nome:'TRES MARIAS MERCADO E PADARIA',v:894.37},{cod:'4816',nome:'DANYELA QUEIROS DA NOBREGA',v:2248.79},{cod:'4979',nome:'PADARIA NOVA GAROTO LTDA',v:760.68},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:11025.49},{cod:'5006',nome:'RENATO SANTOS LOPES',v:2536.49},{cod:'5017',nome:'SUPERMERCADO MATHUR TARDELLI LTDA',v:6959.45},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:3690.91}],
+};
+const CARTEIRA_REPR_JULHO   = {
+  '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:15751.88},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:10321.59},{cod:'3113',nome:'JOSE SILVA CABRAL',v:8075.03},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:4199.29},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:11055.43},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:18566.68},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:10588.71},{cod:'4707',nome:'PADARIA NOVA PALMARES LTDA',v:556.23},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:7297.19},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:1806.39}],
+  '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:5408.19},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:10662.48},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:21895.85},{cod:'3480',nome:'MINIMERCADO TRES ESTRELAS LTDA',v:16532.23},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:18825.27},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:4534.44},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:2538.25},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:2751.13},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:2212.51},{cod:'4499',nome:'REDE FRED LTDA',v:3627.99},{cod:'4591',nome:'CRISTIANE APARECIDA IGNACIO',v:390.00},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:6248.02},{cod:'4593',nome:'PEDRO HENRIQUE BATISTA DA SILVA',v:3508.83},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:3248.33},{cod:'4816',nome:'DANYELA QUEIROS DA NOBREGA',v:3218.47},{cod:'4894',nome:'THIAGO FREDSON SANTOS',v:1926.25},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:11824.92},{cod:'5006',nome:'RENATO SANTOS LOPES',v:1686.10},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:3808.46}],
+};
+const CARTEIRA_REPR_AGOSTO  = {
+  '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:15281.56},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:8629.36},{cod:'3113',nome:'JOSE SILVA CABRAL',v:5593.65},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:9818.98},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:14913.35},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:10596.06},{cod:'4707',nome:'PADARIA NOVA PALMARES LTDA',v:584.27},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:5938.30},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:2718.06}],
+  '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:4125.78},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:10066.63},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:20989.05},{cod:'3480',nome:'MINIMERCADO TRES ESTRELAS LTDA',v:20479.46},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:19407.96},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:8568.61},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:6216.60},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:5148.60},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:3441.05},{cod:'4499',nome:'REDE FRED LTDA',v:5313.77},{cod:'4591',nome:'CRISTIANE APARECIDA IGNACIO',v:314.26},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:7172.49},{cod:'4593',nome:'PEDRO HENRIQUE BATISTA DA SILVA',v:4363.84},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:3586.94},{cod:'4816',nome:'DANYELA QUEIROS DA NOBREGA',v:1909.28},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:8583.52},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:3686.06}],
+};
+const CARTEIRA_REPR_SETEMBRO = {
+  '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:4174.38},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:1997.82},{cod:'3113',nome:'JOSE SILVA CABRAL',v:1424.93},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:1894.35},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:4464.80},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:2664.03},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:1851.79},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:813.81}],
+  '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:1288.54},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:2583.90},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:7272.57},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:4774.99},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:2104.25},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:1135.42},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:910.20},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:785.67},{cod:'4499',nome:'REDE FRED LTDA',v:1079.79},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:2085.53},{cod:'4593',nome:'PEDRO HENRIQUE BATISTA DA SILVA',v:1275.44},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:536.27},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:2381.38},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:1247.38}],
+};
 
 const FATURAMENTO_DIARIO = {
   '2026-06-08': {
@@ -11686,54 +11699,70 @@ function applyRepresentanteMode(user){
   renderRepresentanteDashboard(user);
 }
 
-function renderRepresentanteDashboard(user){
+function _getCarteiraReprForMes(mes){
+  return {junho:CARTEIRA_REPR_JUNHO,julho:CARTEIRA_REPR_JULHO,agosto:CARTEIRA_REPR_AGOSTO,setembro:CARTEIRA_REPR_SETEMBRO}[mes]||{};
+}
+
+function renderRepresentanteDashboard(user, mesOverride){
   const reprId=user.reprId||'RC';
   const ano='2026';
-  const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   const mesLabels=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mesNomes={junho:'Junho',julho:'Julho',agosto:'Agosto',setembro:'Setembro'};
 
-  // Dados combinados RC (Ricardo + Cristiane) do histórico de representantes
   const arrRC=(HISTORICO_MENSAL_REPR[ano]||{})[reprId]||Array(12).fill(0);
-  // Dados individuais
   const arr29=(HISTORICO_MENSAL[ano]||{})['29']||Array(12).fill(0);
   const arr106=(HISTORICO_MENSAL[ano]||{})['106']||Array(12).fill(0);
 
-  // Último mês com dados
+  // Mês selecionado (padrão: último com dados)
+  const mesIdx={junho:5,julho:6,agosto:7,setembro:8};
   let lastIdx=arrRC.reduce((best,v,i)=>v>0?i:best,-1);
-  if(lastIdx<0) lastIdx=7; // fallback agosto
+  if(lastIdx<0) lastIdx=7;
+  const mesSel=mesOverride||Object.keys(mesNomes).find(k=>mesIdx[k]===lastIdx)||'agosto';
+  const selIdx=mesIdx[mesSel]||lastIdx;
 
   const totalAno=arrRC.reduce((s,v)=>s+v,0);
-  const mesAtual=arrRC[lastIdx]||0;
-  const mesAnt=lastIdx>0?arrRC[lastIdx-1]:0;
+  const mesAtual=arrRC[selIdx]||0;
+  const mesAnt=selIdx>0?arrRC[selIdx-1]:0;
   const varPct=mesAnt>0?((mesAtual-mesAnt)/mesAnt*100):null;
   const varHTML=varPct!==null
-    ?`<span style="color:${varPct>=0?'#4ade80':'#f87171'};font-size:11px;font-weight:700">${varPct>=0?'▲ +':'▼ '}${Math.abs(varPct).toFixed(1)}% vs ${mesLabels[lastIdx-1]}</span>`
+    ?`<span style="color:${varPct>=0?'#4ade80':'#f87171'};font-size:11px;font-weight:700">${varPct>=0?'▲ +':'▼ '}${Math.abs(varPct).toFixed(1)}% vs ${mesLabels[selIdx-1]}</span>`
     :'';
 
-  // Últimos 5 meses com dados para o mini-histórico
-  const histMeses=[];
-  for(let i=Math.max(0,lastIdx-4);i<=lastIdx;i++){
-    if(arrRC[i]>0||i===lastIdx) histMeses.push(i);
-  }
-  const maxH=Math.max(...histMeses.map(i=>arrRC[i]),1);
-
-  const histHTML=histMeses.map(i=>{
-    const v=arrRC[i];
-    const pct=Math.round(v/maxH*100);
-    const isAct=i===lastIdx;
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0">
-      <div style="font-size:10px;color:rgba(255,255,255,.55);font-weight:700">${fK(v)}</div>
-      <div style="width:100%;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;height:60px;display:flex;align-items:flex-end">
-        <div style="width:100%;height:${pct}%;background:${isAct?'#F97316':'rgba(249,115,22,.4)'};border-radius:4px 4px 0 0;transition:height .3s"></div>
+  // Histórico (todos os meses com dados)
+  const histIdxs=[];
+  for(let i=0;i<12;i++){if(arrRC[i]>0)histIdxs.push(i);}
+  const maxH=Math.max(...histIdxs.map(i=>arrRC[i]),1);
+  const histHTML=histIdxs.map(i=>{
+    const v=arrRC[i];const pct=Math.round(v/maxH*100);const isAct=i===selIdx;
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0;cursor:pointer" onclick="renderRepresentanteDashboard(CRM_USER,'${Object.keys(mesIdx).find(k=>mesIdx[k]===i)||''}')">
+      <div style="font-size:9px;color:${isAct?'#fff':'rgba(255,255,255,.45)'};font-weight:700">${fK(v)}</div>
+      <div style="width:100%;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;height:52px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${pct}%;background:${isAct?'#F97316':'rgba(249,115,22,.35)'};border-radius:3px 3px 0 0"></div>
       </div>
-      <div style="font-size:10px;color:${isAct?'#fff':'rgba(255,255,255,.4)'};font-weight:${isAct?700:500}">${mesLabels[i]}</div>
+      <div style="font-size:9px;color:${isAct?'#F97316':'rgba(255,255,255,.35)'};font-weight:${isAct?700:500}">${mesLabels[i]}</div>
     </div>`;
   }).join('');
 
-  // Breakdown Ricardo vs Cristiane no mês atual
-  const r29=arr29[lastIdx]||0;
-  const r106=arr106[lastIdx]||0;
-  const totalBk=r29+r106||1;
+  // Breakdown
+  const r29=arr29[selIdx]||0;const r106=arr106[selIdx]||0;const totalBk=r29+r106||1;
+
+  // Clientes do mês selecionado
+  const cartMes=_getCarteiraReprForMes(mesSel);
+  const cli106=(cartMes['106']||[]).slice().sort((a,b)=>b.v-a.v);
+  const cli29=(cartMes['29']||[]).slice().sort((a,b)=>b.v-a.v);
+
+  const mkRow=(c,color)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+      <span style="font-size:10px;color:rgba(255,255,255,.35);min-width:36px">#${c.cod}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" title="${c.nome}">${c.nome}</span>
+    </div>
+    <span style="font-size:12px;font-weight:700;color:${color};white-space:nowrap;margin-left:8px">${fBRL(c.v)}</span>
+  </div>`;
+
+  const cliHtml106=cli106.length?cli106.map(c=>mkRow(c,'#fb923c')).join(''):'<div style="color:rgba(255,255,255,.3);font-size:12px;padding:10px 0;text-align:center">Sem dados</div>';
+  const cliHtml29=cli29.length?cli29.map(c=>mkRow(c,'#F97316')).join(''):'<div style="color:rgba(255,255,255,.3);font-size:12px;padding:10px 0;text-align:center">Sem dados</div>';
+
+  const selOptions=Object.entries(mesNomes).map(([k,l])=>`<option value="${k}"${k===mesSel?' selected':''}>${l}</option>`).join('');
 
   document.getElementById('tab-dashboard').innerHTML=`
     <div class="section-header">
@@ -11741,11 +11770,12 @@ function renderRepresentanteDashboard(user){
         <div class="section-title">Olá, ${user.name} 🤝</div>
         <div class="section-sub">Representante · Ricardo & Cristiane</div>
       </div>
+      <select style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer" onchange="renderRepresentanteDashboard(CRM_USER,this.value)">${selOptions}</select>
     </div>
 
     <div class="kpi-grid mb-16" style="grid-template-columns:1fr 1fr">
       <div class="kpi-card kpi-gold">
-        <div class="kpi-label" style="color:rgba(255,255,255,.65)">Faturamento ${mesLabels[lastIdx]}</div>
+        <div class="kpi-label" style="color:rgba(255,255,255,.65)">Total ${mesNomes[mesSel]}</div>
         <div class="kpi-value" style="color:#fff;font-size:22px">${fK(mesAtual)}</div>
         <div class="kpi-sub" style="color:rgba(255,255,255,.7)">${fBRL(mesAtual)}</div>
         <div class="kpi-change" style="color:#fff;margin-top:6px">${varHTML}</div>
@@ -11758,32 +11788,42 @@ function renderRepresentanteDashboard(user){
     </div>
 
     <div class="card mb-16">
-      <div class="card-header"><span class="card-title">Histórico Mensal · ${ano}</span></div>
-      <div style="display:flex;gap:8px;align-items:flex-end;padding:8px 0">${histHTML}</div>
+      <div class="card-header"><span class="card-title">Histórico Mensal ${ano}</span><span style="font-size:11px;color:rgba(255,255,255,.4)">clique para navegar</span></div>
+      <div style="display:flex;gap:6px;align-items:flex-end;padding:8px 0">${histHTML}</div>
     </div>
 
     <div class="card mb-16">
-      <div class="card-header"><span class="card-title">Breakdown · ${mesLabels[lastIdx]}</span></div>
-      <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
+      <div class="card-header"><span class="card-title">Breakdown · ${mesNomes[mesSel]}</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:4px 0">
         <div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:12px;color:rgba(255,255,255,.8)">Ricardo</span>
-            <span style="font-size:12px;font-weight:700;color:#fff">${fBRL(r29)}</span>
+            <span style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600">Ricardo</span>
+            <span style="font-size:12px;font-weight:700;color:#F97316">${fBRL(r29)}</span>
           </div>
-          <div style="background:rgba(255,255,255,.08);border-radius:4px;height:8px;overflow:hidden">
+          <div style="background:rgba(255,255,255,.08);border-radius:4px;height:7px;overflow:hidden">
             <div style="height:100%;width:${Math.round(r29/totalBk*100)}%;background:#F97316;border-radius:4px"></div>
           </div>
         </div>
         <div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:12px;color:rgba(255,255,255,.8)">Cristiane</span>
-            <span style="font-size:12px;font-weight:700;color:#fff">${fBRL(r106)}</span>
+            <span style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600">Cristiane</span>
+            <span style="font-size:12px;font-weight:700;color:#fb923c">${fBRL(r106)}</span>
           </div>
-          <div style="background:rgba(255,255,255,.08);border-radius:4px;height:8px;overflow:hidden">
+          <div style="background:rgba(255,255,255,.08);border-radius:4px;height:7px;overflow:hidden">
             <div style="height:100%;width:${Math.round(r106/totalBk*100)}%;background:#fb923c;border-radius:4px"></div>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-header"><span class="card-title" style="color:#F97316">● Ricardo · Clientes ${mesNomes[mesSel]}</span><span style="font-size:11px;color:rgba(255,255,255,.5)">${cli29.length} clientes · ${fBRL(r29)}</span></div>
+      ${cliHtml29}
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-header"><span class="card-title" style="color:#fb923c">● Cristiane · Clientes ${mesNomes[mesSel]}</span><span style="font-size:11px;color:rgba(255,255,255,.5)">${cli106.length} clientes · ${fBRL(r106)}</span></div>
+      ${cliHtml106}
     </div>
   `;
 }
