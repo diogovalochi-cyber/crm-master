@@ -11565,6 +11565,12 @@ function applySession(user){
     }
   }
 
+  // Oculta botão de reporte de endereço para vendedores e supervisores
+  if(user.role==='VENDEDOR'||user.role==='SUPERVISOR'){
+    const _brg=document.getElementById('btn-rep-global');
+    if(_brg)_brg.style.display='none';
+  }
+
   // Auto-carrega Forms (dados necessários para contagem de atividades no dashboard do vendedor)
   if(user.role==='VENDEDOR'){
     const vk=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
