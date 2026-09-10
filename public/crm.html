@@ -8983,7 +8983,7 @@ const FORMS_CSV={
   visitas:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRAvnHYU0UxBnJXG3Km54hwzBiUibcFhiH-sn-Xe20nCs1WAR0mn79K_aOnQnTdt3Zi2TkoKAWKdZU0/pub?gid=1717895650&single=true&output=csv',
   visitas2:'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6y53hqMmLAABn59kAbwt2PNuU6Oq6CryZfMHJOY5n3bM4wW97FkGwoEOHVXgosUXZZHDqQBxYfBra/pub?gid=1717895650&single=true&output=csv',
   visitas3:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-dIqwzUxGLqLu6aCbs-RKoWffq_y8EyYKUSsBU0r35EyduvK8xcFRtUTOiZMVe4u8lYSnP4yQ5CT7/pub?gid=476597622&single=true&output=csv', // Cezar
-  visitas4:null, // Kelly individual (desativado — Kelly migrada para visitas8 Equipe Val combinado)
+  visitas4:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTi85POR4NaXWM1B00oHH_bi-ZUNUX6aZIFJ6rNvMBex6di1U6Kqma215ZKJ79w9OiXUxGNiQSjrBK9/pub?gid=1358041991&single=true&output=csv', // Kelly individual (ativo enquanto visitas8 nao tem Kelly conectada)
   visitas5:null, // Moab+Ramon (desativado — Moab removido dos forms; Ramon em visitas7)
   apresentacoes:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQnA4sJPRTHJ__POvLyzGFuEWssd5xSqEYxvlL-4sLCTE8ci6vWtqjz1-E3Hd2d39jOQLdrsqYieb8D/pub?gid=1717895650&single=true&output=csv',
   apresentacoes2:null, // Cezar+Moab+Ramon+Kelly (desativado — Moab removido; Cezar/Kelly em apresentacoes5, Ramon em apresentacoes4)
@@ -12751,7 +12751,7 @@ function _initApp(){
   updateGreetingClock();
   setMes(CRM_MES);
   // Inicializa selects de "Por Vendedor" com os 3 últimos meses disponíveis
-  const _mseq=['marco','abril','maio','junho','julho','agosto'];
+  const _mseq=['marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   const _ci=_mseq.indexOf(CRM_MES);
   const _va=_mseq[Math.max(0,_ci-2)];
   const _vb=_mseq[Math.max(0,_ci-1)];
