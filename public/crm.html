@@ -10190,7 +10190,9 @@ function renderRota(){
   if(nxtBtn) nxtBtn.style.opacity=rotaWeekOffset>=0?'.3':'1';
   if(nxtBtn) nxtBtn.style.pointerEvents=rotaWeekOffset>=0?'none':'auto';
 
-  const vend=VENDEDORES.find(v=>v.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')===currentRegSeller);
+  const _rotaNm=v=>v.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const _allForRota=[VENDEDORES,...(typeof VENDEDORES_SETEMBRO!=='undefined'?[VENDEDORES_SETEMBRO]:[]),...(typeof VENDEDORES_AGOSTO!=='undefined'?[VENDEDORES_AGOSTO]:[])];
+  let vend=null;for(const arr of _allForRota){vend=arr.find(v=>_rotaNm(v)===currentRegSeller);if(vend)break;}
   const cod=vend?.cod||'';
   const rota=ROTAS[cod];
   const grid=document.getElementById('rota-grid');
@@ -11387,7 +11389,7 @@ const CREDS=[
   {user:'kelly',       pass:'kelly123',  role:'VENDEDOR', name:'Kelly',        av:'KL', vendId:'123', color:'#E879F9', newHire:true},
   {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luiz Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'1203', role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
-  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'118', color:'#FCD34D', newHire:true},
+  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'RA',  color:'#FCD34D', newHire:true},
   // Representantes
   {user:'ricardo', pass:'Ricardo@RC', role:'REPRESENTANTE', name:'Ricardo', av:'RI', reprId:'RC', color:'#F97316'},
   // Manutenção
