@@ -12252,14 +12252,8 @@ function renderAgenda(){
   // Tabs por técnico
   const tabsEl=document.getElementById('ag-tec-tabs');
   if(tabsEl){
-    const _zonas=[['ZN','Zona Norte'],['ZL','Zona Leste'],['ZS','Zona Sul'],['Guarulhos','Guarulhos'],['Ribeirão Pires','Rib. Pires'],['Suzano','Suzano']];
-    const zonaRow='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.1)">'
-      +`<button onclick="agSetZona('')" style="background:${!_agZonaFiltro?'#374151':'rgba(255,255,255,.06)'};color:${!_agZonaFiltro?'#fff':'rgba(255,255,255,.45)'};border:none;border-radius:6px;padding:3px 11px;font-size:11px;cursor:pointer;transition:all .15s">Todos</button>`
-      +_zonas.map(([z,l])=>`<button onclick="agSetZona('${z}')" style="background:${_agZonaFiltro===z?'#374151':'rgba(255,255,255,.06)'};color:${_agZonaFiltro===z?'#fff':'rgba(255,255,255,.45)'};border:none;border-radius:6px;padding:3px 11px;font-size:11px;cursor:pointer;transition:all .15s">${l}</button>`).join('')
-      +'</div>';
-    const tecs=_agZonaFiltro?_AG_TECS.filter(t=>t.z===_agZonaFiltro):_AG_TECS;
-    tabsEl.innerHTML=zonaRow+tecs.map(t=>`<button onclick="agSetTec('${t.n}')" id="ag-tab-${t.n}"
-      style="background:${t.n===_agTecAtivo?'#7C3AED':'rgba(255,255,255,.07)'};color:${t.n===_agTecAtivo?'#fff':'rgba(255,255,255,.55)'};border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:${t.n===_agTecAtivo?'700':'500'};cursor:pointer;transition:all .15s">${t.n}</button>`).join('');
+    tabsEl.innerHTML=_AG_TECS.map(t=>`<button onclick="agSetTec('${t.n}')" id="ag-tab-${t.n}"
+      style="background:${t.n===_agTecAtivo?'#7C3AED':'rgba(255,255,255,.07)'};color:${t.n===_agTecAtivo?'#fff':'rgba(255,255,255,.55)'};border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:${t.n===_agTecAtivo?'700':'500'};cursor:pointer;transition:all .15s">${t.n}${t.z?`<span style="font-size:10px;opacity:.6;margin-left:5px">${t.z}</span>`:''}</button>`).join('');
   }
   // Semana label
   const mon=_agMonday(_agWeekOff);
