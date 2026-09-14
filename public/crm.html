@@ -12135,13 +12135,20 @@ async function syncManual(btn){
   if(btn){btn.textContent='↻';btn.disabled=false;}
 }
 
-const _AG_TECS=['Abnael','Caio','Carlos Holanda','Edilson','Gabriel','Hélio','Juan','Leandro','Leonardo','Matheus','Rodrigo','Rogério'];
+const _AG_TECS=[
+  {n:'Abnael',z:'ZN'},{n:'Caio',z:'ZN'},{n:'Carlos Holanda',z:'ZL'},
+  {n:'Edilson',z:'ZS'},{n:'Gabriel',z:'Guarulhos'},{n:'Hélio',z:'ZS'},
+  {n:'Juan',z:'Ribeirão Pires'},{n:'Leandro',z:null},
+  {n:'Leonardo',z:'ZN'},{n:'Matheus',z:'ZL'},
+  {n:'Rodrigo',z:'Suzano'},{n:'Rogério',z:'Guarulhos'},
+];
 const _AG_DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const _AG_TIPO_COR={TREINAMENTO:'#3B82F6',APRESENTAÇÃO:'#F59E0B',INAUGURAÇÃO:'#10B981',REAPRESENTAÇÃO:'#8B5CF6',MANUTENÇÃO:'#EF4444',FOLGA:'#94A3B8'};
 const _AG_MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-let _agTecAtivo=_AG_TECS[4]; // Leandro default
+let _agTecAtivo='Leandro';
 let _agWeekOff=0;
+let _agZonaFiltro='';
 let _agSlotAtivo=null; // {d1,d2,tec} slot being edited
 let _agEditId=null;
 
@@ -12245,8 +12252,14 @@ function renderAgenda(){
   // Tabs por técnico
   const tabsEl=document.getElementById('ag-tec-tabs');
   if(tabsEl){
-    tabsEl.innerHTML=_AG_TECS.map(t=>`<button onclick="agSetTec('${t}')" id="ag-tab-${t}"
-      style="background:${t===_agTecAtivo?'#7C3AED':'rgba(255,255,255,.07)'};color:${t===_agTecAtivo?'#fff':'rgba(255,255,255,.55)'};border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:${t===_agTecAtivo?'700':'500'};cursor:pointer;transition:all .15s">${t}</button>`).join('');
+    const _zonas=[['ZN','Zona Norte'],['ZL','Zona Leste'],['ZS','Zona Sul'],['Guarulhos','Guarulhos'],['Ribeirão Pires','Rib. Pires'],['Suzano','Suzano']];
+    const zonaRow='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.1)">'
+      +`<button onclick="agSetZona('')" style="background:${!_agZonaFiltro?'#374151':'rgba(255,255,255,.06)'};color:${!_agZonaFiltro?'#fff':'rgba(255,255,255,.45)'};border:none;border-radius:6px;padding:3px 11px;font-size:11px;cursor:pointer;transition:all .15s">Todos</button>`
+      +_zonas.map(([z,l])=>`<button onclick="agSetZona('${z}')" style="background:${_agZonaFiltro===z?'#374151':'rgba(255,255,255,.06)'};color:${_agZonaFiltro===z?'#fff':'rgba(255,255,255,.45)'};border:none;border-radius:6px;padding:3px 11px;font-size:11px;cursor:pointer;transition:all .15s">${l}</button>`).join('')
+      +'</div>';
+    const tecs=_agZonaFiltro?_AG_TECS.filter(t=>t.z===_agZonaFiltro):_AG_TECS;
+    tabsEl.innerHTML=zonaRow+tecs.map(t=>`<button onclick="agSetTec('${t.n}')" id="ag-tab-${t.n}"
+      style="background:${t.n===_agTecAtivo?'#7C3AED':'rgba(255,255,255,.07)'};color:${t.n===_agTecAtivo?'#fff':'rgba(255,255,255,.55)'};border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:${t.n===_agTecAtivo?'700':'500'};cursor:pointer;transition:all .15s">${t.n}</button>`).join('');
   }
   // Semana label
   const mon=_agMonday(_agWeekOff);
@@ -12305,6 +12318,7 @@ function renderAgenda(){
 }
 
 function agSetTec(tec){_agTecAtivo=tec;renderAgenda();}
+function agSetZona(z){_agZonaFiltro=z;renderAgenda();}
 function agNavSemana(dir,reset){if(reset)_agWeekOff=0;else _agWeekOff+=dir;renderAgenda();}
 
 let _agSearchQ='';
@@ -12642,7 +12656,7 @@ function abrirDupAgenda(id){
   if(orig) orig.textContent=`${e.cli} · ${e.tipo}${e.vend?' · '+e.vend:''}`;
   // Técnicos
   const tecSel=document.getElementById('dup-ag-tec');
-  if(tecSel) tecSel.innerHTML=_AG_TECS.map(t=>`<option value="${t}"${t===e.tec?' selected':''}>${t}</option>`).join('');
+  if(tecSel) tecSel.innerHTML=_AG_TECS.map(t=>`<option value="${t.n}"${t.n===e.tec?' selected':''}>${t.n}</option>`).join('');
   // Slots da semana atual e próxima
   const mon=_agMonday(_agWeekOff);
   const slots=_agSlots(mon);
@@ -12686,8 +12700,8 @@ function _swapSlotOpts(){
         `<optgroup label="Próxima semana">${_opts(_agSlots(monNext))}</optgroup>`;
 }
 function abrirSwapAgenda(){
-  const outro=_AG_TECS.find(t=>t!==_agTecAtivo)||_AG_TECS[0];
-  const tecOpts=_AG_TECS.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const outro=(_AG_TECS.find(t=>t.n!==_agTecAtivo)||_AG_TECS[0]).n;
+  const tecOpts=_AG_TECS.map(t=>`<option value="${t.n}">${t.n}</option>`).join('');
   const slotOpts=_swapSlotOpts();
   const sa=document.getElementById('swap-ag-tec-a');
   const sb=document.getElementById('swap-ag-tec-b');
@@ -12793,7 +12807,7 @@ function renderMateriais(){
   if(resumo) resumo.textContent=all.length+' registro'+(all.length!==1?'s':'')+' · '+pend+' pendente'+(pend!==1?'s':'');
   // Preenche datalist de técnicos no modal
   const dl=document.getElementById('mat-tec-dl');
-  if(dl) dl.innerHTML=_AG_TECS.map(t=>`<option value="${t}">`).join('');
+  if(dl) dl.innerHTML=_AG_TECS.map(t=>`<option value="${t.n}">`).join('');
   const lista=document.getElementById('mat-lista');
   if(!lista) return;
   if(!items.length){
@@ -12852,7 +12866,7 @@ function abrirMatModal(id){
   document.getElementById('mat-obs').value=e?.obs||'';
   // Preenche datalist
   const dl=document.getElementById('mat-tec-dl');
-  if(dl) dl.innerHTML=_AG_TECS.map(t=>`<option value="${t}">`).join('');
+  if(dl) dl.innerHTML=_AG_TECS.map(t=>`<option value="${t.n}">`).join('');
   document.getElementById('modal-materiais').style.display='flex';
 }
 
