@@ -11113,6 +11113,17 @@ function renderVendorDetail(name){
       if(_hmIdx[m]!==undefined) _D[m]={label:MES_LABELS[m]||m,total:arr25[_hmIdx[m]]||0,ped:0,cli:0};
     });
   }
+  // 2026: preenche meses sem dados nos arrays de vendedores via HISTORICO_MENSAL
+  if(CRM_ANO==='2026'&&cod){
+    const _hmIdx={fevereiro:1,marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7,setembro:8,outubro:9,novembro:10,dezembro:11};
+    const arr26=(HISTORICO_MENSAL['2026']||{})[cod]||Array(12).fill(0);
+    ['fevereiro','marco','abril','maio','junho','julho','agosto','setembro'].forEach(m=>{
+      if(_D[m]&&_D[m].total===0&&_hmIdx[m]!==undefined){
+        const v=arr26[_hmIdx[m]]||0;
+        if(v>0) _D[m]={label:MES_LABELS[m]||m,total:v,ped:0,cli:0};
+      }
+    });
+  }
   // Carteira comparativo — une os 3 meses selecionados por código de cliente
   const cA=CRM_ANO==='2025'?[]:(getCarteiraForMes(mesA)[cod]||[]);
   const cB=CRM_ANO==='2025'?[]:(getCarteiraForMes(mesB)[cod]||[]);
