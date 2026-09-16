@@ -12138,6 +12138,10 @@ async function _syncFromServer(){
     if(lbSrv.length===0&&lbLoc.length>0) _dbSave('lembretes',lbLoc);
     else if(lbSrv.length>0&&_agSubnavAtivo==='lembretes') renderLembretes();
   }
+  // Reportes de endereço
+  _syncReportes();
+  // Novos clientes de manutenção
+  _syncMnNovos();
 }
 
 async function syncManual(btn){
@@ -13846,8 +13850,8 @@ function showMn(sec,el){
     b.style.background='rgba(255,255,255,.07)';b.style.color='rgba(255,255,255,.55)';b.style.fontWeight='500';
   });
   if(el){el.style.background='#7C3AED';el.style.color='#fff';el.style.fontWeight='700';}
-  if(sec==='enderecos') mnRenderLista();
-  if(sec==='reportes') mnRenderReportes();
+  if(sec==='enderecos'){mnRenderLista();_syncMnNovos();}
+  if(sec==='reportes'){mnRenderReportes();_syncReportes();}
 }
 
 function mnBusca(v){_mnBusca=v.toLowerCase();mnRenderLista();}
@@ -13872,6 +13876,33 @@ function _mnSaveEdits(){
     localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));
     const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
     localStorage.setItem('mn_edits_bkp_'+today,JSON.stringify(_mnEdits));
+  }catch(e){}
+  try{
+    const novos=Object.entries(_mnEdits).filter(([k])=>k.startsWith('_novo_')).map(([k,v])=>({...v,_key:k,id:k}));
+    if(novos.length>0) _dbSave('mn_novos',novos);
+  }catch(e){}
+}
+async function _syncMnNovos(){
+  try{
+    const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.mn_novos&select=value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length)return;
+    const srv=JSON.parse(rows[0].value||'[]');
+    if(!Array.isArray(srv)||!srv.length)return;
+    _mnLoadEdits();
+    let changed=false;
+    srv.forEach(v=>{
+      const k=v._key||v.id;
+      if(k&&k.startsWith('_novo_')&&!_mnEdits[k]){
+        const {_key:_k,id:_i,...rest}=v;
+        _mnEdits[k]=rest;
+        changed=true;
+      }
+    });
+    if(changed){
+      try{localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));}catch(e){}
+      mnRenderLista();
+    }
   }catch(e){}
 }
 function mnExportBackup(){
@@ -13921,13 +13952,25 @@ function mnRenderLista(){
   if(!el)return;
   _mnLoadEdits();
   const vendMap=_mnBuildVendMap();
+  // Mapa cod→maps do ROTAS, para preencher endereços ausentes em CLIENTES_MANU
+  const _rotasMap={};
+  if(typeof ROTAS!=='undefined'){
+    for(const vc of Object.keys(ROTAS)){
+      for(const day of Object.values(ROTAS[vc])){
+        if(!Array.isArray(day))continue;
+        day.forEach(c=>{if(c.maps&&c.cod&&!_rotasMap[c.cod])_rotasMap[c.cod]=c.maps;});
+      }
+    }
+  }
   // Merge edits — track occurrence count only for unique element IDs
   const _oc={};
   const baseItems=CLIENTES_MANU.map(c=>{
     const n=_oc[c.cod]=(_oc[c.cod]??-1)+1;
     const uidKey=(c.cod||'')+(n>0?'__'+n:'');
     const edit=_mnEdits[uidKey]||_mnEdits[c.cod];
-    return edit?{...c,...edit,_occN:n}:{...c,_occN:n};
+    const merged=edit?{...c,...edit,_occN:n}:{...c,_occN:n};
+    if(!merged.maps&&c.cod&&_rotasMap[c.cod]) return{...merged,maps:_rotasMap[c.cod]};
+    return merged;
   });
   let items=baseItems.filter(c=>{
     const _uid=(c.cod||'')+(c._occN>0?'__'+c._occN:'');
@@ -14194,8 +14237,9 @@ function salvarReporte(){
   if(!nome&&!cod){alert('Informe o nome ou código do cliente.');return;}
   try{
     const arr=JSON.parse(localStorage.getItem('mn_reportes')||'[]');
-    arr.push({id:Date.now(),cod,nome,tipo,detalhe,rep,dt:new Date().toISOString()});
+    arr.push({id:Date.now(),_mts:Date.now(),cod,nome,tipo,detalhe,rep,dt:new Date().toISOString()});
     localStorage.setItem('mn_reportes',JSON.stringify(arr));
+    _dbSave('reportes',arr);
   }catch(e){}
   fecharReporteModal();
   const btn=document.getElementById('btn-rep-global');
@@ -14238,8 +14282,25 @@ function mnDeleteReporte(id){
     let arr=JSON.parse(localStorage.getItem('mn_reportes')||'[]');
     arr=arr.filter(r=>r.id!==id);
     localStorage.setItem('mn_reportes',JSON.stringify(arr));
+    _dbSave('reportes',arr);
   }catch(e){}
   mnRenderReportes();
+}
+async function _syncReportes(){
+  try{
+    const r=await fetch(`${_SB_URL}/rest/v1/crm_data?key=eq.reportes&select=value`,{headers:_SB_H,cache:'no-store'});
+    const rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length)return;
+    const srv=JSON.parse(rows[0].value||'[]');
+    if(!Array.isArray(srv))return;
+    const loc=JSON.parse(localStorage.getItem('mn_reportes')||'[]');
+    const srvIds=new Set(srv.map(x=>x.id));
+    const localOnly=loc.filter(x=>!srvIds.has(x.id));
+    const merged=[...srv,...localOnly].sort((a,b)=>new Date(b.dt)-new Date(a.dt));
+    localStorage.setItem('mn_reportes',JSON.stringify(merged));
+    if(localOnly.length>0) _dbSave('reportes',merged);
+    mnRenderReportes();
+  }catch(e){}
 }
 
 // ══════════════════════════════════════════════════════════════
