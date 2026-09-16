@@ -13901,7 +13901,7 @@ async function _syncMnNovos(){
     });
     if(changed){
       try{localStorage.setItem('mn_edits',JSON.stringify(_mnEdits));}catch(e){}
-      mnRenderLista();
+      if(!document.getElementById('mn-novo-form')) mnRenderLista();
     }
   }catch(e){}
 }
@@ -14011,10 +14011,13 @@ function mnRenderLista(){
     return;
   }
   // Novo entries (manually added, not from CLIENTES_MANU)
-  const novosHtml=(_mnFiltro===''||_mnFiltro==='editados')?Object.entries(_mnEdits).filter(([k])=>k.startsWith('_novo_')).filter(([,v])=>{
-    if(!_mnBusca)return true;
-    const q=_mnBusca;
-    return(v.cod&&v.cod.toLowerCase().includes(q))||(v.nome&&v.nome.toLowerCase().includes(q))||(v.end&&v.end.toLowerCase().includes(q));
+  const novosHtml=Object.entries(_mnEdits).filter(([k])=>k.startsWith('_novo_')).filter(([,v])=>{
+    if(_mnFiltro==='inativos') return false;
+    if(_mnFiltro==='sem_edicao') return false;
+    if(_mnFiltro==='com_end'&&!v.end) return false;
+    if(_mnFiltro==='sem_end'&&!!v.end) return false;
+    if(_mnBusca){const q=_mnBusca;return(v.cod&&v.cod.toLowerCase().includes(q))||(v.nome&&v.nome.toLowerCase().includes(q))||(v.end&&v.end.toLowerCase().includes(q));}
+    return true;
   }).map(([k,c])=>{
     const safeKey=k.replace(/'/g,"\\'");
     const safeNome=(c.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
@@ -14047,7 +14050,7 @@ function mnRenderLista(){
         </div>
       </div>
     </div>`;
-  }).join(''):'';
+  }).join('');
   el.innerHTML=novosHtml+items.map(c=>{
     const uid=(c.cod||'')+(c._occN>0?'__'+c._occN:''); // unique per occurrence, not visible
     const safeUid=uid.replace(/'/g,"\\'").replace(/"/g,'&quot;');
