@@ -11548,10 +11548,10 @@ function applySession(user){
   const phMeta=document.querySelector('#print-header .ph-meta');
   if(phMeta) phMeta.innerHTML='<div>Emissão: '+nowBRDateStr()+'</div><div>'+user.name+' · '+user.role+'</div>';
   // Copy protection: non-admins cannot select/copy text; admins can
-  if(!user.fullAccess&&user.name!=='Marcelo') document.body.classList.add('no-copy');
+  if(!user.fullAccess&&user.role!=='TECNICO') document.body.classList.add('no-copy');
   else document.body.classList.add('admin-mode');
-  // Técnicos e Placas: apenas para ANALISTA (admin) e Marcelo
-  if((user.fullAccess && !user.team && user.role!=='GERENTE') || user.name==='Marcelo'){
+  // Técnicos e Placas: apenas para ANALISTA (admin) e técnicos
+  if((user.fullAccess && !user.team && user.role!=='GERENTE') || user.role==='TECNICO'){
     const nt=document.getElementById('nav-tecnicos'),bt=document.getElementById('botnav-tecnicos');
     if(nt)nt.style.display='';if(bt)bt.style.display='';
     const np=document.getElementById('nav-placas'),bp=document.getElementById('botnav-placas');
@@ -11654,8 +11654,8 @@ function applyTecnicoMode(user){
   const botItems=document.querySelectorAll('.botnav-item');
   botItems.forEach(item=>item.classList.remove('active'));
   if(botItems[0]) botItems[0].classList.add('active');
-  // Marcelo: sem Dashboard — abre direto na aba Técnicos → Agenda
-  if(user.name==='Marcelo'){
+  // Técnicos: sem Dashboard — abre direto na aba Técnicos → Agenda
+  if(user.role==='TECNICO'){
     ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
