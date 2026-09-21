@@ -11879,10 +11879,6 @@ function applyVendorMode(user){
   else CRM_MES='abril';
   document.querySelectorAll('.mes-select').forEach(s=>s.value=CRM_MES);
 
-  // Comparativo: mostra aba (vendedor vê apenas próprios dados)
-  const _nc=document.getElementById('nav-comparativo'),_bc=document.getElementById('botnav-comparativo');
-  if(_nc)_nc.style.display='';if(_bc)_bc.style.display='';
-
   // Substitui dashboard pelo painel pessoal do vendedor
   renderVendorDashboard(user, vendorKey);
 }
