@@ -11407,7 +11407,7 @@ const CREDS=[
   {user:'jean', pass:'Jean123@', role:'MANUTENCAO', name:'Jean', av:'JN'},
   // Técnicos
   {user:'marcelo',  pass:'140995', role:'TECNICO', name:'Marcelo', av:'MC', color:'#C77DFF'},
-  {user:'mateus',   pass:'530907', role:'VENDEDOR', name:'Matheus', av:'MT', vendId:'116', color:'#4ADE80'},
+  {user:'mateus',   pass:'530907', role:'VENDEDOR', name:'Matheus', av:'MT', vendId:'116', color:'#4ADE80', openAnalise:true},
 ];
 
 function togglePw(){
@@ -11842,7 +11842,7 @@ function renderRepresentanteDashboard(user, mesOverride){
 
 function applyVendorMode(user){
   window.CRM_VENDOR_ID  =user.vendId;
-  window.CRM_VENDOR_NAME=user.name;
+  if(!user.openAnalise) window.CRM_VENDOR_NAME=user.name;
   activeVendor=user.name; // garante que Análise abre no vendedor correto, não em 'Guilherme'
   const vendorKey=user.name.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
   // Oculta stats da topbar (total geral da empresa não deve ser visível ao vendedor)
