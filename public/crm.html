@@ -994,7 +994,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div style="display:flex;gap:4px;align-items:center">
           <button class="equipe-btn ano-btn active" data-ano="2026" onclick="setAno('2026')">2026</button>
-          <button class="equipe-btn ano-btn" data-ano="2025" onclick="setAno('2025')">2025</button>
           <select class="mes-select" onchange="setMes(this.value)" style="margin-left:6px">
             <option value="abril">Abril</option>
             <option value="maio">Maio</option>
@@ -1048,7 +1047,6 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">ANO</span>
       <button class="equipe-btn ano-btn active" data-ano="2026" onclick="setAno('2026')">2026</button>
-      <button class="equipe-btn ano-btn" data-ano="2025" onclick="setAno('2025')">2025</button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.3px">PERÍODOS</span>
@@ -1985,7 +1983,7 @@ const EQUIPES = {
 };
 // Vendedores sem código ERP ainda, agrupados por equipe (data-seller)
 const EQUIPES_EXTRA = {
-  lazaro: ['RAUER'],
+  lazaro: ['RAUER','MATHEUS'],
   val:    [],
 };
 function _getVendedores2025(mes){
