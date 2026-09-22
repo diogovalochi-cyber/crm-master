@@ -9869,7 +9869,7 @@ function obsCell(text,btnLabel,modalLabel){
 function endCell(text){
   if(!text||!text.trim()||text==='#N/A') return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
   const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  return `<td style="white-space:nowrap;overflow:hidden;max-width:220px"><span style="display:inline-block;max-width:210px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;font-size:12px;color:rgba(255,255,255,.75)" title="${safe}">${safe}</span></td>`;
+  return `<td style="max-width:220px"><div style="display:flex;align-items:center;gap:4px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font-size:12px;color:rgba(255,255,255,.75)">${safe}</span><button class="obs-btn" onclick="showObs(this)" data-obs="${safe}" data-label="Endereço" style="flex-shrink:0;font-size:9px;padding:2px 5px">ver</button></div></td>`;
 }
 function fotoCell(url){
   if(!url||!url.trim()||url==='#N/A') return '<td style="text-align:center;color:rgba(255,255,255,.2)">—</td>';
