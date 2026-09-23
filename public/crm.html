@@ -11657,8 +11657,8 @@ function applyTecnicoMode(user){
   if(botItems[0]) botItems[0].classList.add('active');
   // Técnicos: sem Dashboard — abre direto na aba Técnicos → Agenda
   if(user.role==='TECNICO'){
-    ['nav-dashboard','nav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-    ['botnav-dashboard','botnav-forms'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    ['nav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    ['botnav-dashboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     document.getElementById('tab-tecnicos').classList.add('active');
     document.querySelectorAll('#sidebar .nav-item').forEach(n=>n.classList.remove('active'));
