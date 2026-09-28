@@ -1153,10 +1153,10 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
   <div class="forms-filter-bar" style="margin-top:14px">
     <label>De <input type="date" id="forms-dt-from" onchange="formsDateChanged()"></label>
     <label>Até <input type="date" id="forms-dt-to" onchange="formsDateChanged()"></label>
-    <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';renderFormsTable()">✕ Limpar filtro</button>
+    <button class="clear-btn" onclick="document.getElementById('forms-dt-from').value='';document.getElementById('forms-dt-to').value='';document.getElementById('forms-search').value='';formsSearchFilter='';renderFormsTable()">✕ Limpar filtro</button>
   </div>
   <div id="forms-search-wrap" style="display:block;margin-top:10px">
-    <input id="forms-search" type="text" placeholder="Buscar concorrente (Empresa Atual)..." autocomplete="off"
+    <input id="forms-search" type="text" placeholder="Buscar por nome ou código..." autocomplete="off"
       oninput="formsSearchFilter=this.value.trim();renderFormsTable()"
       style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#fff;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;-webkit-appearance:none"/>
   </div>
@@ -10045,9 +10045,7 @@ function selectFormsType(el){
   document.querySelectorAll('#reg-type-tabs .subtab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   formsSearchFilter='';
-  const _sw=document.getElementById('forms-search-wrap');
   const _si=document.getElementById('forms-search');
-  if(_sw) _sw.style.display=currentFormsType==='prospeccoes'?'block':'none';
   if(_si) _si.value='';
   if(window._rotaTimer){clearInterval(window._rotaTimer);window._rotaTimer=null;}
   const _rotaSec=document.getElementById('rota-section');
@@ -10592,10 +10590,25 @@ function renderFormsTable(){
     if(dtTo&&d>dtTo) return false;
     return true;
   });
-  if(formsSearchFilter && currentFormsType==='prospeccoes'){
+  if(formsSearchFilter){
     const _fn=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
     const _fq=_fn(formsSearchFilter);
-    rows=rows.filter(r=>_fn(r[7]||'').includes(_fq));
+    rows=rows.filter(r=>{
+      if(currentFormsType==='visitas'){
+        const{iC,iR}=_visitasOffsets(r);
+        return _fn(normCod(r[iC]||'')).includes(_fq)||_fn(_findRS(r,iR,iR+2)||'').includes(_fq);
+      }
+      if(currentFormsType==='cadastros'){
+        return _fn(r[3]||'').includes(_fq)||_fn(_findRS(r,4,9)||'').includes(_fq);
+      }
+      if(currentFormsType==='apresentacoes'){
+        return _fn(_findRS(r,4,9)||'').includes(_fq);
+      }
+      // prospeccoes
+      const noEA=r.length<=10||(r[8]||'').startsWith('http');
+      const rs=noEA?r[2]:_findRS(r,3,8);
+      return _fn(rs||'').includes(_fq)||_fn(r[2]||'').includes(_fq)||_fn(r[3]||'').includes(_fq);
+    });
   }
   if(!rows.length){
     const msg=sellerRows.length?'Nenhum registro no período selecionado':'Nenhum registro para este vendedor';
