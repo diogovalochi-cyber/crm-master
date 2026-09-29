@@ -1272,6 +1272,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
             <button onclick="agNavSemana(0,true)" style="background:none;border:none;border-radius:6px;color:rgba(255,255,255,.3);padding:6px 10px;font-size:11px;cursor:pointer">Hoje</button>
             <button onclick="abrirSwapAgenda()" title="Trocar agendas entre dois técnicos" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 14px;font-size:12px;cursor:pointer">⇄ Trocar</button>
             <button onclick="syncManual(this)" title="Sincronizar com servidor" style="background:rgba(255,255,255,.07);border:none;border-radius:6px;color:rgba(255,255,255,.6);padding:6px 10px;font-size:12px;cursor:pointer">↻</button>
+            <button onclick="agExportExcel()" title="Exportar agenda como CSV (Excel)" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer">↓ Excel</button>
           </div>
         </div>
         <!-- Grade de slots -->
@@ -1367,6 +1368,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button id="mn-fil-sem_edicao" class="mn-fil-btn" onclick="mnSetFiltro('sem_edicao')" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">○ Não editados</button>
         <button onclick="mnAddNovo()" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">➕ Novo</button>
         <button onclick="mnExportBackup()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Backup</button>
+        <button onclick="mnExportExcel()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Excel</button>
         <label style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↑ Restaurar<input type="file" accept=".json" onchange="mnImportBackup(this)" style="display:none"></label>
       </div>
       <div id="mn-lista"></div>
@@ -13962,6 +13964,34 @@ function mnExportBackup(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;a.download='mn_edits_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function mnExportExcel(){
+  _mnLoadEdits();
+  const esc=v=>{const s=String(v||'');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
+  const header=['Cód','Nome','Endereço','Maps'];
+  const entries=Object.entries(_mnEdits).filter(([,v])=>v.end||v.nome||v.maps);
+  if(!entries.length){alert('Nenhum endereço cadastrado.');return;}
+  const rows=entries.map(([k,v])=>[k.startsWith('_novo_')?(v.cod||k):k,v.nome,v.end,v.maps].map(esc).join(','));
+  const csv='﻿'+[header.map(esc).join(','),...rows].join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='enderecos_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function agExportExcel(){
+  const list=_loadAg();
+  if(!list.length){alert('Nenhuma visita na agenda.');return;}
+  const esc=v=>{const s=String(v||'');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
+  const header=['Técnico','Início','Fim','Cliente','Cód','Tipo','Vendedor','Local','Nota'];
+  const sorted=[...list].sort((a,b)=>a.d1.localeCompare(b.d1)||a.tec.localeCompare(b.tec));
+  const rows=sorted.map(e=>[e.tec,e.d1,e.d2,e.cli,e.cod,e.tipo,e.vend,e.loc,e.nota].map(esc).join(','));
+  const csv='﻿'+[header.map(esc).join(','),...rows].join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='agenda_tecnicos_'+new Date().toISOString().slice(0,10)+'.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 function mnImportBackup(input){
