@@ -13968,13 +13968,14 @@ function mnExportBackup(){
 }
 function mnExportExcel(){
   _mnLoadEdits();
-  const esc=v=>{const s=String(v||'');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
+  const SEP=';';
+  const esc=v=>{const s=String(v||'');return s.includes(SEP)||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
   const header=['Cód','Nome','Endereço','Maps'];
   const entries=Object.entries(_mnEdits).filter(([,v])=>v.end||v.nome||v.maps);
   if(!entries.length){alert('Nenhum endereço cadastrado.');return;}
-  const rows=entries.map(([k,v])=>[k.startsWith('_novo_')?(v.cod||k):k,v.nome,v.end,v.maps].map(esc).join(','));
-  const csv='﻿'+[header.map(esc).join(','),...rows].join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const rows=entries.map(([k,v])=>[k.startsWith('_novo_')?(v.cod||k):k,v.nome,v.end,v.maps].map(esc).join(SEP));
+  const csv='sep=;\r\n'+[header.map(esc).join(SEP),...rows].join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;a.download='enderecos_'+new Date().toISOString().slice(0,10)+'.csv';
@@ -13983,12 +13984,13 @@ function mnExportExcel(){
 function agExportExcel(){
   const list=_loadAg();
   if(!list.length){alert('Nenhuma visita na agenda.');return;}
-  const esc=v=>{const s=String(v||'');return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
+  const SEP=';';
+  const esc=v=>{const s=String(v||'');return s.includes(SEP)||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;};
   const header=['Técnico','Início','Fim','Cliente','Cód','Tipo','Vendedor','Local','Nota'];
   const sorted=[...list].sort((a,b)=>a.d1.localeCompare(b.d1)||a.tec.localeCompare(b.tec));
-  const rows=sorted.map(e=>[e.tec,e.d1,e.d2,e.cli,e.cod,e.tipo,e.vend,e.loc,e.nota].map(esc).join(','));
-  const csv='﻿'+[header.map(esc).join(','),...rows].join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const rows=sorted.map(e=>[e.tec,e.d1,e.d2,e.cli,e.cod,e.tipo,e.vend,e.loc,e.nota].map(esc).join(SEP));
+  const csv='sep=;\r\n'+[header.map(esc).join(SEP),...rows].join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;a.download='agenda_tecnicos_'+new Date().toISOString().slice(0,10)+'.csv';
