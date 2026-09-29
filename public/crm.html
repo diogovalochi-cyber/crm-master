@@ -1369,6 +1369,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
         <button onclick="mnAddNovo()" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">➕ Novo</button>
         <button onclick="mnExportBackup()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Backup</button>
         <button onclick="mnExportExcel()" style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↓ Excel</button>
+        <button onclick="mnGerarRelatorio()" style="background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">📄 Relatório</button>
         <label style="background:rgba(110,231,183,.12);color:#6ee7b7;border:1px solid rgba(110,231,183,.25);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;cursor:pointer">↑ Restaurar<input type="file" accept=".json" onchange="mnImportBackup(this)" style="display:none"></label>
       </div>
       <div id="mn-lista"></div>
@@ -13965,6 +13966,71 @@ function mnExportBackup(){
   const a=document.createElement('a');
   a.href=url;a.download='mn_edits_backup_'+new Date().toISOString().slice(0,10)+'.json';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function mnGerarRelatorio(){
+  _mnLoadEdits();
+  const entries=Object.entries(_mnEdits)
+    .filter(([,v])=>!v.inativo&&(v.end||v.nome||v.maps))
+    .sort((a,b)=>{
+      const na=(a[1].nome||a[0]||'').toLowerCase();
+      const nb=(b[1].nome||b[0]||'').toLowerCase();
+      return na.localeCompare(nb,'pt-BR');
+    });
+  if(!entries.length){alert('Nenhum endereço cadastrado.');return;}
+  const hoje=new Date().toLocaleDateString('pt-BR');
+  const linhas=entries.map(([k,v])=>{
+    const cod=k.startsWith('_novo_')?(v.cod||''):k;
+    const nome=v.nome||'';
+    const end=v.end||'';
+    const maps=v.maps?`<a href="${v.maps}" target="_blank" style="color:#7C3AED;font-size:12px">📍 Maps</a>`:'';
+    return`<tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:13px;white-space:nowrap">${cod}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:13px;font-weight:500">${nome}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:13px">${end}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:center">${maps}</td>
+    </tr>`;
+  }).join('');
+  const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Endereços – Valochi</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,sans-serif;background:#f9fafb;color:#111827;padding:24px}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+  h1{font-size:20px;font-weight:700;color:#111827}
+  .sub{font-size:12px;color:#6b7280;margin-top:3px}
+  .print-btn{background:#7C3AED;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  thead th{background:#7C3AED;color:#fff;padding:10px;font-size:12px;font-weight:600;text-align:left;letter-spacing:.4px}
+  tbody tr:hover{background:#f5f3ff}
+  .footer{margin-top:16px;font-size:11px;color:#9ca3af;text-align:right}
+  @media print{
+    body{padding:12px;background:#fff}
+    .print-btn{display:none}
+    table{box-shadow:none;border:1px solid #e5e7eb}
+  }
+</style></head><body>
+<div class="header">
+  <div>
+    <h1>Endereços dos Clientes</h1>
+    <div class="sub">Valochi Sousa · Gerado em ${hoje} · ${entries.length} registros</div>
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+</div>
+<table>
+  <thead><tr>
+    <th style="width:70px">Cód</th>
+    <th>Nome</th>
+    <th>Endereço</th>
+    <th style="width:70px;text-align:center">Maps</th>
+  </tr></thead>
+  <tbody>${linhas}</tbody>
+</table>
+<div class="footer">CRM Valochi Sousa</div>
+</body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else alert('Permita pop-ups para abrir o relatório.');
 }
 function mnExportExcel(){
   _mnLoadEdits();
