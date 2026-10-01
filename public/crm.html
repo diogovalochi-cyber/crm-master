@@ -10716,6 +10716,10 @@ async function loadAllFormsCaches(){
         if(t==='cadastros'&&FORMS_CSV.cadastros5) urls.push(FORMS_CSV.cadastros5);
         const res=await Promise.allSettled(urls.map(u=>fetch(u).then(r=>r.text())));
         const texts=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
+        res.forEach((r,i)=>{
+          const rows=r.status==='fulfilled'?parseCSV(r.value).filter(x=>x[0]&&x[0].trim()).length:0;
+          console.log(`[forms/${t}] planilha ${i+1}: ${r.status==='fulfilled'?rows+' linhas':'FALHOU'} — ${urls[i].slice(0,80)}…`);
+        });
         if(!texts.length) return;
         formsCaches[t]=texts.flatMap(txt=>parseCSV(txt).filter(r=>r[0]&&r[0].trim()));
         renderFormsSummary();
@@ -10755,6 +10759,10 @@ async function loadFormsData(){
     if(type==='cadastros'&&FORMS_CSV.cadastros5) _fUrls.push(FORMS_CSV.cadastros5);
     const _fRes=await Promise.allSettled(_fUrls.map(u=>fetch(u).then(r=>r.text())));
     const texts=_fRes.filter(r=>r.status==='fulfilled').map(r=>r.value);
+    _fRes.forEach((r,i)=>{
+      const rows=r.status==='fulfilled'?parseCSV(r.value).filter(x=>x[0]&&x[0].trim()).length:0;
+      console.log(`[forms/${type}] planilha ${i+1}: ${r.status==='fulfilled'?rows+' linhas':'FALHOU'} — ${_fUrls[i].slice(0,80)}…`);
+    });
     if(!texts.length) throw new Error('all_failed');
     formsCaches[type]=texts.flatMap(t=>parseCSV(t).filter(r=>r[0]&&r[0].trim()));
     renderFormsTable();
