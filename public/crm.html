@@ -7718,6 +7718,10 @@ const CARTEIRA_REPR_SETEMBRO = {
   '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:9338.51},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:4956.35},{cod:'3113',nome:'JOSE SILVA CABRAL',v:4490.42},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:5124.06},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:5068.22},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:10250.61},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:6134.87},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:3291.58},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:1747.95}],
   '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:3649.56},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:6042.20},{cod:'2965',nome:'IGOR SILVA FERREIRA',v:545.84},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:10983.36},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:12596.08},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:3478.47},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:1890.10},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:1664.88},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:2315.41},{cod:'4499',nome:'REDE FRED LTDA',v:1910.73},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:2761.01},{cod:'4593',nome:'PEDRO HENRIQUE BATISTA DA SILVA',v:2152.53},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:1359.40},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:6088.39},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:2628.81}],
 };
+const CARTEIRA_REPR_OUTUBRO = {
+  '106':[{cod:'1740',nome:'CICERO DONIZETTI MOREIRA DE SOUZA',v:5395.49},{cod:'2937',nome:'ANA MARIA SANTOS SILVA - MINIMERCADO',v:2118.11},{cod:'3113',nome:'JOSE SILVA CABRAL',v:1988.35},{cod:'3351',nome:'GRACA MIX PANIFICADORA EIRELI',v:8720.20},{cod:'3653',nome:'BOA HORA SUPERMERCADOS LTDA',v:2460.12},{cod:'3797',nome:'RENATA RANIELE DA SILVA ROCHA',v:6133.04},{cod:'4474',nome:'JOSE ANTONIO DOS SANTOS FREIRE',v:3733.96},{cod:'4707',nome:'PADARIA NOVA PALMARES LTDA',v:640.71},{cod:'4776',nome:'RAFAEL DOUGLAS OLIVEIRA LIMA',v:2198.76},{cod:'4860',nome:'LAS NUSTAS SUPER MERCADO LTDA',v:842.31}],
+  '29': [{cod:'2079',nome:'HELIDA BEZERRA DE MEDEIROS',v:1644.69},{cod:'2671',nome:'REDE FRED MERCADO LTDA',v:3588.29},{cod:'3549',nome:'OCELIA SILVA FERREIRA',v:5996.05},{cod:'3769',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:2338.77},{cod:'3770',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:1144.72},{cod:'3771',nome:'ASSOCIACAO COMUNITARIA E EDUCACIONAL MARIA',v:910.20},{cod:'4405',nome:'VICKS LOJA DE CONVENIENCIA LTDA',v:630.63},{cod:'4499',nome:'REDE FRED LTDA',v:940.53},{cod:'4592',nome:'REDE FRED MERCADO LTDA',v:1190.27},{cod:'4799',nome:'REDE FRED MERCADO LTDA',v:835.67},{cod:'4992',nome:'BIANCA ELOISA SASSO',v:3938.23},{cod:'865',nome:'VANDERSON BOTELHO LOURENCO',v:1211.89}],
+};
 
 const FATURAMENTO_DIARIO = {
   '2026-06-08': {
@@ -11836,21 +11840,21 @@ function applyRepresentanteMode(user){
 }
 
 function _getCarteiraReprForMes(mes){
-  return {junho:CARTEIRA_REPR_JUNHO,julho:CARTEIRA_REPR_JULHO,agosto:CARTEIRA_REPR_AGOSTO,setembro:CARTEIRA_REPR_SETEMBRO}[mes]||{};
+  return {junho:CARTEIRA_REPR_JUNHO,julho:CARTEIRA_REPR_JULHO,agosto:CARTEIRA_REPR_AGOSTO,setembro:CARTEIRA_REPR_SETEMBRO,outubro:CARTEIRA_REPR_OUTUBRO}[mes]||{};
 }
 
 function renderRepresentanteDashboard(user, mesOverride){
   const reprId=user.reprId||'RC';
   const ano='2026';
   const mesLabels=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const mesNomes={junho:'Junho',julho:'Julho',agosto:'Agosto',setembro:'Setembro'};
+  const mesNomes={junho:'Junho',julho:'Julho',agosto:'Agosto',setembro:'Setembro',outubro:'Outubro'};
 
   const arrRC=(HISTORICO_MENSAL_REPR[ano]||{})[reprId]||Array(12).fill(0);
   const arr29=(HISTORICO_MENSAL[ano]||{})['29']||Array(12).fill(0);
   const arr106=(HISTORICO_MENSAL[ano]||{})['106']||Array(12).fill(0);
 
   // Mês selecionado (padrão: último com dados)
-  const mesIdx={junho:5,julho:6,agosto:7,setembro:8};
+  const mesIdx={junho:5,julho:6,agosto:7,setembro:8,outubro:9};
   let lastIdx=arrRC.reduce((best,v,i)=>v>0?i:best,-1);
   if(lastIdx<0) lastIdx=7;
   const mesSel=mesOverride||Object.keys(mesNomes).find(k=>mesIdx[k]===lastIdx)||'agosto';
