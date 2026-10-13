@@ -8652,9 +8652,15 @@ function getVendedoresForMes(mes){
 function getCarteiraForMes(mes){
   if(mes==='diario') return (FATURAMENTO_DIARIO||{})[CRM_DIA]?.carteira||{};
   const _raw={marco:CARTEIRA_MARCO,abril:CARTEIRA_ABRIL,maio:CARTEIRA_MAIO,junho:CARTEIRA_JUNHO,julho:CARTEIRA_JULHO,agosto:CARTEIRA_AGOSTO,setembro:CARTEIRA_SETEMBRO,outubro:CARTEIRA_OUTUBRO}[mes]||{};
-  // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em CARTEIRA_JUNHO)
+  // Normaliza formato abreviado {cod,v} → {cod,nome,valor} (busca nome em todas as carteiras com formato completo)
   const _nameMap=new Map();
-  Object.values(CARTEIRA_JUNHO).forEach(arr=>arr.forEach(c=>{if(!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
+  [CARTEIRA_MARCO,CARTEIRA_ABRIL,CARTEIRA_MAIO,CARTEIRA_JUNHO].forEach(cart=>{
+    Object.values(cart).forEach(arr=>arr.forEach(c=>{if(c.nome&&!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
+  });
+  // Complementa com nomes do FATURAMENTO_DIARIO (clientes mais recentes)
+  Object.values(FATURAMENTO_DIARIO||{}).forEach(dia=>{
+    Object.values(dia.carteira||{}).forEach(arr=>arr.forEach(c=>{if(c.nome&&!_nameMap.has(c.cod))_nameMap.set(c.cod,c.nome);}));
+  });
   const _norm=raw=>{const r={};for(const k in raw){r[k]=raw[k].map(c=>c.valor!==undefined?c:{...c,valor:c.v??0,nome:_nameMap.get(c.cod)||c.cod});}return r;};
   const _normalized=_norm(_raw);
   if(!CRM_USER?.team) return _normalized;
@@ -11112,7 +11118,7 @@ function initVendorPills(){
       return{name:ref?.name||v.label,av:ref?.av||v.av,color:ref?.color||'#94a3b8',cod:v.id};
     });
   })();
-  const _allV=CRM_ANO==='2025'?_allV2025:(typeof VENDEDORES_OUTUBRO!=='undefined'&&VENDEDORES_OUTUBRO.length)?VENDEDORES_OUTUBRO:(typeof VENDEDORES_SETEMBRO!=='undefined'&&VENDEDORES_SETEMBRO.length)?VENDEDORES_SETEMBRO:(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
+  const _allV=CRM_ANO==='2025'?_allV2025:(typeof VENDEDORES_AGOSTO!=='undefined'&&VENDEDORES_AGOSTO.length)?VENDEDORES_AGOSTO:(typeof VENDEDORES_JULHO!=='undefined'&&VENDEDORES_JULHO.length)?VENDEDORES_JULHO:(typeof VENDEDORES_JUNHO!=='undefined'&&VENDEDORES_JUNHO.length)?VENDEDORES_JUNHO:VENDEDORES;
   const vendorsToShow=window.CRM_VENDOR_NAME
     ? (_allV.filter(v=>v.cod===window.CRM_VENDOR_ID).length
         ? _allV.filter(v=>v.cod===window.CRM_VENDOR_ID)
