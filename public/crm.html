@@ -12023,8 +12023,8 @@ function renderVendorDashboard(user, vendorKey){
   const vRawAbr   = VENDEDORES.find(v=>v.cod===user.vendId);
   const vRawMaio  = VENDEDORES_MAIO.find(v=>v.cod===user.vendId);
   const vRawJunho = VENDEDORES_JUNHO.find(v=>v.cod===user.vendId);
-  const vRawJulho = VENDEDORES_JULHO.find(v=>v.cod===user.vendId);
-  const vRawAgosto = VENDEDORES_AGOSTO.find(v=>v.cod===user.vendId);
+  const vRawJulho = VENDEDORES_JULHO.find(v=>v.cod===user.vendId) || VENDEDORES_JULHO.find(v=>v.name===user.name);
+  const vRawAgosto = VENDEDORES_AGOSTO.find(v=>v.cod===user.vendId) || VENDEDORES_AGOSTO.find(v=>v.name===user.name);
 
   const mesData=getVendedoresForMes(CRM_MES);
   const vM=mesData.find(v=>v.cod===user.vendId);
