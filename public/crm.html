@@ -11554,7 +11554,7 @@ const CREDS=[
   {user:'kelly',       pass:'kelly123',  role:'VENDEDOR', name:'Kelly',        av:'KL', vendId:'123', color:'#E879F9', newHire:true},
   {user:'luishenrique',pass:'010738',role:'VENDEDOR', name:'Luiz Henrique',av:'LH', vendId:'124', color:'#38BDF8', newHire:true},
   {user:'cezar',       pass:'1203', role:'VENDEDOR', name:'Cezar',        av:'CZ', vendId:'125', color:'#F43F5E', newHire:true},
-  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'RA',  color:'#FCD34D', newHire:true},
+  {user:'rauer',       pass:'rauer123', role:'VENDEDOR', name:'Rauer',       av:'RA', vendId:'RA',  color:'#FCD34D', newHire:true, formName:'WILLIAM HUNTER'},
   // Representantes
   {user:'ricardo', pass:'Ricardo@RC', role:'REPRESENTANTE', name:'Ricardo', av:'RI', reprId:'RC', color:'#F97316'},
   // Manutenção
@@ -12065,7 +12065,7 @@ function renderVendorDashboard(user, vendorKey){
 
   // Atividades do mês (dos formsCaches já carregados)
   const _nm2=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
-  const vNorm=_nm2(user.name);
+  const vNorm=_nm2(user.formName||user.name);
   const _br2=nowBR(); const cm=_br2.month,cy=_br2.year;
   const countF=type=>{
     const dc=FORMS_CONFIG[type]?.dateCol??1;
@@ -14656,7 +14656,7 @@ const _EQUIPE_VENDS=[
   'ALTHIERES SOARES','CEZAR JUNIOR','EVERALDO LINS','GUILHERME PINHEIRO',
   'JOAO VICTOR','JOÃO VICTOR','KELLER CAMARA','KELLER CÂMARA',
   'KELLY CRISTINA','LUIZ HENRIQUE','MOAB XAVIER','NATALIA SCHUNCK',
-  'NATÁLIA SCHUNCK','RAMON NASCIMENTO','RAUER TOMAS','RAUER TOMÁS','RELSON SOARES'
+  'NATÁLIA SCHUNCK','RAMON NASCIMENTO','RAUER TOMAS','RAUER TOMÁS','WILLIAM HUNTER','RELSON SOARES'
 ];
 const _EQUIPE_COD_MAP={
   'ALTHIERES SOARES':'119','CEZAR JUNIOR':'125','EVERALDO LINS':'107',
@@ -14664,7 +14664,7 @@ const _EQUIPE_COD_MAP={
   'KELLER CAMARA':'117','KELLER CÂMARA':'117','KELLY CRISTINA':'123',
   'LUIZ HENRIQUE':'124','MOAB XAVIER':'121','NATALIA SCHUNCK':'116',
   'NATÁLIA SCHUNCK':'116','RAMON NASCIMENTO':'122','RAUER TOMAS':'RA',
-  'RAUER TOMÁS':'RA','RELSON SOARES':'094'
+  'RAUER TOMÁS':'RA','WILLIAM HUNTER':'RA','RELSON SOARES':'094'
 };
 
 function _normStr(s){return(s||'').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
