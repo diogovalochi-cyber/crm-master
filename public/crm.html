@@ -10006,6 +10006,12 @@ function _vendMatch(rv,sv){
   const f1=fw(rv),f2=fw(sv);
   return f1.length>=3&&f1===f2;
 }
+// Retorna o nome usado nos Forms para um vendedor (usa formName se definido no USERS)
+function _formsSellerSv(sel){
+  const _n=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
+  if(typeof USERS!=='undefined'){const u=USERS.find(u=>_n(u.name)===_n(sel));if(u&&u.formName)return _n(u.formName);}
+  return _n(sel);
+}
 // Normaliza COD para comparação: "172.0" → "172", "172" → "172"
 function normCod(v){const t=String(v||'').trim();const n=parseFloat(t);return(!isNaN(n)&&n===Math.floor(n)&&t!=='')?String(Math.floor(n)):t;}
 
@@ -10340,7 +10346,7 @@ function renderRota(){
     const _weekEnd=new Date(weekMon);_weekEnd.setDate(weekMon.getDate()+6);_weekEnd.setHours(23,59,59,999);
     const visitedWeek=new Set();
     formsCaches.visitas.forEach(r=>{
-      if(!_vendMatch(_nm2(r[0]),currentRegSeller)) return;
+      if(!_vendMatch(_nm2(r[0]),_formsSellerSv(currentRegSeller))) return;
       const dt=toDate(r[1]);if(!dt) return;
       if(dt<weekMon||dt>_weekEnd) return;
       const{iC,iR}=_visitasOffsets(r);
@@ -10355,7 +10361,7 @@ function renderRota(){
     const _curMes2=_now2.getFullYear()+'-'+String(_now2.getMonth()+1).padStart(2,'0');
     const _mesCount2={};
     formsCaches.visitas.forEach(r=>{
-      if(!_vendMatch(_nm2(r[0]),currentRegSeller)) return;
+      if(!_vendMatch(_nm2(r[0]),_formsSellerSv(currentRegSeller))) return;
       const dt=toDate(r[1]);if(!dt) return;
       if((dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))!==_curMes2) return;
       const{iC,iR}=_visitasOffsets(r);
@@ -10428,7 +10434,7 @@ function renderRota(){
     const dayDate=new Date(weekMon);
     dayDate.setDate(weekMon.getDate()+(d.dow-1));
     const visits=formsCaches.visitas.filter(r=>{
-      if(!_vendMatch(_nm(r[0]),currentRegSeller)) return false;
+      if(!_vendMatch(_nm(r[0]),_formsSellerSv(currentRegSeller))) return false;
       const dt=toDate(r[1]);if(!dt) return false;
       return dt.getFullYear()===dayDate.getFullYear()&&dt.getMonth()===dayDate.getMonth()&&dt.getDate()===dayDate.getDate();
     });
@@ -10485,7 +10491,7 @@ function renderRota(){
   const _curMes=_now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0');
   const _mesCount={};
   formsCaches.visitas.forEach(r=>{
-    if(!_vendMatch(_nm(r[0]),currentRegSeller)) return;
+    if(!_vendMatch(_nm(r[0]),_formsSellerSv(currentRegSeller))) return;
     const dt=toDate(r[1]);if(!dt) return;
     if((dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'))!==_curMes) return;
     const{iC,iR}=_visitasOffsets(r);
@@ -10628,7 +10634,7 @@ function renderFormsTable(){
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
   const vc=cfg.vendCol??0;
   const dc=cfg.dateCol??1;
-  const sv=_nm(currentRegSeller);
+  const sv=_formsSellerSv(currentRegSeller);
   const sellerRows=cache.filter(r=>{
     const tryCol=ci=>_vendMatch(_nm(r[ci]||''),sv);
     return tryCol(vc)||(vc!==0&&tryCol(0))||(vc!==1&&tryCol(1));
@@ -10684,7 +10690,7 @@ function renderFormsSummary(){
   const dtFrom=fromVal?new Date(fromVal):null;
   const dtTo=toVal?new Date(toVal+'T23:59:59'):null;
   const _nm=s=>(s||'').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ');
-  const sv=_nm(currentRegSeller);
+  const sv=_formsSellerSv(currentRegSeller);
 
   const countType=type=>{
     const c=formsCaches[type]; if(!c.length) return null;
