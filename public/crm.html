@@ -11214,7 +11214,7 @@ function _toggleInactive(){
   renderVendorDetail(activeVendor);
 }
 function renderVendorDetail(name){
-  const _mseqVD=['marco','abril','maio','junho','julho','agosto','setembro','outubro'];
+  const _mseqVD=['marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   const _ciVD=_mseqVD.indexOf(CRM_MES);
   const mesA=document.getElementById('vd-mes-a')?.value||_mseqVD[Math.max(0,_ciVD-2)];
   const mesB=document.getElementById('vd-mes-b')?.value||_mseqVD[Math.max(0,_ciVD-1)];
@@ -11230,7 +11230,8 @@ function renderVendorDetail(name){
   const vRawAgostoD=VENDEDORES_AGOSTO.find(x=>x.name===name);
   const vRawSetembro=(typeof VENDEDORES_SETEMBRO!=='undefined')?VENDEDORES_SETEMBRO.find(x=>x.name===name):null;
   const vRawOutubro=(typeof VENDEDORES_OUTUBRO!=='undefined')?VENDEDORES_OUTUBRO.find(x=>x.name===name):null;
-  const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod||vRawJulho?.cod||vRawAgostoD?.cod||vRawSetembro?.cod||vRawOutubro?.cod;
+  const vRawNovembro=(typeof VENDEDORES_NOVEMBRO!=='undefined')?VENDEDORES_NOVEMBRO.find(x=>x.name===name):null;
+  const cod=vRawAbr?.cod||vRawMaio?.cod||vRawJunho?.cod||vRawJulho?.cod||vRawAgostoD?.cod||vRawSetembro?.cod||vRawOutubro?.cod||vRawNovembro?.cod;
 
   const _vdDia=(()=>{const d=(FATURAMENTO_DIARIO||{})[CRM_DIA];const r=d?.resumo.find(x=>x.cod===cod);return r?{total:r.total,ped:r.ped,cli:r.cli}:{total:0,ped:0,cli:0};})();
   const _D={
@@ -11242,8 +11243,31 @@ function renderVendorDetail(name){
     agosto:{label:'Agosto',            total:vRawAgostoD?.total||0,ped:vRawAgostoD?.ped||0,cli:vRawAgostoD?.cli||0},
     setembro:{label:'Setembro',        total:vRawSetembro?.total||0,ped:vRawSetembro?.ped||0,cli:vRawSetembro?.cli||0},
     outubro: {label:'Outubro',         total:vRawOutubro?.total||0, ped:vRawOutubro?.ped||0, cli:vRawOutubro?.cli||0},
+    novembro:{label:'Novembro',        total:vRawNovembro?.total||0,ped:vRawNovembro?.ped||0,cli:vRawNovembro?.cli||0},
     diario:{label:getDiaLabel(CRM_DIA),total:_vdDia.total,       ped:_vdDia.ped,      cli:_vdDia.cli},
   };
+
+  // 2025: sobrescreve _D com dados do HISTORICO_MENSAL
+  if(CRM_ANO==='2025'&&cod){
+    const _hmIdx={marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7,setembro:8,outubro:9,novembro:10,dezembro:11};
+    const d25=HISTORICO_MENSAL['2025']||{};
+    const arr25=d25[cod]||Array(12).fill(0);
+    ['marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'].forEach(m=>{
+      if(_hmIdx[m]!==undefined) _D[m]={label:MES_LABELS[m]||m,total:arr25[_hmIdx[m]]||0,ped:0,cli:0};
+    });
+  }
+  // 2026: preenche meses sem dados nos arrays de vendedores via HISTORICO_MENSAL
+  if(CRM_ANO==='2026'&&cod){
+    const _hmIdx={fevereiro:1,marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7,setembro:8,outubro:9,novembro:10,dezembro:11};
+    const arr26=(HISTORICO_MENSAL['2026']||{})[cod]||Array(12).fill(0);
+    ['fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'].forEach(m=>{
+      if(!_D[m]) _D[m]={label:MES_LABELS[m]||m,total:0,ped:0,cli:0};
+      if(_D[m].total===0&&_hmIdx[m]!==undefined){
+        const v=arr26[_hmIdx[m]]||0;
+        if(v>0) _D[m]={label:MES_LABELS[m]||m,total:v,ped:0,cli:0};
+      }
+    });
+  }
 
   const periods=[mesA,mesB,mesC].map(k=>({...(_D[k]||{label:k,total:0,ped:0,cli:0}),key:k}));
   const compRows=periods.map((m,i)=>{
@@ -11259,26 +11283,6 @@ function renderVendorDetail(name){
     </tr>`;
   }).join('');
 
-  // 2025: sobrescreve _D com dados do HISTORICO_MENSAL
-  if(CRM_ANO==='2025'&&cod){
-    const _hmIdx={marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7,setembro:8,outubro:9,novembro:10,dezembro:11};
-    const d25=HISTORICO_MENSAL['2025']||{};
-    const arr25=d25[cod]||Array(12).fill(0);
-    ['marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'].forEach(m=>{
-      if(_hmIdx[m]!==undefined) _D[m]={label:MES_LABELS[m]||m,total:arr25[_hmIdx[m]]||0,ped:0,cli:0};
-    });
-  }
-  // 2026: preenche meses sem dados nos arrays de vendedores via HISTORICO_MENSAL
-  if(CRM_ANO==='2026'&&cod){
-    const _hmIdx={fevereiro:1,marco:2,abril:3,maio:4,junho:5,julho:6,agosto:7,setembro:8,outubro:9,novembro:10,dezembro:11};
-    const arr26=(HISTORICO_MENSAL['2026']||{})[cod]||Array(12).fill(0);
-    ['fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro'].forEach(m=>{
-      if(_D[m]&&_D[m].total===0&&_hmIdx[m]!==undefined){
-        const v=arr26[_hmIdx[m]]||0;
-        if(v>0) _D[m]={label:MES_LABELS[m]||m,total:v,ped:0,cli:0};
-      }
-    });
-  }
   // Carteira comparativo — une os 3 meses selecionados por código de cliente
   const cA=CRM_ANO==='2025'?[]:(getCarteiraForMes(mesA)[cod]||[]);
   const cB=CRM_ANO==='2025'?[]:(getCarteiraForMes(mesB)[cod]||[]);
