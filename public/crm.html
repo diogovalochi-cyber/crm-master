@@ -1132,7 +1132,7 @@ body.mode-mobile #ag-slots .ag-act-row{flex-shrink:0;margin-left:auto}
     <button class="subtab" data-seller="NATALIA"        onclick="selectRegSeller(this)">Natália</button>
     <button class="subtab" data-seller="KELLER"         onclick="selectRegSeller(this)">Keller</button>
     <button class="subtab" data-seller="ALTHIERES"      onclick="selectRegSeller(this)">Althieres</button>
-    <button class="subtab" data-seller="JOAO"           onclick="selectRegSeller(this)">Caio</button>
+    <button class="subtab" data-seller="CAIO"           onclick="selectRegSeller(this)">Caio</button>
     <button class="subtab" data-seller="RAMON"          onclick="selectRegSeller(this)">Ramon</button>
     <button class="subtab" data-seller="KELLY"          onclick="selectRegSeller(this)">Kelly</button>
     <button class="subtab" data-seller="LUIZ HENRIQUE"  onclick="selectRegSeller(this)">Luiz Henrique</button>
@@ -10037,8 +10037,12 @@ function _findRS(r,iStart,iEnd){
 }
 
 /* Compara nome de vendedor: lida com nomes completos, espaços extras, variações */
+// Apelidos de vendedor nos Forms: João (cód 120) foi renomeado para Caio — linhas antigas "JOAO..." e novas "CAIO" valem para o mesmo vendedor
+const _VEND_ALIAS=[[/^JOAO(?=$|[\s\-,])/,'CAIO']];
+function _vendAlias(s){for(const[re,to] of _VEND_ALIAS) s=s.replace(re,to);return s;}
 function _vendMatch(rv,sv){
   if(!rv||rv==='#N/A'||rv.length<2) return false;
+  rv=_vendAlias(rv); sv=_vendAlias(sv||'');
   if(rv===sv) return true;
   if(rv.startsWith(sv+' ')||rv.startsWith(sv+'-')) return true;
   if(sv.startsWith(rv+' ')||sv.startsWith(rv+'-')) return true;
